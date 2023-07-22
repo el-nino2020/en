@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hexo自定义404页面</title>
+    <url>/2023/07/04/Hexo%E8%87%AA%E5%AE%9A%E4%B9%89404%E9%A1%B5%E9%9D%A2/</url>
+    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
+
+<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
+<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
+<p>下面是对应的代码，直接放在 md 文件中即可：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
+<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
+<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
+
+<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
+<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
+
+<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
+<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
+    <url>/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
+<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
+<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
+<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
+<span id="more"></span>
+
+
+<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
+<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
+<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
+<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
+<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
+
+<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
+<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
+
+<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
+<hr>
+<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
+
+<hr>
+<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
+<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
+<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
+<p><img src="/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
+<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
+<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
+<p><img src="/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
+<p>如果有重复，就在文件名后面添加数字以示区分：</p>
+<p><img src="/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
+<p><img src="/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
+<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
+<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>tech</category>
+        <category>VS Code</category>
+        <category>Typora</category>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>VS Code</tag>
+        <tag>Typora</tag>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/2023/07/09/PotPlayer-%E5%90%AF%E7%94%A8-Nvidia-%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
+
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
+    <url>/2023/07/08/MyBatis-Plus-%E5%AE%9E%E7%8E%B0-MySQL-JSON-%E7%B1%BB%E5%9E%8B%E5%AD%97%E6%AE%B5%E7%9A%84%E6%98%A0%E5%B0%84/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
+<ul>
+<li>自动检查 JSON 语法是否正确</li>
+<li>底层支持快速存取 JSON 中的元素。不需要将整个 字符串 全部读取出来，再解析成 JSON 对象</li>
+</ul>
+<p>在逻辑上，JSON 与 POJO 无异。Spring MVC 已经实现了 Controller 层两者的自动转化，这体现在请求参数和返回值上。那么，Repository 层如何实现两者的自动转换呢？</p>
+<p>本文展示了通过使用 MyBatis-Plus，<strong>无侵入式</strong>地实现持久层 JSON 与 POJO 的自动映射（ORM， Object Relational Mapping）</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><span id="more"></span>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `person` (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(255) NOT NULL,</span><br><span class="line">  `log` json NOT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB;</span><br></pre></td></tr></table></figure>
+
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;person&quot;, autoResultMap = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(typeHandler = JacksonTypeHandler.class)</span></span><br><span class="line">    <span class="keyword">private</span> PersonLog log;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">PersonLog</span> &#123;</span><br><span class="line">        List&lt;String&gt; hobbies;</span><br><span class="line">        Integer age;</span><br><span class="line">        String address;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>PersonLog</code>是重点讨论的对象，我们要实现它与 JSON 的映射。</p>
+<p><code>Person</code>类上需要标记两个注解，两者通常一起使用：</p>
+<p> <code>TableName#autoResultMap</code>：负责在<strong>查询</strong>时候把 JSON 转换为 POJO</p>
+<p><code>TableField#typeHandler</code>：负责在<strong>插入</strong>时将 POJO 转换为 JSON。由于 spring-web-starter 已经导入了 jackson 依赖，直接使用 <code>JacksonTypeHandler</code> 即可。</p>
+<h2 id="mapper-xml"><a href="#mapper-xml" class="headerlink" title="mapper.xml"></a>mapper.xml</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.example.demo.mapper.PersonMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">&quot;BaseResultMap&quot;</span> <span class="attr">type</span>=<span class="string">&quot;com.example.demo.entity.Person&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">&quot;id&quot;</span> <span class="attr">property</span>=<span class="string">&quot;id&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;BIGINT&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;name&quot;</span> <span class="attr">property</span>=<span class="string">&quot;name&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;VARCHAR&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;log&quot;</span> <span class="attr">property</span>=<span class="string">&quot;log&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;LONGVARCHAR&quot;</span> <span class="attr">typeHandler</span>=<span class="string">&quot;com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span>&gt;</span></span><br><span class="line">        id, name, log</span><br><span class="line">    <span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>mapper 文件中需要指出 <code>log</code> 字段的 typeHandler 的全类名</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PersonMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;Person&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>省略了 Service 层</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PersonController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PersonMapper personMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/json&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">testJSON2BeanMap</span><span class="params">(<span class="meta">@RequestBody</span> Person person)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.insert(person);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/json/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Person <span class="title function_">getPersonById</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> Long id)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.selectById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试两个方法，没报错就说明成功，插入时可以再查看一下数据库。</p>
+<p>在<a href="#%E5%BA%8F%E8%A8%80">序言</a>中提到的<strong>无侵入式ORM</strong>，是指我们不需要在代码中手动地执行 JSON 与 PersonLog 的转换。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文展示了通过使用 MyBatis-Plus<strong>无侵入式</strong>实现持久层 JSON 与 POJO 的自动映射。</p>
+<p>我对这一问题的研究源自实习时业务的要求。当我查询网上的资料时，发现帖子的表述都不太完整、直观，于是我记录下了解决方案，写成了这篇文章。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://dev.mysql.com/doc/refman/8.0/en/json.html">The JSON Data Type</a></p>
+<p><a href="https://blog.csdn.net/qq_33360626/article/details/119836835">mybatis-plus处理mysql中json格式方法</a></p>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>MySQL</tag>
+        <tag>MyBatis-Plus</tag>
+        <tag>JDBC</tag>
+        <tag>Repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
+    <url>/2023/07/05/Spring-MVC-%E4%BD%BF%E7%94%A8-Validation-%E6%B3%A8%E8%A7%A3%E5%AE%9E%E7%8E%B0%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E6%A0%A1%E9%AA%8C/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
+<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
+<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
+<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
+
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>validation-api 是本次介绍的重点</p>
+<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
+
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
+<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
+
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
+<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
+<p><code>@NotNull</code>：字面含义，字段非空</p>
+<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
+<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
+<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
+
+<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务器返回了 400 错误</p>
+<p><img src="/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
+<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
+<p><img src="/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
+<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>Spring MVC</tag>
+        <tag>Controller</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我的 VS Code 快捷键</title>
+    <url>/2023/07/02/%E6%88%91%E7%9A%84-VS-Code-%E5%BF%AB%E6%8D%B7%E9%94%AE/</url>
+    <content><![CDATA[<p>展示一下我的 VS Code 快捷键设置：</p>
+<h1 id="KeyBoards-Shortcuts"><a href="#KeyBoards-Shortcuts" class="headerlink" title="KeyBoards Shortcuts"></a>KeyBoards Shortcuts</h1><p>对应 keybindings.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Place your key bindings in this file to override the defaults</span></span><br><span class="line"><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+n&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.new&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+tab&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.focusNext&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+shift+tab&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.focusPrevious&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+w&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.kill&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+alt+`&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;markdown.extension.editing.toggleCodeBlock&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;editorFocus &amp;&amp; editorLangId == &#x27;markdown&#x27;&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+shift+w&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-workbench.action.closeWindow&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+shift+w&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;editor.action.toggleWordWrap&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;alt+z&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-editor.action.toggleWordWrap&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>VS Code</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>VS Code</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>测试 hexo 特性用</title>
+    <url>/2023/07/02/%E6%B5%8B%E8%AF%95-hexo-%E7%89%B9%E6%80%A7%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="该-post-用来测试-hexo-的各种特性"><a href="#该-post-用来测试-hexo-的各种特性" class="headerlink" title="该 post 用来测试 hexo 的各种特性"></a>该 post 用来测试 hexo 的各种特性</h1>]]></content>
+      <categories>
+        <category>others</category>
+        <category>test</category>
+      </categories>
+      <tags>
+        <tag>test</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>测试文章</title>
+    <url>/2023/07/01/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</url>
+    <content><![CDATA[<h1 id="这是一篇测试文章"><a href="#这是一篇测试文章" class="headerlink" title="这是一篇测试文章"></a>这是一篇测试文章</h1><p>啦啦啦</p>
+<h2 id="目录生效吗"><a href="#目录生效吗" class="headerlink" title="目录生效吗"></a>目录生效吗</h2><p>[toc]</p>
+<h2 id="锚点生效吗"><a href="#锚点生效吗" class="headerlink" title="锚点生效吗"></a>锚点生效吗</h2><p><a href="#%E8%BF%99%E6%98%AF%E4%B8%80%E7%AF%87%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0">点我跳转</a></p>
+<h2 id="latex-代码"><a href="#latex-代码" class="headerlink" title="latex 代码"></a>latex 代码</h2><p>$$\sum\limits_{i &#x3D; 1}^{10}e^i$$</p>
+<span id="more"></span>
+
+
+<h2 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><p><img src="/MarkDownImages/image-20230701210627516.png" alt="image-20230701210627516"></p>
+]]></content>
+      <categories>
+        <category>others</category>
+        <category>test</category>
+      </categories>
+      <tags>
+        <tag>test</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我的 VS Code 设置</title>
+    <url>/2023/07/02/%E6%88%91%E7%9A%84-VS-Code-%E8%AE%BE%E7%BD%AE/</url>
+    <content><![CDATA[<p>展示一下我的 VS Code 设置：</p>
+<h1 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h1><p>对应 settings.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;workbench.colorTheme&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Default Dark+&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;files.autoSave&quot;</span><span class="punctuation">:</span> <span class="string">&quot;onFocusChange&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.fontLigatures&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.fontSize&quot;</span><span class="punctuation">:</span> <span class="number">16</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.fontFamily&quot;</span><span class="punctuation">:</span> <span class="string">&quot;JetBrains Mono Regular&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.formatOnSave&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.rulers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;window.title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;dirty&#125;$&#123;activeEditorMedium&#125;$&#123;separator&#125;$&#123;rootPath&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;workbench.iconTheme&quot;</span><span class="punctuation">:</span> <span class="string">&quot;vscode-icons&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;terminal.integrated.fontSize&quot;</span><span class="punctuation">:</span> <span class="number">16</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;extensions.ignoreRecommendations&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;git.confirmSync&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;remote.SSH.remotePlatform&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;CentOS8Main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;linux&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;vsicons.dontShowNewVersionMessage&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;explorer.confirmDelete&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;terminal.integrated.enableMultiLinePasteWarning&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;settingsSync.ignoredSettings&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;workbench.editor.untitled.hint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;hidden&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;explorer.confirmDragAndDrop&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;shellformat.effectLanguages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;shellscript&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;dockerfile&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;dotenv&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;hosts&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;jvmoptions&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;ignore&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;gitignore&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;properties&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;spring-boot-properties&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;azcli&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;bats&quot;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;markdown.extension.print.absoluteImgPath&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;markdown.extension.print.validateUrls&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;redhat.telemetry.enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;[markdown]&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;editor.wordWrap&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>VS Code</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>VS Code</tag>
+      </tags>
+  </entry>
+</search>
