@@ -32,76 +32,6 @@
       </tags>
   </entry>
   <entry>
-    <title>LocalSend：局域网文件传输利器</title>
-    <url>/2023/09/04/LocalSend%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%88%A9%E5%99%A8/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
-<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
-<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
-<span id="more"></span>
-
-<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
-<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
-<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
-<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
-<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
-<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
-</li>
-<li><p>进入『配置防火墙和安全设置』</p>
-<p> <img src="/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
-</li>
-<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
-<p> <img src="/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
-</li>
-<li><p>重启 LocalSend，等待找到目标主机</p>
-</li>
-</ol>
-<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
-<ol>
-<li><p>打开『Windows Defender 防火墙』</p>
-<p> <img src="/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
-</li>
-<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
-<p> <img src="/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
-</li>
-<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
-</li>
-</ol>
-<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
-<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
-<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
-<p><img src="/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
-<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
-<p><img src="/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
-<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>LocalSend</category>
-      </categories>
-      <tags>
-        <tag>LocalSend</tag>
-        <tag>settings</tag>
-        <tag>Firewall</tag>
-        <tag>Windows</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
     <url>/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
@@ -165,6 +95,76 @@
         <tag>VS Code</tag>
         <tag>Typora</tag>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LocalSend：局域网文件传输利器</title>
+    <url>/2023/09/04/LocalSend%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%88%A9%E5%99%A8/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
+<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
+<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
+<span id="more"></span>
+
+<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
+<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
+<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
+<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
+<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
+<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
+</li>
+<li><p>进入『配置防火墙和安全设置』</p>
+<p> <img src="/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
+</li>
+<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
+<p> <img src="/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
+</li>
+<li><p>重启 LocalSend，等待找到目标主机</p>
+</li>
+</ol>
+<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
+<ol>
+<li><p>打开『Windows Defender 防火墙』</p>
+<p> <img src="/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
+</li>
+<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
+<p> <img src="/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
+</li>
+<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
+</li>
+</ol>
+<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
+<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
+<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
+<p><img src="/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
+<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
+<p><img src="/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
+<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>LocalSend</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>LocalSend</tag>
+        <tag>Firewall</tag>
+        <tag>Windows</tag>
       </tags>
   </entry>
   <entry>
@@ -318,74 +318,6 @@
         <tag>Spring Boot</tag>
         <tag>Spring MVC</tag>
         <tag>Controller</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>我的 VS Code 快捷键</title>
-    <url>/2023/07/02/%E6%88%91%E7%9A%84-VS-Code-%E5%BF%AB%E6%8D%B7%E9%94%AE/</url>
-    <content><![CDATA[<p>展示一下我的 VS Code 快捷键设置：</p>
-<h1 id="KeyBoards-Shortcuts"><a href="#KeyBoards-Shortcuts" class="headerlink" title="KeyBoards Shortcuts"></a>KeyBoards Shortcuts</h1><p>对应 keybindings.json</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Place your key bindings in this file to override the defaults</span></span><br><span class="line"><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+n&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.new&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+tab&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.focusNext&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+shift+tab&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.focusPrevious&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+w&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;workbench.action.terminal.kill&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;terminalFocus&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+alt+`&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;markdown.extension.editing.toggleCodeBlock&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;when&quot;</span><span class="punctuation">:</span> <span class="string">&quot;editorFocus &amp;&amp; editorLangId == &#x27;markdown&#x27;&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+shift+w&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-workbench.action.closeWindow&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;ctrl+shift+w&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;editor.action.toggleWordWrap&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;key&quot;</span><span class="punctuation">:</span> <span class="string">&quot;alt+z&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-editor.action.toggleWordWrap&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>VS Code</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>我的 VS Code 设置</title>
-    <url>/2023/07/02/%E6%88%91%E7%9A%84-VS-Code-%E8%AE%BE%E7%BD%AE/</url>
-    <content><![CDATA[<p>展示一下我的 VS Code 设置：</p>
-<h1 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h1><p>对应 settings.json</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;workbench.colorTheme&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Default Dark+&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;files.autoSave&quot;</span><span class="punctuation">:</span> <span class="string">&quot;onFocusChange&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.fontLigatures&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.fontSize&quot;</span><span class="punctuation">:</span> <span class="number">16</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.fontFamily&quot;</span><span class="punctuation">:</span> <span class="string">&quot;JetBrains Mono Regular&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.formatOnSave&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;editor.rulers&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;window.title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;dirty&#125;$&#123;activeEditorMedium&#125;$&#123;separator&#125;$&#123;rootPath&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;workbench.iconTheme&quot;</span><span class="punctuation">:</span> <span class="string">&quot;vscode-icons&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;terminal.integrated.fontSize&quot;</span><span class="punctuation">:</span> <span class="number">16</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;extensions.ignoreRecommendations&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;git.confirmSync&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;remote.SSH.remotePlatform&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;CentOS8Main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;linux&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;vsicons.dontShowNewVersionMessage&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;explorer.confirmDelete&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;terminal.integrated.enableMultiLinePasteWarning&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;settingsSync.ignoredSettings&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;workbench.editor.untitled.hint&quot;</span><span class="punctuation">:</span> <span class="string">&quot;hidden&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;explorer.confirmDragAndDrop&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;shellformat.effectLanguages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;shellscript&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;dockerfile&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;dotenv&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;hosts&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;jvmoptions&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;ignore&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;gitignore&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;properties&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;spring-boot-properties&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;azcli&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;bats&quot;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;markdown.extension.print.absoluteImgPath&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;markdown.extension.print.validateUrls&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;redhat.telemetry.enabled&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;[markdown]&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;editor.wordWrap&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>VS Code</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>测试文章</title>
-    <url>/2023/07/01/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/</url>
-    <content><![CDATA[<h1 id="这是一篇测试文章"><a href="#这是一篇测试文章" class="headerlink" title="这是一篇测试文章"></a>这是一篇测试文章</h1><p>啦啦啦</p>
-<h2 id="目录生效吗"><a href="#目录生效吗" class="headerlink" title="目录生效吗"></a>目录生效吗</h2><p>[toc]</p>
-<h2 id="锚点生效吗"><a href="#锚点生效吗" class="headerlink" title="锚点生效吗"></a>锚点生效吗</h2><p><a href="#%E8%BF%99%E6%98%AF%E4%B8%80%E7%AF%87%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0">点我跳转</a></p>
-<h2 id="latex-代码"><a href="#latex-代码" class="headerlink" title="latex 代码"></a>latex 代码</h2><p>$$\sum\limits_{i &#x3D; 1}^{10}e^i$$</p>
-<span id="more"></span>
-
-
-<h2 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;hello world&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><p><img src="/MarkDownImages/image-20230701210627516.png" alt="image-20230701210627516"></p>
-]]></content>
-      <categories>
-        <category>others</category>
-        <category>test</category>
-      </categories>
-      <tags>
-        <tag>test</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>测试 hexo 特性用</title>
-    <url>/2023/07/02/%E6%B5%8B%E8%AF%95-hexo-%E7%89%B9%E6%80%A7%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="该-post-用来测试-hexo-的各种特性"><a href="#该-post-用来测试-hexo-的各种特性" class="headerlink" title="该 post 用来测试 hexo 的各种特性"></a>该 post 用来测试 hexo 的各种特性</h1>]]></content>
-      <categories>
-        <category>others</category>
-        <category>test</category>
-      </categories>
-      <tags>
-        <tag>test</tag>
       </tags>
   </entry>
 </search>
