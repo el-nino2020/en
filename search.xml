@@ -32,72 +32,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
-    <url>/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
-<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
-<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
-<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
-<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
-<span id="more"></span>
-
-
-<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
-<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
-
-<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
-<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
-<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
-<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
-
-<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
-<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
-
-<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
-<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
-<hr>
-<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
-
-<hr>
-<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
-
-<hr>
-<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
-
-<hr>
-<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
-<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
-<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
-<p><img src="/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
-<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
-<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
-<p><img src="/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
-<p>如果有重复，就在文件名后面添加数字以示区分：</p>
-<p><img src="/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
-<p><img src="/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
-<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
-<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>tech</category>
-        <category>VS Code</category>
-        <category>Typora</category>
-        <category>Markdown</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-        <tag>Typora</tag>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>LocalSend：局域网文件传输利器</title>
     <url>/2023/09/04/LocalSend%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%88%A9%E5%99%A8/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
@@ -161,10 +95,76 @@
         <category>LocalSend</category>
       </categories>
       <tags>
-        <tag>settings</tag>
         <tag>LocalSend</tag>
+        <tag>settings</tag>
         <tag>Firewall</tag>
         <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
+    <url>/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
+<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
+<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
+<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
+<span id="more"></span>
+
+
+<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
+<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
+<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
+<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
+<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
+
+<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
+<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
+
+<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
+<hr>
+<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
+
+<hr>
+<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
+<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
+<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
+<p><img src="/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
+<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
+<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
+<p><img src="/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
+<p>如果有重复，就在文件名后面添加数字以示区分：</p>
+<p><img src="/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
+<p><img src="/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
+<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
+<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>tech</category>
+        <category>VS Code</category>
+        <category>Typora</category>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>VS Code</tag>
+        <tag>Typora</tag>
+        <tag>Markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -258,6 +258,79 @@
         <tag>PotPlayer</tag>
         <tag>Nvidia</tag>
         <tag>VSR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>算法题001：求数组可能的最大得分</title>
+    <url>/2023/09/21/%E7%AE%97%E6%B3%95%E9%A2%98001%EF%BC%9A%E6%B1%82%E6%95%B0%E7%BB%84%E5%8F%AF%E8%83%BD%E7%9A%84%E6%9C%80%E5%A4%A7%E5%BE%97%E5%88%86/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p> 题目来源：牛客笔试</p>
+</blockquote>
+<p>给定一个从 $0$ 开始的数组 $nums$ 和一个非负整数 $k$。</p>
+<p>在一次操作中，你可以做以下操作：</p>
+<ul>
+<li>选择一个之前未选择过的下标 $i$，范围为 $[0, nums.length - 1]$ 。</li>
+<li>将 $nums[i]$ 替换为范围 $[nums[i] - k, nums[i] + k]$ 内的任意整数（包含两端）。</li>
+</ul>
+<p>在应用任意次数的操作后，返回数组 $nums$ 的最大可能分数。</p>
+<p>数组<strong>分数</strong>是“数组中最多的重复元素个数”</p>
+<p>注意，你<strong>只能</strong>对每个下标应用<strong>一次</strong>操作。</p>
+<span id="more"></span>
+
+
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="number">4</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">]</span></span><br><span class="line"><span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<p>在这个示例中，我们进行了以下操作：</p>
+<ul>
+<li>选择下标1，将其替换为4（范围为[4, 8]），nums &#x3D; [4,4,1,2]。</li>
+<li>选择下标3，将其替换为4（范围为[0, 4]），nums &#x3D; [4,4,1,4]。</li>
+</ul>
+<p>应用这些操作后，数组 nums 的得分为3（由下标 0、1 和 3 组成的子序列）。可以证明，3 是我们可以达到的最大可能长度。</p>
+<h2 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">]</span></span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<p>在这个示例中，我们无需执行任何操作。</p>
+<p>数组nums的得分是4（整个数组）。</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><h2 id="重新读题"><a href="#重新读题" class="headerlink" title="重新读题"></a>重新读题</h2><p>题目的表述有一股浓重的机翻味，我们不妨重新表述一下：</p>
+<p>给定一个数组 $nums$ 和一个自然数 $k$</p>
+<p>对于任意下标 $i$，我们可以将该元素 $nums[i]$ 替换为 $[nums[i] - k, nums[i] + k]$ 中的任意整数。一个下标只能操作一次，也可以不操作。</p>
+<p>返回任意次操作后，$nums$ 中最大可能的重复元素数量。</p>
+<h2 id="观察1：排序"><a href="#观察1：排序" class="headerlink" title="观察1：排序"></a>观察1：排序</h2><p>为了得到尽可能多的重复元素，我们需要地将<strong>大小接近</strong>的元素进行操作，使它们的值相等。</p>
+<p>如何找出大小接近的元素呢？—— 排序</p>
+<h2 id="观察2：找规律"><a href="#观察2：找规律" class="headerlink" title="观察2：找规律"></a>观察2：找规律</h2><p>假设在排序后，我们试图使区间 $[i, j]$内的元素在操作后的值相等。那么此时 $i$ 和 $j$ 需要满足什么条件呢？</p>
+<ul>
+<li>在排序后，已知 $nums[i] \le nums[i + 1] \le … \le nums[j - 1] \le nums[j]$</li>
+<li>$nums[i]$ 的替换范围是 $[nums[i] - k, nums[i] + k]$ ；$nums[j]$ 的替换范围是 $[nums[j] - k, nums[j] + k]$ </li>
+<li>则 $nums[i] + k \ge nums[j] - k$</li>
+<li>化简，得到  <strong>$0 \le nums[j] - nums[i] \le 2k$</strong></li>
+</ul>
+<p>可以看出，当 $i$ 固定时，为了尽可能使区间范围 $j - i + 1$ 变大，我们需要找到一个 $j$ ，使得 $nums[j] - nums[i]$ 尽可能地接近 $2k$。此时的区间范围 $j - i + 1$才有可能是我们想要的答案。</p>
+<h2 id="观察3：滑动窗口"><a href="#观察3：滑动窗口" class="headerlink" title="观察3：滑动窗口"></a>观察3：滑动窗口</h2><p>经过我们的分析，这道题变成了：</p>
+<ul>
+<li>对于一个有序数组 $nums$，和一个自然数 $k$</li>
+<li>当下标 $i$ 固定，我们需要找到一个尽可能大的下标 $j$，并且满足 $0 \le nums[j] - nums[i] \le 2k$</li>
+<li>在所有满足条件的区间 $[i, j]$ 中，最大的 $j - i + 1$ 即为答案</li>
+</ul>
+<p>那么，使用<strong>滑动窗口</strong>算法能够将暴力遍历的时间复杂度从 $O(n^2)$ 降低到 $O(n)$</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumScore</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line"></span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// sliding window</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>, j = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (j &lt; n &amp;&amp; nums[j] &lt;= nums[i] + <span class="number">2</span> * k) j++;</span><br><span class="line">            ans = Math.max(ans, j - i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>排序</tag>
+        <tag>滑动窗口</tag>
       </tags>
   </entry>
   <entry>
