@@ -1,6 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Azure Pipelines 架构解析</title>
+    <url>/2023/10/06/Azure-Pipelines-%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
+<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
+<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
+<span id="more"></span>
+
+<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
+<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
+<ul>
+<li>一条 Pipeline 可以包含多个 Stage</li>
+<li>一个 Stage 可以包含多个 Job</li>
+<li>一个 Job 可以包含多个 Step</li>
+<li>一个 Step 可以包含多个 task</li>
+</ul>
+<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
+<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
+<p>这种分配是如何完成的呢？</p>
+<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
+<ul>
+<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
+<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
+</ul>
+<p>因此，一条 Pipeline 是这样执行的：</p>
+<ol>
+<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
+<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
+<li>竞争成功，开始执行；</li>
+<li>竞争失败，继续监听；</li>
+</ul>
+</li>
+<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
+</ol>
+<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
+<blockquote>
+<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
+</blockquote>
+<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
+<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
+<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
+<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Azure</category>
+      </categories>
+      <tags>
+        <tag>Azure</tag>
+        <tag>Azure Pipelines</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo自定义404页面</title>
     <url>/2023/07/04/Hexo%E8%87%AA%E5%AE%9A%E4%B9%89404%E9%A1%B5%E9%9D%A2/</url>
     <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
@@ -29,6 +88,241 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LANraragi 漫画服务器</title>
+    <url>/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近在研究家庭媒体库，教程大多以 NAS 为主机，实际上大多数软件都跑在 Docker 上。</p>
+<p>现在有如下看漫画&#x2F;同人志的需求：</p>
+<ul>
+<li>电脑上存有大量的漫画的压缩包，想要各种设备能访问这些资源。—— 服务端软件，能够以 HTTP 的方式传输图片。</li>
+<li>漫画的目录管理以我为主，而不能以服务端软件的规则为主。</li>
+<li>手机 &#x2F; pad 浏览漫画时，操作方便易用。—— 客户端好用，或者直接提供 web 端。</li>
+<li>客户端有随机选择漫画功能。—— 收集的漫画太多了，出于消磨时间的目的，随便挑一本看最方便。</li>
+</ul>
+<p>综上，我选择了 <a href="https://github.com/Difegue/LANraragi">LANraragi</a>。尽管 <a href="https://komga.org/">Komga</a>、<a href="https://www.kavitareader.com/#home">Kavita</a> 和 <a href="https://github.com/Suwayomi/Tachidesk-Sorayomi">Tachidesk (Sorayomi)</a> 也都是开源的漫画服务器，但都不尽如人意。</p>
+<p>这篇文章是对官方文档的一些摘录，以及我自己使用的一些心得。</p>
+<span id="more"></span>
+
+<h1 id="LANraragi"><a href="#LANraragi" class="headerlink" title="LANraragi"></a>LANraragi</h1><p>LANraragi 提供很多功能，但我需要的不多：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>是否需要</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本地上传漫画</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>网上下载漫画</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>添加元数据（主要是打 tag）</td>
+<td>❌</td>
+</tr>
+</tbody></table>
+<p>所有漫画都是我自己本地上传的。我只是要看漫画，不需要通过 tag 分类漫画。</p>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>Docker compose:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">lanraragi:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">difegue/lanraragi:v.0.9.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">lanraragi</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">43000</span><span class="string">:3000</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/doujinshiArchives:/home/koyomi/lanraragi/content:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-database:/home/koyomi/lanraragi/database</span></span><br><span class="line">        </span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">lanraragi-database:</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>/home/koyomi/lanraragi/database</code> 是 LANraragi 存放 Redis 数据的目录。创建一个 volume 即可</li>
+<li><code>/home/koyomi/lanraragi/content</code> 目录存放：<ul>
+<li>所有漫画压缩包。LANraragi 可以递归地扫描子目录 —— 文件管理以我为主；</li>
+<li>漫画的缩略图，默认存放在 <code>/home/koyomi/lanraragi/content/thumb</code> 下；</li>
+</ul>
+</li>
+<li>由于缩略图目录可以改，因此 <code>content</code> 实际只存放我自己的所有资源。我把权限设置为只读，直接映射主机存放漫画压缩包的目录。LANraragi 会自己检测文件变动，我只要像以前一样收集资源即可。</li>
+</ul>
+<hr>
+<ul>
+<li>用 Docker compose 是因为可以记录启动命令，方便之后复用。</li>
+<li>Portainer 的 Stacks 就是存放 Docker-compose 文件的地方。修改 Docker-compose 后，Portainer  会重新部署，很方便。（本质上就是 <a href="https://docs.docker.com/engine/reference/commandline/compose_down/">down</a> + up，但数据不会丢，因为存放在 volume 里面）</li>
+</ul>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>第一次启动，admin 的密码是 <code>kamimamita</code>。登录后进入配置页面，</p>
+<p><img src="/MarkDownImages/image-20240125195217045.png" alt="image-20240125195217045"></p>
+<p>首先提醒一下，改了配置不要忘记保存：</p>
+<p><img src="/MarkDownImages/image-20240125200813922.png" alt="image-20240125200813922"></p>
+<p>先修改初始密码：</p>
+<p><img src="/MarkDownImages/image-20240125195247264.png" alt="image-20240125195247264"></p>
+<p>其他配置如下：</p>
+<h2 id="Global-Settings"><a href="#Global-Settings" class="headerlink" title="Global Settings"></a>Global Settings</h2><p><img src="/MarkDownImages/image-20240125195357388.png" alt="image-20240125195357388"></p>
+<ul>
+<li>分页数设置为 20，默认的 100 太多了。</li>
+<li>其实不太需要阅读记录功能，就把存储任务放在客户端了，节省服务器资源</li>
+</ul>
+<h2 id="Archive-Files"><a href="#Archive-Files" class="headerlink" title="Archive Files"></a>Archive Files</h2><p>不用改</p>
+<p><img src="/MarkDownImages/image-20240125195541509.png" alt="image-20240125195541509"></p>
+<h2 id="Tags-and-Thumbnails"><a href="#Tags-and-Thumbnails" class="headerlink" title="Tags and Thumbnails"></a>Tags and Thumbnails</h2><p><img src="/MarkDownImages/image-20240125195742625.png" alt="image-20240125195742625"></p>
+<ul>
+<li>重点是改缩略图目录。因为 docker 启动时的只读映射，以及默认的缩略图目录在 <code>content</code> 里。</li>
+<li>把两个关于 tag 的选项关掉</li>
+</ul>
+<h2 id="Background-Workers"><a href="#Background-Workers" class="headerlink" title="Background Workers"></a>Background Workers</h2><p><img src="/MarkDownImages/image-20240125200521462.png" alt="image-20240125200521462"></p>
+<p>这个是用来监听 <code>content</code> 目录中漫画资源变动的。如果没有及时处理新的资源，可以重启。</p>
+<h2 id="Plugin-Configuration"><a href="#Plugin-Configuration" class="headerlink" title="Plugin Configuration"></a>Plugin Configuration</h2><p><img src="/MarkDownImages/image-20240125200854396.png" alt="image-20240125200854396"></p>
+<p>把这个关了，不需要</p>
+<p>所有插件默认都是关闭的，问题不大。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>首次挂载自己的漫画资源到 <code>content</code> 时，LANraragi 需要大量资源处理元数据和缩略图。根据 Portainer 的监视数据，使用了 2-3GB 内存，2000% 的 CPU （不太懂这个 CPU 资源是怎么统计的）。</p>
+<p>首页的功能：</p>
+<ul>
+<li>搜索；</li>
+<li>每次显示随机加载的漫画；</li>
+<li>列表模式 &#x2F; 缩略图模式</li>
+</ul>
+<p>阅读器配置：</p>
+<p>1️⃣默认是分页模式</p>
+<p>2️⃣我更喜欢垂直浏览模式：</p>
+<p><img src="/MarkDownImages/image-20240125201748231.png" alt="image-20240125201748231"></p>
+<h1 id="设备共享"><a href="#设备共享" class="headerlink" title="设备共享"></a>设备共享</h1><p>Docker 运行在 Linux 虚拟机中，由于 Docker 端口映射，本机可以通过虚拟机的 IP 访问 LANraragi 。</p>
+<h2 id="虚拟机-NAT-穿透"><a href="#虚拟机-NAT-穿透" class="headerlink" title="虚拟机 NAT 穿透"></a>虚拟机 NAT 穿透</h2><p>如果要用其他设备访问 LANraragi，则需要通过 NAT 穿透将虚拟机的端口映射到主机的端口：</p>
+<p><img src="/MarkDownImages/image-20240125202125135.png" alt="image-20240125202125135"></p>
+<p><img src="/MarkDownImages/image-20240125202155268.png" alt="image-20240125202155268"></p>
+<p><img src="/MarkDownImages/image-20240125202344077.png" alt="image-20240125202344077"></p>
+<p>如图配置，将 虚拟机的 43000 端口映射到主机的 43000 端口</p>
+<h2 id="本机防火墙"><a href="#本机防火墙" class="headerlink" title="本机防火墙"></a>本机防火墙</h2><p>Windows 的防火墙默认会屏蔽该端口，配置新的规则即可：</p>
+<p><img src="/MarkDownImages/image-20240125202513739.png" alt="image-20240125202513739"></p>
+<p><img src="/MarkDownImages/image-20240125202536458.png" alt="image-20240125202536458"></p>
+<p><img src="/MarkDownImages/image-20240125202641453.png" alt="image-20240125202641453"></p>
+<p>在入站规则里新建规则：给专用网络（家庭内网）开放 43000&#x2F;tcp </p>
+<p>之后手机就可以通过 电脑IP:43000 访问 LANraragi 了。</p>
+<p>手机端 web 界面的首页不咋地，可以用<a href="https://sugoi.gitbook.io/lanraragi/advanced-usage/external-readers">官方推荐的客户端</a>。但我只要随机阅读，所以问题不大，看漫画的界面好用就行了。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li><a href="https://sugoi.gitbook.io/lanraragi/">LANraragi 官方文档</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>NAS</category>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>NAS</tag>
+        <tag>Docker</tag>
+        <tag>LANraragi</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
+    <url>/2023/07/08/MyBatis-Plus-%E5%AE%9E%E7%8E%B0-MySQL-JSON-%E7%B1%BB%E5%9E%8B%E5%AD%97%E6%AE%B5%E7%9A%84%E6%98%A0%E5%B0%84/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
+<ul>
+<li>自动检查 JSON 语法是否正确</li>
+<li>底层支持快速存取 JSON 中的元素。不需要将整个 字符串 全部读取出来，再解析成 JSON 对象</li>
+</ul>
+<p>在逻辑上，JSON 与 POJO 无异。Spring MVC 已经实现了 Controller 层两者的自动转化，这体现在请求参数和返回值上。那么，Repository 层如何实现两者的自动转换呢？</p>
+<p>本文展示了通过使用 MyBatis-Plus，<strong>无侵入式</strong>地实现持久层 JSON 与 POJO 的自动映射（ORM， Object Relational Mapping）</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><span id="more"></span>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `person` (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(255) NOT NULL,</span><br><span class="line">  `log` json NOT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB;</span><br></pre></td></tr></table></figure>
+
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;person&quot;, autoResultMap = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(typeHandler = JacksonTypeHandler.class)</span></span><br><span class="line">    <span class="keyword">private</span> PersonLog log;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">PersonLog</span> &#123;</span><br><span class="line">        List&lt;String&gt; hobbies;</span><br><span class="line">        Integer age;</span><br><span class="line">        String address;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>PersonLog</code>是重点讨论的对象，我们要实现它与 JSON 的映射。</p>
+<p><code>Person</code>类上需要标记两个注解，两者通常一起使用：</p>
+<p> <code>TableName#autoResultMap</code>：负责在<strong>查询</strong>时候把 JSON 转换为 POJO</p>
+<p><code>TableField#typeHandler</code>：负责在<strong>插入</strong>时将 POJO 转换为 JSON。由于 spring-web-starter 已经导入了 jackson 依赖，直接使用 <code>JacksonTypeHandler</code> 即可。</p>
+<h2 id="mapper-xml"><a href="#mapper-xml" class="headerlink" title="mapper.xml"></a>mapper.xml</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.example.demo.mapper.PersonMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">&quot;BaseResultMap&quot;</span> <span class="attr">type</span>=<span class="string">&quot;com.example.demo.entity.Person&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">&quot;id&quot;</span> <span class="attr">property</span>=<span class="string">&quot;id&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;BIGINT&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;name&quot;</span> <span class="attr">property</span>=<span class="string">&quot;name&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;VARCHAR&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;log&quot;</span> <span class="attr">property</span>=<span class="string">&quot;log&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;LONGVARCHAR&quot;</span> <span class="attr">typeHandler</span>=<span class="string">&quot;com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span>&gt;</span></span><br><span class="line">        id, name, log</span><br><span class="line">    <span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>mapper 文件中需要指出 <code>log</code> 字段的 typeHandler 的全类名</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PersonMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;Person&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>省略了 Service 层</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PersonController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PersonMapper personMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/json&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">testJSON2BeanMap</span><span class="params">(<span class="meta">@RequestBody</span> Person person)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.insert(person);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/json/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Person <span class="title function_">getPersonById</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> Long id)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.selectById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试两个方法，没报错就说明成功，插入时可以再查看一下数据库。</p>
+<p>在<a href="#%E5%BA%8F%E8%A8%80">序言</a>中提到的<strong>无侵入式ORM</strong>，是指我们不需要在代码中手动地执行 JSON 与 PersonLog 的转换。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文展示了通过使用 MyBatis-Plus<strong>无侵入式</strong>实现持久层 JSON 与 POJO 的自动映射。</p>
+<p>我对这一问题的研究源自实习时业务的要求。当我查询网上的资料时，发现帖子的表述都不太完整、直观，于是我记录下了解决方案，写成了这篇文章。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://dev.mysql.com/doc/refman/8.0/en/json.html">The JSON Data Type</a></p>
+<p><a href="https://blog.csdn.net/qq_33360626/article/details/119836835">mybatis-plus处理mysql中json格式方法</a></p>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>MySQL</tag>
+        <tag>MyBatis-Plus</tag>
+        <tag>JDBC</tag>
+        <tag>Repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
+    <url>/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
+<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
+<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
+<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
+<span id="more"></span>
+
+
+<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
+<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
+<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
+<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
+<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
+
+<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
+<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
+
+<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
+<hr>
+<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
+
+<hr>
+<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
+<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
+<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
+<p><img src="/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
+<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
+<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
+<p><img src="/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
+<p>如果有重复，就在文件名后面添加数字以示区分：</p>
+<p><img src="/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
+<p><img src="/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
+<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
+<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>softwares</category>
+        <category>VS Code</category>
+        <category>Typora</category>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>VS Code</tag>
+        <tag>Typora</tag>
+        <tag>Markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -95,228 +389,10 @@
         <category>LocalSend</category>
       </categories>
       <tags>
-        <tag>LocalSend</tag>
         <tag>settings</tag>
+        <tag>LocalSend</tag>
         <tag>Firewall</tag>
         <tag>Windows</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Azure Pipelines 架构解析</title>
-    <url>/2023/10/06/Azure-Pipelines-%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
-<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
-<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
-<span id="more"></span>
-
-<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
-<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
-<ul>
-<li>一条 Pipeline 可以包含多个 Stage</li>
-<li>一个 Stage 可以包含多个 Job</li>
-<li>一个 Job 可以包含多个 Step</li>
-<li>一个 Step 可以包含多个 task</li>
-</ul>
-<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
-<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
-<p>这种分配是如何完成的呢？</p>
-<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
-<ul>
-<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
-<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
-</ul>
-<p>因此，一条 Pipeline 是这样执行的：</p>
-<ol>
-<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
-<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
-<li>竞争成功，开始执行；</li>
-<li>竞争失败，继续监听；</li>
-</ul>
-</li>
-<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
-</ol>
-<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
-<blockquote>
-<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
-</blockquote>
-<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
-<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
-<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
-<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
-<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Azure</category>
-      </categories>
-      <tags>
-        <tag>Azure</tag>
-        <tag>Azure Pipelines</tag>
-        <tag>架构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
-    <url>/2023/07/08/MyBatis-Plus-%E5%AE%9E%E7%8E%B0-MySQL-JSON-%E7%B1%BB%E5%9E%8B%E5%AD%97%E6%AE%B5%E7%9A%84%E6%98%A0%E5%B0%84/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
-<ul>
-<li>自动检查 JSON 语法是否正确</li>
-<li>底层支持快速存取 JSON 中的元素。不需要将整个 字符串 全部读取出来，再解析成 JSON 对象</li>
-</ul>
-<p>在逻辑上，JSON 与 POJO 无异。Spring MVC 已经实现了 Controller 层两者的自动转化，这体现在请求参数和返回值上。那么，Repository 层如何实现两者的自动转换呢？</p>
-<p>本文展示了通过使用 MyBatis-Plus，<strong>无侵入式</strong>地实现持久层 JSON 与 POJO 的自动映射（ORM， Object Relational Mapping）</p>
-<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><span id="more"></span>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `person` (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(255) NOT NULL,</span><br><span class="line">  `log` json NOT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB;</span><br></pre></td></tr></table></figure>
-
-<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;person&quot;, autoResultMap = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(typeHandler = JacksonTypeHandler.class)</span></span><br><span class="line">    <span class="keyword">private</span> PersonLog log;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">PersonLog</span> &#123;</span><br><span class="line">        List&lt;String&gt; hobbies;</span><br><span class="line">        Integer age;</span><br><span class="line">        String address;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里的<code>PersonLog</code>是重点讨论的对象，我们要实现它与 JSON 的映射。</p>
-<p><code>Person</code>类上需要标记两个注解，两者通常一起使用：</p>
-<p> <code>TableName#autoResultMap</code>：负责在<strong>查询</strong>时候把 JSON 转换为 POJO</p>
-<p><code>TableField#typeHandler</code>：负责在<strong>插入</strong>时将 POJO 转换为 JSON。由于 spring-web-starter 已经导入了 jackson 依赖，直接使用 <code>JacksonTypeHandler</code> 即可。</p>
-<h2 id="mapper-xml"><a href="#mapper-xml" class="headerlink" title="mapper.xml"></a>mapper.xml</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.example.demo.mapper.PersonMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">&quot;BaseResultMap&quot;</span> <span class="attr">type</span>=<span class="string">&quot;com.example.demo.entity.Person&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">&quot;id&quot;</span> <span class="attr">property</span>=<span class="string">&quot;id&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;BIGINT&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;name&quot;</span> <span class="attr">property</span>=<span class="string">&quot;name&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;VARCHAR&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;log&quot;</span> <span class="attr">property</span>=<span class="string">&quot;log&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;LONGVARCHAR&quot;</span> <span class="attr">typeHandler</span>=<span class="string">&quot;com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span>&gt;</span></span><br><span class="line">        id, name, log</span><br><span class="line">    <span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>mapper 文件中需要指出 <code>log</code> 字段的 typeHandler 的全类名</p>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PersonMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;Person&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>省略了 Service 层</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PersonController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PersonMapper personMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/json&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">testJSON2BeanMap</span><span class="params">(<span class="meta">@RequestBody</span> Person person)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.insert(person);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/json/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Person <span class="title function_">getPersonById</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> Long id)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.selectById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试两个方法，没报错就说明成功，插入时可以再查看一下数据库。</p>
-<p>在<a href="#%E5%BA%8F%E8%A8%80">序言</a>中提到的<strong>无侵入式ORM</strong>，是指我们不需要在代码中手动地执行 JSON 与 PersonLog 的转换。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文展示了通过使用 MyBatis-Plus<strong>无侵入式</strong>实现持久层 JSON 与 POJO 的自动映射。</p>
-<p>我对这一问题的研究源自实习时业务的要求。当我查询网上的资料时，发现帖子的表述都不太完整、直观，于是我记录下了解决方案，写成了这篇文章。</p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://dev.mysql.com/doc/refman/8.0/en/json.html">The JSON Data Type</a></p>
-<p><a href="https://blog.csdn.net/qq_33360626/article/details/119836835">mybatis-plus处理mysql中json格式方法</a></p>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Spring Boot</tag>
-        <tag>MySQL</tag>
-        <tag>MyBatis-Plus</tag>
-        <tag>JDBC</tag>
-        <tag>Repository</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/2023/07/09/PotPlayer-%E5%90%AF%E7%94%A8-Nvidia-%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
-<span id="more"></span>
-
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
-
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
-
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>PotPlayer</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
-    <url>/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
-<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
-<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
-<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
-<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
-<span id="more"></span>
-
-
-<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
-<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
-
-<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
-<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
-<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
-<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
-
-<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
-<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
-
-<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
-<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
-<hr>
-<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
-
-<hr>
-<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
-
-<hr>
-<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
-
-<hr>
-<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
-<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
-<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
-<p><img src="/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
-<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
-<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
-<p><img src="/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
-<p>如果有重复，就在文件名后面添加数字以示区分：</p>
-<p><img src="/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
-<p><img src="/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
-<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
-<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>tech</category>
-        <category>VS Code</category>
-        <category>Typora</category>
-        <category>Markdown</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-        <tag>Typora</tag>
-        <tag>Markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -348,156 +424,6 @@
       <tags>
         <tag>Python</tag>
         <tag>venv</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
-    <url>/2023/07/05/Spring-MVC-%E4%BD%BF%E7%94%A8-Validation-%E6%B3%A8%E8%A7%A3%E5%AE%9E%E7%8E%B0%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E6%A0%A1%E9%AA%8C/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
-<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
-<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
-<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
-<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
-
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>validation-api 是本次介绍的重点</p>
-<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
-
-<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
-<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
-
-<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
-<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
-<p><code>@NotNull</code>：字面含义，字段非空</p>
-<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
-<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
-<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
-<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
-
-<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>服务器返回了 400 错误</p>
-<p><img src="/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
-<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
-<p><img src="/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
-<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Spring Boot</tag>
-        <tag>Spring MVC</tag>
-        <tag>Controller</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>pip &amp; conda 常用指令</title>
-    <url>/2024/01/14/pip-conda-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
-<li><p>安装 <code>script-house</code>，版本为 <code>0.0.2</code></p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
-
-<p> 如果默认安装最新版，则不需要写 <code>==0.0.2</code></p>
-<p> 所有要安装的依赖也可以写在一行：</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
-</ol>
-<span id="more"></span>
-
-<ol start="2">
-<li><p>列出所有依赖</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>以 <code>requirements.txt</code> 的格式列出当前依赖</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
-
-<p> <code>pip freeze</code> 的结果是 <code>pip list</code> 的子集。<code>pip list</code> 通常还包括 <code>pip</code> 、<code>setuptools</code> 和 <code>wheel</code> 这些基础依赖；</p>
-<p> <code>pip freeze</code> 的目的是导出该项目的依赖，方便他人使用。而 <code>pip list</code> 仅仅只是展示。</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>从 <code>requirements.txt</code> 中安装所有依赖</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除某一依赖</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除某些依赖</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
-
-<p> <code>-y</code> 表示自动确认删除</p>
-<p> 如何删除当前环境的所有依赖？</p>
- <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
-<li><p>在 Linux 安装好 conda，通常需要先执行  <code>conda init</code>，才能使用 conda 命令</p>
-</li>
-<li><p>列出所有环境</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建环境</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;环境名&gt; python=3.8</span><br></pre></td></tr></table></figure>
-
-<p> 基本命令就是 <code>conda create -n &lt;环境名&gt;</code>，但通常要指定 python 版本。相比 venv，conda 环境会额外安装 OS 相关的一些基础依赖。</p>
-</li>
-<li><p>进入环境</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;环境名&gt;</span><br></pre></td></tr></table></figure>
-
-<p> 如果是 Windows，不需要写 <code>conda</code></p>
-</li>
-<li><p>退出环境</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除环境</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;环境名&gt; --all</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看基本信息</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>安装依赖</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
-
-<p> 和 pip 类似，也是 <code>依赖==版本号</code>的形式 ；<code>-c</code> 参数是指定下载源（channel），因为默认 channel 经常会查找失败</p>
-</li>
-<li><p>从配置文件（通常叫 <code>environment.yml</code> ）中创建环境：</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
-
-<p> 配置文件内容：</p>
- <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;环境名&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c 参数，指定下载源</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies 默认用 conda install</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># 下面的依赖用 pip install </span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
-
-<p> 根据经验，不建议通过这种方式安装，因为 channel 不一定靠谱</p>
-</li>
-<li><p>关闭自动进入 base 环境。如果开启，每个新建的 shell 都会自动进入 base 环境。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Python</category>
-        <category>cheat sheet</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>pip</tag>
-        <tag>conda</tag>
       </tags>
   </entry>
   <entry>
@@ -560,6 +486,107 @@
         <tag>settings</tag>
         <tag>VS Code</tag>
         <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/2023/07/09/PotPlayer-%E5%90%AF%E7%94%A8-Nvidia-%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
+
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
+    <url>/2023/07/05/Spring-MVC-%E4%BD%BF%E7%94%A8-Validation-%E6%B3%A8%E8%A7%A3%E5%AE%9E%E7%8E%B0%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%87%AA%E5%8A%A8%E6%A0%A1%E9%AA%8C/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
+<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
+<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
+<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
+
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>validation-api 是本次介绍的重点</p>
+<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
+
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
+<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
+
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
+<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
+<p><code>@NotNull</code>：字面含义，字段非空</p>
+<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
+<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
+<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
+
+<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务器返回了 400 错误</p>
+<p><img src="/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
+<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
+<p><img src="/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
+<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>Spring MVC</tag>
+        <tag>Controller</tag>
       </tags>
   </entry>
   <entry>
@@ -654,81 +681,6 @@
       </tags>
   </entry>
   <entry>
-    <title>力扣 370 周赛总结</title>
-    <url>/2023/11/05/%E5%8A%9B%E6%89%A3-370-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
-<p><a href="https://leetcode.cn/contest/weekly-contest-370/">力扣第 370 场周赛</a></p>
-</blockquote>
-<blockquote>
-<p>本文只是周赛的总结，我不准备详细地讨论每一道题，有些题只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
-</blockquote>
-<p>23 分钟 AC 前三题，使得排名在三百左右 —— 典型的比手速策略。做题情况简要描述：</p>
-<ul>
-<li>第一题：送分题，但是有点卡住了，花了 5 分钟😒；</li>
-<li>第二题：背景和第一题一样，同样是送分题，做得反而更快😋；</li>
-<li>第三题：一道符合难度的中等题，需要稍微想一下，15 分钟做出来，不错😋；</li>
-<li>第四题：没做出来。如果数据规模小的话是一道简单 dp，但没有优化思路 😒；</li>
-</ul>
-<span id="more"></span>
-
-
-
-<h1 id="一、找到冠军-I"><a href="#一、找到冠军-I" class="headerlink" title="一、找到冠军 I"></a>一、<a href="https://leetcode.cn/problems/find-champion-i/">找到冠军 I</a></h1><p><img src="/MarkDownImages/image-20231105132950645.png" alt="image-20231105132950645"></p>
-<p><img src="/MarkDownImages/image-20231105132958733.png" alt="image-20231105132958733"></p>
-<p>“如果不存在某支强于 <code>a</code> 队的队伍，则认为 <code>a</code> 队将会是 <strong>冠军</strong> ”，因此使用 <code>count[i]</code> 表示比 <code>i</code> 强的队伍数量。使得 $count[i] &#x3D; 0$ 的 $i$ 即为答案</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span>[][] grid)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> grid.length;</span><br><span class="line">        <span class="type">int</span>[] count = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == j) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">if</span> (grid[i][j] == <span class="number">1</span>) count[j]++;</span><br><span class="line">                <span class="keyword">else</span> count[i]++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (count[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="二、找到冠军-II"><a href="#二、找到冠军-II" class="headerlink" title="二、找到冠军 II"></a>二、<a href="https://leetcode.cn/problems/find-champion-ii/">找到冠军 II</a></h1><p><img src="/MarkDownImages/image-20231105133352267.png" alt="image-20231105133352267"></p>
-<p><img src="/MarkDownImages/image-20231105133528772.png" alt="image-20231105133528772"></p>
-<p><img src="/MarkDownImages/image-20231105133540889.png" alt="image-20231105133540889"></p>
-<p>用有向边表示谁比谁强，明显比第一题好理解。边 $(a,b)$ 表示 $a$ 比 $b$ 强，因此那些最强的队伍的入度为 $0$。统计入度即可。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span>[][] edges)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] inDeg = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="comment">// 统计入度</span></span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; inDeg[e[<span class="number">1</span>]]++);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> Arrays.stream(inDeg).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="comment">// 非唯一</span></span><br><span class="line">        <span class="keyword">if</span> (count != <span class="number">1</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDeg[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、在树上执行操作以后得到的最大分数"><a href="#三、在树上执行操作以后得到的最大分数" class="headerlink" title="三、在树上执行操作以后得到的最大分数"></a>三、<a href="https://leetcode.cn/problems/maximum-score-after-applying-operations-on-a-tree/">在树上执行操作以后得到的最大分数</a></h1><p><img src="/MarkDownImages/image-20231105134014234.png" alt="image-20231105134014234"></p>
-<p><img src="/MarkDownImages/image-20231105134359269.png" alt="image-20231105134359269"></p>
-<p><img src="/MarkDownImages/image-20231105134415086.png" alt="image-20231105134415086"></p>
-<p>$\forall i, values[i] \ge 1$，并且“从根节点出发，到任意叶子节点经过的路径上的节点值之和都不等于 0”。因此，我们在执行操作时，<strong>每条从根节点到叶节点的路径上，都要留一个节点不去操作</strong>。（多条路径可能共用一个不操作的节点）</p>
-<p>令图中所有节点的集合是 $V$，我们<strong>不操作</strong>的节点的集合为 $U$，则“对这棵树执行任意次操作，但要求执行完所有操作以后树是 <strong>健康的</strong> ”，得到的分数为 $\sum\limits_{v\in V} v - \sum\limits_{u\in U}u$。$\sum\limits_{v\in V} v $ 即为 <code>sum(values)</code>，因此，为了使分数最大，我们不操作的节点之和 $\sum\limits_{u\in U}u$ 应该尽可能地小。那么，应该不操作哪些节点呢？</p>
-<p>对于树的任意一棵子树，比如下图：</p>
-<p><img src="/MarkDownImages/image-20231105135510005.png" alt="image-20231105135510005"></p>
-<p>假设我们不操作根节点 0，那么剩余的节点都可以操作；假设我们操作了根节点 0，那么剩余的节点中存在不能操作的节点。这里的剩余节点可能是叶节点，也可能是多棵子树，无论是什么，都不影响该结论。</p>
-<p>那么什么时候操作根节点？定义一棵以 $u$ 为根节点的<strong>健康的</strong>子树中<strong>不操作</strong>的节点的<strong>最小和</strong>为 $res(u)$，则 $\forall x, x$ 是 $u$ 的子节点, $res(u) &#x3D; \min\set{values[u], \sum\limits_x res(x)}$</p>
-<p>该递归式的含义是：</p>
-<ul>
-<li>要么不操作根节点 $u$，此时这棵树是健康的，剩余的所有子节点都可以操作；</li>
-<li>要么操作根节点 $u$，但是 $u$ 的所有子树都需要保证自己是健康的；</li>
-<li>根据定义，我们要得到<strong>最小和</strong>，因此取两者情况的较小值；</li>
-</ul>
-<p>对于上述例子，$res(1) &#x3D; 2,res(2) &#x3D; 2,res(3) &#x3D; 5$</p>
-<p>$values[0] &#x3D; 5 &lt; \sum\limits_{x\in\set{1,2,3}}res(x) &#x3D; 9$，因此不操作根节点 $0$，而操作其所有子树中的节点。</p>
-<p>有了 $res(u)$ 的递推式，上述 $\sum\limits_{u\in U}u$ 的值就是 $res(0)$，因此，最大分数是 <code>sum(values) - res(0)</code></p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ArrayList&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maximumScoreAfterOperations</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] values)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> values.length;</span><br><span class="line">        <span class="comment">// 建树，实际上是建图</span></span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(values[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        visited[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// values[i] &lt;= 10^9，注意 mapToLong</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> Arrays.stream(values).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> dfs(nodes[<span class="number">0</span>], visited);</span><br><span class="line">        <span class="keyword">return</span> sum - min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> res(root)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">dfs</span><span class="params">(Node root, <span class="type">boolean</span>[] visited)</span> &#123;</span><br><span class="line">        <span class="comment">// count # visited neighbors</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// min = sum(res(children))</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited[child.index] = <span class="literal">true</span>;</span><br><span class="line">            min += dfs(child, visited);</span><br><span class="line">            visited[child.index] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此时该节点为叶节点，直接返回它的 val</span></span><br><span class="line">        <span class="keyword">if</span> (count == root.children.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> root.val;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.min(root.val, min);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="四、平衡子序列的最大和"><a href="#四、平衡子序列的最大和" class="headerlink" title="四、平衡子序列的最大和"></a>四、<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">平衡子序列的最大和</a></h1><p><img src="/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
-<p><img src="/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
-<p>重新读题：平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
-<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$ —— 左右两边的各项都只关于其下标，而与其他条件无关</p>
-<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
-<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> </p>
-<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (nums[j] - j \ge nums[i] - i)}$</p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[j] - j &gt;= nums[i] - i) &#123;</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>问题在于，这么做显然是 $O(n^2)$ 的时间复杂度，比赛时我也没想出如何优化。</p>
-<p>我准备在下一篇博客中详细描述如何做出这道题（基于大佬的题解），现在先让我去学习相关知识。</p>
-]]></content>
-      <categories>
-        <category>算法题</category>
-        <category>算法竞赛</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>动态规划</tag>
-        <tag>树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>算法题001：求数组可能的最大得分</title>
     <url>/2023/09/21/%E7%AE%97%E6%B3%95%E9%A2%98001%EF%BC%9A%E6%B1%82%E6%95%B0%E7%BB%84%E5%8F%AF%E8%83%BD%E7%9A%84%E6%9C%80%E5%A4%A7%E5%BE%97%E5%88%86/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -799,6 +751,96 @@
       <tags>
         <tag>排序</tag>
         <tag>滑动窗口</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>pip &amp; conda 常用指令</title>
+    <url>/2024/01/14/pip-conda-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
+<li><p>安装 <code>script-house</code>，版本为 <code>0.0.2</code></p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
+
+<p> 如果默认安装最新版，则不需要写 <code>==0.0.2</code></p>
+<p> 所有要安装的依赖也可以写在一行：</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
+</ol>
+<span id="more"></span>
+
+<ol start="2">
+<li><p>列出所有依赖</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以 <code>requirements.txt</code> 的格式列出当前依赖</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
+
+<p> <code>pip freeze</code> 的结果是 <code>pip list</code> 的子集。<code>pip list</code> 通常还包括 <code>pip</code> 、<code>setuptools</code> 和 <code>wheel</code> 这些基础依赖；</p>
+<p> <code>pip freeze</code> 的目的是导出该项目的依赖，方便他人使用。而 <code>pip list</code> 仅仅只是展示。</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从 <code>requirements.txt</code> 中安装所有依赖</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除某一依赖</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除某些依赖</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
+
+<p> <code>-y</code> 表示自动确认删除</p>
+<p> 如何删除当前环境的所有依赖？</p>
+ <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
+<li><p>在 Linux 安装好 conda，通常需要先执行  <code>conda init</code>，才能使用 conda 命令</p>
+</li>
+<li><p>列出所有环境</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>新建环境</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;环境名&gt; python=3.8</span><br></pre></td></tr></table></figure>
+
+<p> 基本命令就是 <code>conda create -n &lt;环境名&gt;</code>，但通常要指定 python 版本。相比 venv，conda 环境会额外安装 OS 相关的一些基础依赖。</p>
+</li>
+<li><p>进入环境</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;环境名&gt;</span><br></pre></td></tr></table></figure>
+
+<p> 如果是 Windows，不需要写 <code>conda</code></p>
+</li>
+<li><p>退出环境</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除环境</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;环境名&gt; --all</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看基本信息</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装依赖</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
+
+<p> 和 pip 类似，也是 <code>依赖==版本号</code>的形式 ；<code>-c</code> 参数是指定下载源（channel），因为默认 channel 经常会查找失败</p>
+</li>
+<li><p>从配置文件（通常叫 <code>environment.yml</code> ）中创建环境：</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
+
+<p> 配置文件内容：</p>
+ <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;环境名&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c 参数，指定下载源</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies 默认用 conda install</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># 下面的依赖用 pip install </span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
+
+<p> 根据经验，不建议通过这种方式安装，因为 channel 不一定靠谱</p>
+</li>
+<li><p>关闭自动进入 base 环境。如果开启，每个新建的 shell 都会自动进入 base 环境。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Python</category>
+        <category>cheat sheet</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>pip</tag>
+        <tag>conda</tag>
       </tags>
   </entry>
   <entry>
@@ -938,6 +980,92 @@
       </tags>
   </entry>
   <entry>
+    <title>力扣 370 周赛总结</title>
+    <url>/2023/11/05/%E5%8A%9B%E6%89%A3-370-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
+<p><a href="https://leetcode.cn/contest/weekly-contest-370/">力扣第 370 场周赛</a></p>
+</blockquote>
+<blockquote>
+<p>本文只是周赛的总结，我不准备详细地讨论每一道题，有些题只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
+</blockquote>
+<p>23 分钟 AC 前三题，使得排名在三百左右 —— 典型的比手速策略。做题情况简要描述：</p>
+<ul>
+<li>第一题：送分题，但是有点卡住了，花了 5 分钟😒；</li>
+<li>第二题：背景和第一题一样，同样是送分题，做得反而更快😋；</li>
+<li>第三题：一道符合难度的中等题，需要稍微想一下，15 分钟做出来，不错😋；</li>
+<li>第四题：没做出来。如果数据规模小的话是一道简单 dp，但没有优化思路 😒；</li>
+</ul>
+<span id="more"></span>
+
+
+
+<h1 id="一、找到冠军-I"><a href="#一、找到冠军-I" class="headerlink" title="一、找到冠军 I"></a>一、<a href="https://leetcode.cn/problems/find-champion-i/">找到冠军 I</a></h1><p><img src="/MarkDownImages/image-20231105132950645.png" alt="image-20231105132950645"></p>
+<p><img src="/MarkDownImages/image-20231105132958733.png" alt="image-20231105132958733"></p>
+<p>“如果不存在某支强于 <code>a</code> 队的队伍，则认为 <code>a</code> 队将会是 <strong>冠军</strong> ”，因此使用 <code>count[i]</code> 表示比 <code>i</code> 强的队伍数量。使得 $count[i] &#x3D; 0$ 的 $i$ 即为答案</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span>[][] grid)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> grid.length;</span><br><span class="line">        <span class="type">int</span>[] count = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == j) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">if</span> (grid[i][j] == <span class="number">1</span>) count[j]++;</span><br><span class="line">                <span class="keyword">else</span> count[i]++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (count[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、找到冠军-II"><a href="#二、找到冠军-II" class="headerlink" title="二、找到冠军 II"></a>二、<a href="https://leetcode.cn/problems/find-champion-ii/">找到冠军 II</a></h1><p><img src="/MarkDownImages/image-20231105133352267.png" alt="image-20231105133352267"></p>
+<p><img src="/MarkDownImages/image-20231105133528772.png" alt="image-20231105133528772"></p>
+<p><img src="/MarkDownImages/image-20231105133540889.png" alt="image-20231105133540889"></p>
+<p>用有向边表示谁比谁强，明显比第一题好理解。边 $(a,b)$ 表示 $a$ 比 $b$ 强，因此那些最强的队伍的入度为 $0$。统计入度即可。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span>[][] edges)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] inDeg = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="comment">// 统计入度</span></span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; inDeg[e[<span class="number">1</span>]]++);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> Arrays.stream(inDeg).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="comment">// 非唯一</span></span><br><span class="line">        <span class="keyword">if</span> (count != <span class="number">1</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDeg[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、在树上执行操作以后得到的最大分数"><a href="#三、在树上执行操作以后得到的最大分数" class="headerlink" title="三、在树上执行操作以后得到的最大分数"></a>三、<a href="https://leetcode.cn/problems/maximum-score-after-applying-operations-on-a-tree/">在树上执行操作以后得到的最大分数</a></h1><p><img src="/MarkDownImages/image-20231105134014234.png" alt="image-20231105134014234"></p>
+<p><img src="/MarkDownImages/image-20231105134359269.png" alt="image-20231105134359269"></p>
+<p><img src="/MarkDownImages/image-20231105134415086.png" alt="image-20231105134415086"></p>
+<p>$\forall i, values[i] \ge 1$，并且“从根节点出发，到任意叶子节点经过的路径上的节点值之和都不等于 0”。因此，我们在执行操作时，<strong>每条从根节点到叶节点的路径上，都要留一个节点不去操作</strong>。（多条路径可能共用一个不操作的节点）</p>
+<p>令图中所有节点的集合是 $V$，我们<strong>不操作</strong>的节点的集合为 $U$，则“对这棵树执行任意次操作，但要求执行完所有操作以后树是 <strong>健康的</strong> ”，得到的分数为 $\sum\limits_{v\in V} v - \sum\limits_{u\in U}u$。$\sum\limits_{v\in V} v $ 即为 <code>sum(values)</code>，因此，为了使分数最大，我们不操作的节点之和 $\sum\limits_{u\in U}u$ 应该尽可能地小。那么，应该不操作哪些节点呢？</p>
+<p>对于树的任意一棵子树，比如下图：</p>
+<p><img src="/MarkDownImages/image-20231105135510005.png" alt="image-20231105135510005"></p>
+<p>假设我们不操作根节点 0，那么剩余的节点都可以操作；假设我们操作了根节点 0，那么剩余的节点中存在不能操作的节点。这里的剩余节点可能是叶节点，也可能是多棵子树，无论是什么，都不影响该结论。</p>
+<p>那么什么时候操作根节点？定义一棵以 $u$ 为根节点的<strong>健康的</strong>子树中<strong>不操作</strong>的节点的<strong>最小和</strong>为 $res(u)$，则 $\forall x, x$ 是 $u$ 的子节点, $res(u) &#x3D; \min\set{values[u], \sum\limits_x res(x)}$</p>
+<p>该递归式的含义是：</p>
+<ul>
+<li>要么不操作根节点 $u$，此时这棵树是健康的，剩余的所有子节点都可以操作；</li>
+<li>要么操作根节点 $u$，但是 $u$ 的所有子树都需要保证自己是健康的；</li>
+<li>根据定义，我们要得到<strong>最小和</strong>，因此取两者情况的较小值；</li>
+</ul>
+<p>对于上述例子，$res(1) &#x3D; 2,res(2) &#x3D; 2,res(3) &#x3D; 5$</p>
+<p>$values[0] &#x3D; 5 &lt; \sum\limits_{x\in\set{1,2,3}}res(x) &#x3D; 9$，因此不操作根节点 $0$，而操作其所有子树中的节点。</p>
+<p>有了 $res(u)$ 的递推式，上述 $\sum\limits_{u\in U}u$ 的值就是 $res(0)$，因此，最大分数是 <code>sum(values) - res(0)</code></p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ArrayList&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maximumScoreAfterOperations</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] values)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> values.length;</span><br><span class="line">        <span class="comment">// 建树，实际上是建图</span></span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(values[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        visited[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// values[i] &lt;= 10^9，注意 mapToLong</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> Arrays.stream(values).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> dfs(nodes[<span class="number">0</span>], visited);</span><br><span class="line">        <span class="keyword">return</span> sum - min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> res(root)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">dfs</span><span class="params">(Node root, <span class="type">boolean</span>[] visited)</span> &#123;</span><br><span class="line">        <span class="comment">// count # visited neighbors</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// min = sum(res(children))</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited[child.index] = <span class="literal">true</span>;</span><br><span class="line">            min += dfs(child, visited);</span><br><span class="line">            visited[child.index] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此时该节点为叶节点，直接返回它的 val</span></span><br><span class="line">        <span class="keyword">if</span> (count == root.children.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> root.val;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.min(root.val, min);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、平衡子序列的最大和"><a href="#四、平衡子序列的最大和" class="headerlink" title="四、平衡子序列的最大和"></a>四、<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">平衡子序列的最大和</a></h1><p><img src="/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
+<p><img src="/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
+<p>重新读题：平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
+<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$ —— 左右两边的各项都只关于其下标，而与其他条件无关</p>
+<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
+<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> </p>
+<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (nums[j] - j \ge nums[i] - i)}$</p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[j] - j &gt;= nums[i] - i) &#123;</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题在于，这么做显然是 $O(n^2)$ 的时间复杂度，比赛时我也没想出如何优化。</p>
+<p>我准备在下一篇博客中详细描述如何做出这道题（基于大佬的题解），现在先让我去学习相关知识。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+        <category>算法竞赛</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>动态规划</tag>
+        <tag>树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>置顶通知</title>
+    <url>/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
+    <content><![CDATA[<h4 align="center">致读者：</h4>
+
+<ul>
+<li>请确保网络连接<strong>可靠</strong>，否则一些功能将无法使用，比如显示文章阅读量。</li>
+<li>I do have prepared to write English version of existing posts but I have no such time currently.</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>算法题004：参加会议的最多员工数</title>
     <url>/2023/11/01/%E7%AE%97%E6%B3%95%E9%A2%98004%EF%BC%9A%E5%8F%82%E5%8A%A0%E4%BC%9A%E8%AE%AE%E7%9A%84%E6%9C%80%E5%A4%9A%E5%91%98%E5%B7%A5%E6%95%B0/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -1005,17 +1133,6 @@
         <tag>图</tag>
         <tag>拓扑排序</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>置顶通知</title>
-    <url>/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
-    <content><![CDATA[<h4 align="center">致读者：</h4>
-
-<ul>
-<li>请确保网络连接<strong>可靠</strong>，否则一些功能将无法使用，比如显示文章阅读量。</li>
-<li>I do have prepared to write English version of existing posts but I have no such time currently.</li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>算法题005：平衡子序列的最大和</title>
