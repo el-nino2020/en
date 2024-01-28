@@ -22,12 +22,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"el-nino2020.github.io","root":"/en/","images":"/en/images","scheme":"Gemini","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#008000","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/en/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/en/js/config.js"></script>
 
-    <meta name="description" content="序言最近在研究家庭媒体库，教程大多以 NAS 为主机，实际上大多数软件都跑在 Docker 上。 现在有如下看漫画&#x2F;同人志的需求：  电脑上存有大量的漫画的压缩包，想要各种设备能访问这些资源。—— 服务端软件，能够以 HTTP 的方式传输图片。 漫画的目录管理以我为主，而不能以服务端软件的规则为主。 手机 &#x2F; pad 浏览漫画时，操作方便易用。—— 客户端好用，或者直接提供 w">
+    <meta name="description" content="PrefaceRecently, I’ve been looking into home media libraries, and most tutorials focus on NAS, but most of the applications actually run on Docker. Now, I have the following demands for reading manga&amp;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LANraragi 漫画服务器">
+<meta property="og:title" content="LANraragi Manga Server">
 <meta property="og:url" content="https://el-nino2020.github.io/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/index.html">
 <meta property="og:site_name" content="El nino 的博客">
-<meta property="og:description" content="序言最近在研究家庭媒体库，教程大多以 NAS 为主机，实际上大多数软件都跑在 Docker 上。 现在有如下看漫画&#x2F;同人志的需求：  电脑上存有大量的漫画的压缩包，想要各种设备能访问这些资源。—— 服务端软件，能够以 HTTP 的方式传输图片。 漫画的目录管理以我为主，而不能以服务端软件的规则为主。 手机 &#x2F; pad 浏览漫画时，操作方便易用。—— 客户端好用，或者直接提供 w">
+<meta property="og:description" content="PrefaceRecently, I’ve been looking into home media libraries, and most tutorials focus on NAS, but most of the applications actually run on Docker. Now, I have the following demands for reading manga&amp;">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://el-nino2020.github.io/en/MarkDownImages/image-20240125195217045.png">
 <meta property="og:image" content="https://el-nino2020.github.io/en/MarkDownImages/image-20240125200813922.png">
@@ -58,10 +58,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/","path":"2024/01/25/LANraragi-漫画服务器/","title":"LANraragi 漫画服务器"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/","path":"2024/01/25/LANraragi-漫画服务器/","title":"LANraragi Manga Server"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>LANraragi 漫画服务器 | El nino 的博客</title>
+<title>LANraragi Manga Server | El nino 的博客</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBFGGZ14VS"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-SBFGGZ14VS","only_pageview":false}</script>
@@ -165,7 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%8F%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LANraragi"><span class="nav-number">2.</span> <span class="nav-text">LANraragi</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Global-Settings"><span class="nav-number">4.1.</span> <span class="nav-text">Global Settings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Archive-Files"><span class="nav-number">4.2.</span> <span class="nav-text">Archive Files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tags-and-Thumbnails"><span class="nav-number">4.3.</span> <span class="nav-text">Tags and Thumbnails</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background-Workers"><span class="nav-number">4.4.</span> <span class="nav-text">Background Workers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Plugin-Configuration"><span class="nav-number">4.5.</span> <span class="nav-text">Plugin Configuration</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E5%A4%87%E5%85%B1%E4%BA%AB"><span class="nav-number">6.</span> <span class="nav-text">设备共享</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA-NAT-%E7%A9%BF%E9%80%8F"><span class="nav-number">6.1.</span> <span class="nav-text">虚拟机 NAT 穿透</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E6%9C%BA%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">6.2.</span> <span class="nav-text">本机防火墙</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LANraragi"><span class="nav-number">2.</span> <span class="nav-text">LANraragi</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Installation"><span class="nav-number">3.</span> <span class="nav-text">Installation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Configurations"><span class="nav-number">4.</span> <span class="nav-text">Configurations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Global-Settings"><span class="nav-number">4.1.</span> <span class="nav-text">Global Settings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Archive-Files"><span class="nav-number">4.2.</span> <span class="nav-text">Archive Files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tags-and-Thumbnails"><span class="nav-number">4.3.</span> <span class="nav-text">Tags and Thumbnails</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background-Workers"><span class="nav-number">4.4.</span> <span class="nav-text">Background Workers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Plugin-Configuration"><span class="nav-number">4.5.</span> <span class="nav-text">Plugin Configuration</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Usage"><span class="nav-number">5.</span> <span class="nav-text">Usage</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sharing-With-Other-Devices"><span class="nav-number">6.</span> <span class="nav-text">Sharing With Other Devices</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Virtual-Machine-NAT-Passthrough"><span class="nav-number">6.1.</span> <span class="nav-text">Virtual Machine NAT Passthrough</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Local-Firewall"><span class="nav-number">6.2.</span> <span class="nav-text">Local Firewall</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">7.</span> <span class="nav-text">References</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -245,12 +245,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="LANraragi 漫画服务器 | El nino 的博客">
+      <meta itemprop="name" content="LANraragi Manga Server | El nino 的博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          LANraragi 漫画服务器
+          LANraragi Manga Server
         </h1>
 
         <div class="post-meta-container">
@@ -295,14 +295,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>1.1k</span>
+      <span>828</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>4 mins.</span>
+      <span>3 mins.</span>
     </span>
 </div>
 
@@ -312,107 +312,107 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近在研究家庭媒体库，教程大多以 NAS 为主机，实际上大多数软件都跑在 Docker 上。</p>
-<p>现在有如下看漫画&#x2F;同人志的需求：</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>Recently, I’ve been looking into home media libraries, and most tutorials focus on NAS, but most of the applications actually run on Docker.</p>
+<p>Now, I have the following demands for reading manga&#x2F;doujinshi:</p>
 <ul>
-<li>电脑上存有大量的漫画的压缩包，想要各种设备能访问这些资源。—— 服务端软件，能够以 HTTP 的方式传输图片。</li>
-<li>漫画的目录管理以我为主，而不能以服务端软件的规则为主。</li>
-<li>手机 &#x2F; pad 浏览漫画时，操作方便易用。—— 客户端好用，或者直接提供 web 端。</li>
-<li>客户端有随机选择漫画功能。—— 收集的漫画太多了，出于消磨时间的目的，随便挑一本看最方便。</li>
+<li>I have a large collection of manga archives on my computer and want various devices able to access these resources. —— A server capable of transmitting images via HTTP.</li>
+<li>I want to manage the manga directory according to my preferences, not the rules of the server software.</li>
+<li>When browsing manga on my phone&#x2F;tablet, I want an easy-to-use interface. —— A user-friendly client or a Web UI.</li>
+<li>The client should have a random manga selection feature. —— Due to the abundance of collected manga, randomly picking one for leisure is the most convenient.</li>
 </ul>
-<p>综上，我选择了 <a target="_blank" rel="noopener" href="https://github.com/Difegue/LANraragi">LANraragi</a>。尽管 <a target="_blank" rel="noopener" href="https://komga.org/">Komga</a>、<a target="_blank" rel="noopener" href="https://www.kavitareader.com/#home">Kavita</a> 和 <a target="_blank" rel="noopener" href="https://github.com/Suwayomi/Tachidesk-Sorayomi">Tachidesk (Sorayomi)</a> 也都是开源的漫画服务器，但都不尽如人意。</p>
-<p>这篇文章是对官方文档的一些摘录，以及我自己使用的一些心得。</p>
+<p>Considering these, I chose <a target="_blank" rel="noopener" href="https://github.com/Difegue/LANraragi">LANraragi</a>. Although <a target="_blank" rel="noopener" href="https://komga.org/">Komga</a>, <a target="_blank" rel="noopener" href="https://www.kavitareader.com/#home">Kavita</a>, and <a target="_blank" rel="noopener" href="https://github.com/Suwayomi/Tachidesk-Sorayomi">Tachidesk (Sorayomi)</a> are also open-source manga servers, they didn’t quite meet my expectations.</p>
+<p>This article includes some excerpts from the official documentation and my own insights.</p>
 <span id="more"></span>
 
-<h1 id="LANraragi"><a href="#LANraragi" class="headerlink" title="LANraragi"></a>LANraragi</h1><p>LANraragi 提供很多功能，但我需要的不多：</p>
+<h1 id="LANraragi"><a href="#LANraragi" class="headerlink" title="LANraragi"></a>LANraragi</h1><p>LANraragi offers many features, but I only need a few of them:</p>
 <table>
 <thead>
 <tr>
-<th>功能</th>
-<th>是否需要</th>
+<th>Features</th>
+<th>Required</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>本地上传漫画</td>
+<td>Upload local manga</td>
 <td>✅</td>
 </tr>
 <tr>
-<td>网上下载漫画</td>
+<td>Download online manga</td>
 <td>❌</td>
 </tr>
 <tr>
-<td>添加元数据（主要是打 tag）</td>
+<td>Adding metadata (tagging)</td>
 <td>❌</td>
 </tr>
 </tbody></table>
-<p>所有漫画都是我自己本地上传的。我只是要看漫画，不需要通过 tag 分类漫画。</p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>Docker compose:</p>
+<p>All manga are uploaded locally by me. I just want to read manga and don’t need to categorize them with tags.</p>
+<h1 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h1><p>Docker compose:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">lanraragi:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">difegue/lanraragi:v.0.9.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">lanraragi</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">43000</span><span class="string">:3000</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/doujinshiArchives:/home/koyomi/lanraragi/content:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-database:/home/koyomi/lanraragi/database</span></span><br><span class="line">        </span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">lanraragi-database:</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><code>/home/koyomi/lanraragi/database</code> 是 LANraragi 存放 Redis 数据的目录。创建一个 volume 即可</li>
-<li><code>/home/koyomi/lanraragi/content</code> 目录存放：<ul>
-<li>所有漫画压缩包。LANraragi 可以递归地扫描子目录 —— 文件管理以我为主；</li>
-<li>漫画的缩略图，默认存放在 <code>/home/koyomi/lanraragi/content/thumb</code> 下；</li>
+<li><code>/home/koyomi/lanraragi/database</code> is the directory where LANraragi stores Redis data. Just create a volume for it.</li>
+<li>The <code>/home/koyomi/lanraragi/content</code> directory stores:<ul>
+<li>All manga archives. LANraragi can recursively scan subdirectories —— file management is based on my preferences.</li>
+<li>Thumbnails of manga, by default stored in <code>/home/koyomi/lanraragi/content/thumb</code>.</li>
 </ul>
 </li>
-<li>由于缩略图目录可以改，因此 <code>content</code> 实际只存放我自己的所有资源。我把权限设置为只读，直接映射主机存放漫画压缩包的目录。LANraragi 会自己检测文件变动，我只要像以前一样收集资源即可。</li>
+<li>Since the thumbnail directory can be configured, the <code>content</code> directory only contains my own archives. I set permissions to read-only and map the host directory where manga files are stored. LANraragi detects file changes on its own, and I can collect mangas just like before.</li>
 </ul>
 <hr>
 <ul>
-<li>用 Docker compose 是因为可以记录启动命令，方便之后复用。</li>
-<li>Portainer 的 Stacks 就是存放 Docker-compose 文件的地方。修改 Docker-compose 后，Portainer  会重新部署，很方便。（本质上就是 <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/commandline/compose_down/">down</a> + up，但数据不会丢，因为存放在 volume 里面）</li>
+<li>Using Docker Compose allows for recording the startup command, making it convenient for reuse later.</li>
+<li>Stack in Portainer is a synonym for Docker Compose. After modifying Docker-compose file, Portainer will redeploy it, which is convenient. (Essentially, it’s a combination of <a target="_blank" rel="noopener" href="https://docs.docker.com/engine/reference/commandline/compose_down/">down</a> + up, but data won’t be lost because they are stored in volumes.)</li>
 </ul>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>第一次启动，admin 的密码是 <code>kamimamita</code>。登录后进入配置页面，</p>
+<h1 id="Configurations"><a href="#Configurations" class="headerlink" title="Configurations"></a>Configurations</h1><p>On the first launch, the admin password is <code>kamimamita</code>. After logging in, go to the configuration page:</p>
 <p><img src="/en/MarkDownImages/image-20240125195217045.png" alt="image-20240125195217045"></p>
-<p>首先提醒一下，改了配置不要忘记保存：</p>
+<p>Firstly, a reminder: don’t forget to save your configuration changes:</p>
 <p><img src="/en/MarkDownImages/image-20240125200813922.png" alt="image-20240125200813922"></p>
-<p>先修改初始密码：</p>
+<p>Start by changing the initial password:</p>
 <p><img src="/en/MarkDownImages/image-20240125195247264.png" alt="image-20240125195247264"></p>
-<p>其他配置如下：</p>
+<p>Other configurations are as follows:</p>
 <h2 id="Global-Settings"><a href="#Global-Settings" class="headerlink" title="Global Settings"></a>Global Settings</h2><p><img src="/en/MarkDownImages/image-20240125195357388.png" alt="image-20240125195357388"></p>
 <ul>
-<li>分页数设置为 20，默认的 100 太多了。</li>
-<li>其实不太需要阅读记录功能，就把存储任务放在客户端了，节省服务器资源</li>
+<li>Set <code>Archives per page</code> to 20; a default of 100 is too many.</li>
+<li>The reading history feature is not needed, so I store them on the client side to save server resources.</li>
 </ul>
-<h2 id="Archive-Files"><a href="#Archive-Files" class="headerlink" title="Archive Files"></a>Archive Files</h2><p>不用改</p>
+<h2 id="Archive-Files"><a href="#Archive-Files" class="headerlink" title="Archive Files"></a>Archive Files</h2><p>No need to change.</p>
 <p><img src="/en/MarkDownImages/image-20240125195541509.png" alt="image-20240125195541509"></p>
 <h2 id="Tags-and-Thumbnails"><a href="#Tags-and-Thumbnails" class="headerlink" title="Tags and Thumbnails"></a>Tags and Thumbnails</h2><p><img src="/en/MarkDownImages/image-20240125195742625.png" alt="image-20240125195742625"></p>
 <ul>
-<li>重点是改缩略图目录。因为 docker 启动时的只读映射，以及默认的缩略图目录在 <code>content</code> 里。</li>
-<li>把两个关于 tag 的选项关掉</li>
+<li>The point here is to change the thumbnail directory, due to the read-only mapping during Docker startup and the default thumbnail directory in <code>content</code>.</li>
+<li>Turn off the two options related to tags.</li>
 </ul>
 <h2 id="Background-Workers"><a href="#Background-Workers" class="headerlink" title="Background Workers"></a>Background Workers</h2><p><img src="/en/MarkDownImages/image-20240125200521462.png" alt="image-20240125200521462"></p>
-<p>这个是用来监听 <code>content</code> 目录中漫画资源变动的。如果没有及时处理新的资源，可以重启。</p>
+<p>This is used to monitor changes in manga archives in the <code>content</code> directory. If new resources are not processed promptly, a manual restart may be needed.</p>
 <h2 id="Plugin-Configuration"><a href="#Plugin-Configuration" class="headerlink" title="Plugin Configuration"></a>Plugin Configuration</h2><p><img src="/en/MarkDownImages/image-20240125200854396.png" alt="image-20240125200854396"></p>
-<p>把这个关了，不需要</p>
-<p>所有插件默认都是关闭的，问题不大。</p>
-<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>首次挂载自己的漫画资源到 <code>content</code> 时，LANraragi 需要大量资源处理元数据和缩略图。根据 Portainer 的监视数据，使用了 2-3GB 内存，2000% 的 CPU （不太懂这个 CPU 资源是怎么统计的）。</p>
-<p>首页的功能：</p>
+<p>Turn this off as it’s not needed.</p>
+<p>All plugins are disabled by default, So you may leave this setting as before.</p>
+<h1 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h1><p>When mounting your own manga archives for the first time in the <code>content</code> directory, LANraragi requires significant resources to process metadata and thumbnails. According to Portainer’s monitoring data, it used 2-3GB of memory and 2000% CPU (not quite sure how this CPU resource is calculated).</p>
+<p>Functions on the homepage:</p>
 <ul>
-<li>搜索；</li>
-<li>每次显示随机加载的漫画；</li>
-<li>列表模式 &#x2F; 缩略图模式</li>
+<li>Search;</li>
+<li>Display random mangas each time;</li>
+<li>List mode &#x2F; thumbnail mode.</li>
 </ul>
-<p>阅读器配置：</p>
-<p>1️⃣默认是分页模式</p>
-<p>2️⃣我更喜欢垂直浏览模式：</p>
+<p>Reader configuration:</p>
+<p>1️⃣ Default is pagination mode.</p>
+<p>2️⃣ I prefer infinite scrolling mode:</p>
 <p><img src="/en/MarkDownImages/image-20240125201748231.png" alt="image-20240125201748231"></p>
-<h1 id="设备共享"><a href="#设备共享" class="headerlink" title="设备共享"></a>设备共享</h1><p>Docker 运行在 Linux 虚拟机中，由于 Docker 端口映射，本机可以通过虚拟机的 IP 访问 LANraragi 。</p>
-<h2 id="虚拟机-NAT-穿透"><a href="#虚拟机-NAT-穿透" class="headerlink" title="虚拟机 NAT 穿透"></a>虚拟机 NAT 穿透</h2><p>如果要用其他设备访问 LANraragi，则需要通过 NAT 穿透将虚拟机的端口映射到主机的端口：</p>
+<h1 id="Sharing-With-Other-Devices"><a href="#Sharing-With-Other-Devices" class="headerlink" title="Sharing With Other Devices"></a>Sharing With Other Devices</h1><p>My Docker runs in a Linux virtual machine, and due to Docker port mapping, LANraragi can be accessed on the host machine through the virtual machine’s IP.</p>
+<h2 id="Virtual-Machine-NAT-Passthrough"><a href="#Virtual-Machine-NAT-Passthrough" class="headerlink" title="Virtual Machine NAT Passthrough"></a>Virtual Machine NAT Passthrough</h2><p>To access LANraragi from other devices, NAT passthrough is needed to map the virtual machine’s port to the host’s port:</p>
 <p><img src="/en/MarkDownImages/image-20240125202125135.png" alt="image-20240125202125135"></p>
 <p><img src="/en/MarkDownImages/image-20240125202155268.png" alt="image-20240125202155268"></p>
 <p><img src="/en/MarkDownImages/image-20240125202344077.png" alt="image-20240125202344077"></p>
-<p>如图配置，将 虚拟机的 43000 端口映射到主机的 43000 端口</p>
-<h2 id="本机防火墙"><a href="#本机防火墙" class="headerlink" title="本机防火墙"></a>本机防火墙</h2><p>Windows 的防火墙默认会屏蔽该端口，配置新的规则即可：</p>
+<p>As configured in the images, map port 43000 on the virtual machine to port 43000 on the host.</p>
+<h2 id="Local-Firewall"><a href="#Local-Firewall" class="headerlink" title="Local Firewall"></a>Local Firewall</h2><p>Windows Firewall will block this port by default, so configure a new rule:</p>
 <p><img src="/en/MarkDownImages/image-20240125202513739.png" alt="image-20240125202513739"></p>
 <p><img src="/en/MarkDownImages/image-20240125202536458.png" alt="image-20240125202536458"></p>
 <p><img src="/en/MarkDownImages/image-20240125202641453.png" alt="image-20240125202641453"></p>
-<p>在入站规则里新建规则：给专用网络（家庭内网）开放 43000&#x2F;tcp </p>
-<p>之后手机就可以通过 电脑IP:43000 访问 LANraragi 了。</p>
-<p>手机端 web 界面的首页不咋地，可以用<a target="_blank" rel="noopener" href="https://sugoi.gitbook.io/lanraragi/advanced-usage/external-readers">官方推荐的客户端</a>。但我只要随机阅读，所以问题不大，看漫画的界面好用就行了。</p>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li><a target="_blank" rel="noopener" href="https://sugoi.gitbook.io/lanraragi/">LANraragi 官方文档</a></li>
+<p>Create a new rule in inbound rules: open port 43000&#x2F;tcp for private networks (home networks).</p>
+<p>Afterward, you can access LANraragi from your phone via <code>computerIP:43000</code>.</p>
+<p>The homepage of the mobile web UI is not great, but you can use the <a target="_blank" rel="noopener" href="https://sugoi.gitbook.io/lanraragi/advanced-usage/external-readers">officially recommended client</a>. However, since I only want to read randomly, it’s not a big issue. And the interface for reading manga is handy, So I will take it.</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://sugoi.gitbook.io/lanraragi/">LANraragi Official Documentation</a></li>
 </ul>
 
     </div>
@@ -431,7 +431,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://el-nino2020.github.io/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="LANraragi 漫画服务器">https://el-nino2020.github.io/en/2024/01/25/LANraragi-漫画服务器/</a>
+      <a href="https://el-nino2020.github.io/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="LANraragi Manga Server">https://el-nino2020.github.io/en/2024/01/25/LANraragi-漫画服务器/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -462,8 +462,8 @@
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/" rel="next" title="置顶通知">
-                  置顶通知 <i class="fa fa-chevron-right"></i>
+                <a href="/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/" rel="next" title="Messages for reader">
+                  Messages for reader <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -503,7 +503,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:06</span>
+    <span title="Reading time total">1:05</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>

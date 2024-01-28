@@ -229,7 +229,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">置顶通知</a>
+          <a href="/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">Messages for reader</a>
         </h2>
 
         <div class="post-meta-container">
@@ -257,7 +257,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>54</span>
+      <span>56</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
@@ -275,13 +275,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h4 align="center">致读者：</h4>
-
-<ul>
-<li>请确保网络连接<strong>可靠</strong>，否则一些功能将无法使用，比如显示文章阅读量。</li>
-<li>I do have prepared to write English version of existing posts but I have no such time currently.</li>
+          <ul>
+<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
+<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
 </ul>
-
+<script>
+    function jump() {
+        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
+    }
+</script>
       
     </div>
 
@@ -325,7 +327,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="post-title-link" itemprop="url">LANraragi 漫画服务器</a>
+          <a href="/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="post-title-link" itemprop="url">LANraragi Manga Server</a>
         </h2>
 
         <div class="post-meta-container">
@@ -370,14 +372,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>1.1k</span>
+      <span>828</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>4 mins.</span>
+      <span>3 mins.</span>
     </span>
 </div>
 
@@ -388,16 +390,16 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近在研究家庭媒体库，教程大多以 NAS 为主机，实际上大多数软件都跑在 Docker 上。</p>
-<p>现在有如下看漫画&#x2F;同人志的需求：</p>
+          <h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>Recently, I’ve been looking into home media libraries, and most tutorials focus on NAS, but most of the applications actually run on Docker.</p>
+<p>Now, I have the following demands for reading manga&#x2F;doujinshi:</p>
 <ul>
-<li>电脑上存有大量的漫画的压缩包，想要各种设备能访问这些资源。—— 服务端软件，能够以 HTTP 的方式传输图片。</li>
-<li>漫画的目录管理以我为主，而不能以服务端软件的规则为主。</li>
-<li>手机 &#x2F; pad 浏览漫画时，操作方便易用。—— 客户端好用，或者直接提供 web 端。</li>
-<li>客户端有随机选择漫画功能。—— 收集的漫画太多了，出于消磨时间的目的，随便挑一本看最方便。</li>
+<li>I have a large collection of manga archives on my computer and want various devices able to access these resources. —— A server capable of transmitting images via HTTP.</li>
+<li>I want to manage the manga directory according to my preferences, not the rules of the server software.</li>
+<li>When browsing manga on my phone&#x2F;tablet, I want an easy-to-use interface. —— A user-friendly client or a Web UI.</li>
+<li>The client should have a random manga selection feature. —— Due to the abundance of collected manga, randomly picking one for leisure is the most convenient.</li>
 </ul>
-<p>综上，我选择了 <a target="_blank" rel="noopener" href="https://github.com/Difegue/LANraragi">LANraragi</a>。尽管 <a target="_blank" rel="noopener" href="https://komga.org/">Komga</a>、<a target="_blank" rel="noopener" href="https://www.kavitareader.com/#home">Kavita</a> 和 <a target="_blank" rel="noopener" href="https://github.com/Suwayomi/Tachidesk-Sorayomi">Tachidesk (Sorayomi)</a> 也都是开源的漫画服务器，但都不尽如人意。</p>
-<p>这篇文章是对官方文档的一些摘录，以及我自己使用的一些心得。</p>
+<p>Considering these, I chose <a target="_blank" rel="noopener" href="https://github.com/Difegue/LANraragi">LANraragi</a>. Although <a target="_blank" rel="noopener" href="https://komga.org/">Komga</a>, <a target="_blank" rel="noopener" href="https://www.kavitareader.com/#home">Kavita</a>, and <a target="_blank" rel="noopener" href="https://github.com/Suwayomi/Tachidesk-Sorayomi">Tachidesk (Sorayomi)</a> are also open-source manga servers, they didn’t quite meet my expectations.</p>
+<p>This article includes some excerpts from the official documentation and my own insights.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/en/2024/01/25/LANraragi-%E6%BC%AB%E7%94%BB%E6%9C%8D%E5%8A%A1%E5%99%A8/#more" rel="contents">
@@ -806,7 +808,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:06</span>
+    <span title="Reading time total">1:05</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
