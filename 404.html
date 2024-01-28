@@ -30,7 +30,7 @@
 <meta property="og:description" content="您正在访问一个不存在的地址🤔 系统会在 10 秒后自动跳转到首页,  您也可以点此 链接, 手动跳转!       $(function () {         setInterval(function () {             var seconds &#x3D; $(&quot;#seconds&quot;).text();             $(&quot;#seconds&quot;).text(--seconds)">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2023-07-01T12:47:38.000Z">
-<meta property="article:modified_time" content="2023-07-02T09:53:34.096Z">
+<meta property="article:modified_time" content="2024-01-28T07:50:49.050Z">
 <meta property="article:author" content="El nino">
 <meta property="article:tag" content="blog">
 <meta property="article:tag" content="tech">
@@ -227,7 +227,7 @@
 
 <div align="center">您正在访问一个不存在的地址🤔</div>
 <div align="center">系统会在 <span id="seconds">10</span> 秒后自动跳转到首页,</div>
-<div align="center"> 您也可以点此 <a target="_self" href="/" >链接</a>, 手动跳转!</div>
+<div align="center"> 您也可以点此 <a target="_self" href="/en" >链接</a>, 手动跳转!</div>
 
 <script>
     $(function () {
@@ -235,7 +235,7 @@
             var seconds = $("#seconds").text();
             $("#seconds").text(--seconds);
             if (seconds == 0) {
-                location.href = "/";
+                location.href = "/en";
             }
         }, 1000);
     });
