@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Hexo自定义404页面</title>
+    <url>/en/2023/07/04/Hexo%E8%87%AA%E5%AE%9A%E4%B9%89404%E9%A1%B5%E9%9D%A2/</url>
+    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
+
+<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
+<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
+<p>下面是对应的代码，直接放在 md 文件中即可：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
+<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
+<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
+
+<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
+<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
+
+<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
+<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Azure Pipelines 架构解析</title>
     <url>/en/2023/10/06/Azure-Pipelines-%E6%9E%B6%E6%9E%84%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
@@ -57,107 +88,6 @@
         <tag>Azure</tag>
         <tag>Azure Pipelines</tag>
         <tag>架构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo自定义404页面</title>
-    <url>/en/2023/07/04/Hexo%E8%87%AA%E5%AE%9A%E4%B9%89404%E9%A1%B5%E9%9D%A2/</url>
-    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
-
-<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
-<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
-<p>下面是对应的代码，直接放在 md 文件中即可：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
-<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
-<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
-
-<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
-<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
-
-<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
-<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LocalSend：局域网文件传输利器</title>
-    <url>/en/2023/09/04/LocalSend%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%88%A9%E5%99%A8/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
-<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
-<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
-<span id="more"></span>
-
-<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
-<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
-<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
-<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
-<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
-<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
-</li>
-<li><p>进入『配置防火墙和安全设置』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
-</li>
-<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
-</li>
-<li><p>重启 LocalSend，等待找到目标主机</p>
-</li>
-</ol>
-<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
-<ol>
-<li><p>打开『Windows Defender 防火墙』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
-</li>
-<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
-</li>
-<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
-</li>
-</ol>
-<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
-<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
-<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
-<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
-<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
-<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
-<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>LocalSend</category>
-      </categories>
-      <tags>
-        <tag>LocalSend</tag>
-        <tag>settings</tag>
-        <tag>Firewall</tag>
-        <tag>Windows</tag>
       </tags>
   </entry>
   <entry>
@@ -278,72 +208,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
-    <url>/en/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
-<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
-<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
-<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
-<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
-<span id="more"></span>
-
-
-<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
-<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
-
-<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
-<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
-<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
-<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
-
-<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
-<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
-
-<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
-<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
-<hr>
-<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
-
-<hr>
-<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
-
-<hr>
-<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
-
-<hr>
-<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
-<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
-<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
-<p><img src="/en/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
-<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
-<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
-<p><img src="/en/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
-<p>如果有重复，就在文件名后面添加数字以示区分：</p>
-<p><img src="/en/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
-<p><img src="/en/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
-<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
-<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>softwares</category>
-        <category>VS Code</category>
-        <category>Typora</category>
-        <category>Markdown</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-        <tag>Typora</tag>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
     <url>/en/2023/07/08/MyBatis-Plus-%E5%AE%9E%E7%8E%B0-MySQL-JSON-%E7%B1%BB%E5%9E%8B%E5%AD%97%E6%AE%B5%E7%9A%84%E6%98%A0%E5%B0%84/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
@@ -396,44 +260,139 @@
       </tags>
   </entry>
   <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/en/2023/07/09/PotPlayer-%E5%90%AF%E7%94%A8-Nvidia-%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+    <title>LocalSend：局域网文件传输利器</title>
+    <url>/en/2023/09/04/LocalSend%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E5%88%A9%E5%99%A8/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
+<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
+<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
 <span id="more"></span>
 
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
+<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
+<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
+<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
+<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
+<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
+</li>
+<li><p>进入『配置防火墙和安全设置』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
+</li>
+<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
+</li>
+<li><p>重启 LocalSend，等待找到目标主机</p>
+</li>
+</ol>
+<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
+<ol>
+<li><p>打开『Windows Defender 防火墙』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
+</li>
+<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
+</li>
+<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
+</li>
+</ol>
+<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
+<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
+<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
+<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
+<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
+<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
+<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
 
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+<p>例子：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
 
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
 
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+
+<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
 ]]></content>
       <categories>
         <category>softwares</category>
-        <category>PotPlayer</category>
+        <category>LocalSend</category>
+      </categories>
+      <tags>
+        <tag>LocalSend</tag>
+        <tag>settings</tag>
+        <tag>Firewall</tag>
+        <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
+    <url>/en/2023/07/22/Markdown-%E6%8F%92%E5%85%A5%E5%9B%BE%E7%89%87%E6%97%B6%E8%87%AA%E5%8A%A8%E6%8B%B7%E8%B4%9D%E2%80%94%E2%80%94%E4%BB%A5-Typora-%E5%92%8C-VS-Code-%E4%B8%BA%E4%BE%8B/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
+<p>Typora 作为业界知名的 Markdown 编辑器，除了著名的『即时渲染』，也拥有很多方便书写 Markdown 的功能，比如插入图片时的自动保存：往一个 Markdown 文件（文本文件）中粘贴一张图片，该图片便会自动保存到指定路径，并且自动在 Markdown 中建立好引用。</p>
+<p>对于经常用 Markdown 记笔记的我来说，<strong>这一功能应该成为业界的标准</strong>。但是，另一款常用的编辑器 —— VS Code —— 对这一功能的支持并不好。当然，我们也不应该苛求这样一款免费、通用的编辑器能够面面俱到。</p>
+<h1 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h1><p>对于经常记笔记的用户，截图并插入 Markdown 是一个常见的需求。在这一操作的背后，有两个方面关乎着用户体验：1️⃣ 截图工具 2️⃣Markdown 编辑器。</p>
+<p>在截图工具一致的情况下，Markdown 编辑器是决定用户体验的关键因素。下面我将展开介绍 3 种编辑器是如何插入图片的。</p>
+<span id="more"></span>
+
+
+<h1 id="传统文本编辑器"><a href="#传统文本编辑器" class="headerlink" title="传统文本编辑器"></a>传统文本编辑器</h1><p>这种编辑器通常只是支持 Markdown 语法高亮的“记事本”，比如 vim，sublime 等。</p>
+<p>当我们截图完毕后，需要先将图片存储到本地，再使用 Markdown 语法手动引用该图片的路径：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">image.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+<p>出于方便，截图软件往往会将图片都存储到特定路径下。为了单独存放每个 Markdown 文件相关的图片，我们还需要手动地剪切图片的位置。很麻烦！</p>
+<h1 id="Typora"><a href="#Typora" class="headerlink" title="Typora"></a>Typora</h1><h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>Typora 为插入图片提供了多种功能，我最常用的是『复制图片到指定路径』。</p>
+<p>这里的『插入图片』，是指鼠标拖动图片到 Typora 中，或者从剪贴板（<code>win + v</code>）中粘贴</p>
+<img src="/MarkDownImages/image-20230722141038783.png" alt="image-20230722141038783" style="zoom:50%;" />
+
+<p>我选择保存到与当前 Markdown 文件同目录下的<code>MarkDownImages</code>文件夹下（没有会自动创建）。当然，更好的做法应该是选择『复制图片到 <code>./$&#123;filename&#125;.assets</code> 文件夹』，这样方便 Markdown 文件的迁移</p>
+<img src="/MarkDownImages/image-20230722141359394.png" alt="image-20230722141359394" style="zoom:50%;" />
+
+<p>『对网络位置的图片应用上述规则』：当我们复制了一个网络图片（的 url ） ，Typora 会自动下载图片到指定路径，并将 url 变为本地文件引用 —— 网络上的图片可能随时消失，本地存储更可靠。</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p>截图后，在 Typora 中按下 <code>Ctrl + v</code>，则剪贴板中的图片会自动拷贝到<code>MarkDownImages</code>文件夹下，并且<strong>文件名基于时间戳</strong>，不容易重复</p>
+<hr>
+<img src="/MarkDownImages/image-20230722142231405.png" alt="image-20230722142231405" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142307844.png" alt="image-20230722142307844" style="zoom:67%;" />
+
+<hr>
+<img src="/MarkDownImages/image-20230722142326387.png" alt="image-20230722142326387" style="zoom:67%;" />
+
+<hr>
+<p>可以看出，这种插入图片的方式非常优雅、便捷</p>
+<h1 id="VS-Code"><a href="#VS-Code" class="headerlink" title="VS Code"></a>VS Code</h1><h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>VS Code 应该是在最近才加入类似 Typora 的功能，不过只提供了『复制图片到指定路径』的选项。</p>
+<p>我这里的配置是插入任意文件（<code>**/*</code>）时，将它复制到与当前 Markdown 文件同目录下的 <code>MarkDownImages</code> 文件夹下（没有会自动创建）。文件名叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>。<code>$&#123;fileName&#125;</code>是原始文件名</p>
+<p><img src="/en/MarkDownImages/image-20230722142953270.png" alt="image-20230722142953270"></p>
+<p>或者可以直接复制以下内容到 <code>settings.json</code> 中：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;markdown.copyFiles.destination&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;**/*&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./MarkDownImages/VSCodeCopied-$&#123;fileName&#125;&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="操作-1"><a href="#操作-1" class="headerlink" title="操作"></a>操作</h2><p>与 Typora 类似，截图按下 <code>Ctrl + v</code> 即可</p>
+<p>为什么保存的图片名要叫做 <code>VSCodeCopied-$&#123;fileName&#125;</code>？因为将截图插入到 VS Code 中时，会被起名为<code>image.png</code></p>
+<p><img src="/en/MarkDownImages/image-20230722143640371.png" alt="image-20230722143640371"></p>
+<p>如果有重复，就在文件名后面添加数字以示区分：</p>
+<p><img src="/en/MarkDownImages/image-20230722143756389.png" alt="image-20230722143756389"></p>
+<p><img src="/en/MarkDownImages/image-20230722143813041.png" alt="image-20230722143813041"></p>
+<p>这显然不直观，并且在团队合作写文档时容易造成文件名冲突。期待 VS Code 后续的更新中能够解决这一点，并提供更多的插入图片时的选项。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://support.typora.io/Images/#when-insert-images">Images in Typora: when-insert-images</a></p>
+<p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>tech</category>
+        <category>VS Code</category>
+        <category>Typora</category>
+        <category>Markdown</category>
       </categories>
       <tags>
         <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
+        <tag>VS Code</tag>
+        <tag>Typora</tag>
+        <tag>Markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -590,6 +549,47 @@
       </tags>
   </entry>
   <entry>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/en/2023/07/09/PotPlayer-%E5%90%AF%E7%94%A8-Nvidia-%E8%B6%85%E5%88%86%E8%BE%A8%E7%8E%87/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
+
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>pip &amp; conda 常用指令</title>
     <url>/en/2024/01/14/pip-conda-%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4/</url>
     <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
@@ -680,6 +680,81 @@
       </tags>
   </entry>
   <entry>
+    <title>力扣 370 周赛总结</title>
+    <url>/en/2023/11/05/%E5%8A%9B%E6%89%A3-370-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
+<p><a href="https://leetcode.cn/contest/weekly-contest-370/">力扣第 370 场周赛</a></p>
+</blockquote>
+<blockquote>
+<p>本文只是周赛的总结，我不准备详细地讨论每一道题，有些题只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
+</blockquote>
+<p>23 分钟 AC 前三题，使得排名在三百左右 —— 典型的比手速策略。做题情况简要描述：</p>
+<ul>
+<li>第一题：送分题，但是有点卡住了，花了 5 分钟😒；</li>
+<li>第二题：背景和第一题一样，同样是送分题，做得反而更快😋；</li>
+<li>第三题：一道符合难度的中等题，需要稍微想一下，15 分钟做出来，不错😋；</li>
+<li>第四题：没做出来。如果数据规模小的话是一道简单 dp，但没有优化思路 😒；</li>
+</ul>
+<span id="more"></span>
+
+
+
+<h1 id="一、找到冠军-I"><a href="#一、找到冠军-I" class="headerlink" title="一、找到冠军 I"></a>一、<a href="https://leetcode.cn/problems/find-champion-i/">找到冠军 I</a></h1><p><img src="/en/MarkDownImages/image-20231105132950645.png" alt="image-20231105132950645"></p>
+<p><img src="/en/MarkDownImages/image-20231105132958733.png" alt="image-20231105132958733"></p>
+<p>“如果不存在某支强于 <code>a</code> 队的队伍，则认为 <code>a</code> 队将会是 <strong>冠军</strong> ”，因此使用 <code>count[i]</code> 表示比 <code>i</code> 强的队伍数量。使得 $count[i] &#x3D; 0$ 的 $i$ 即为答案</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span>[][] grid)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> grid.length;</span><br><span class="line">        <span class="type">int</span>[] count = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == j) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">if</span> (grid[i][j] == <span class="number">1</span>) count[j]++;</span><br><span class="line">                <span class="keyword">else</span> count[i]++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (count[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、找到冠军-II"><a href="#二、找到冠军-II" class="headerlink" title="二、找到冠军 II"></a>二、<a href="https://leetcode.cn/problems/find-champion-ii/">找到冠军 II</a></h1><p><img src="/en/MarkDownImages/image-20231105133352267.png" alt="image-20231105133352267"></p>
+<p><img src="/en/MarkDownImages/image-20231105133528772.png" alt="image-20231105133528772"></p>
+<p><img src="/en/MarkDownImages/image-20231105133540889.png" alt="image-20231105133540889"></p>
+<p>用有向边表示谁比谁强，明显比第一题好理解。边 $(a,b)$ 表示 $a$ 比 $b$ 强，因此那些最强的队伍的入度为 $0$。统计入度即可。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span>[][] edges)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] inDeg = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="comment">// 统计入度</span></span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; inDeg[e[<span class="number">1</span>]]++);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> Arrays.stream(inDeg).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="comment">// 非唯一</span></span><br><span class="line">        <span class="keyword">if</span> (count != <span class="number">1</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDeg[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、在树上执行操作以后得到的最大分数"><a href="#三、在树上执行操作以后得到的最大分数" class="headerlink" title="三、在树上执行操作以后得到的最大分数"></a>三、<a href="https://leetcode.cn/problems/maximum-score-after-applying-operations-on-a-tree/">在树上执行操作以后得到的最大分数</a></h1><p><img src="/en/MarkDownImages/image-20231105134014234.png" alt="image-20231105134014234"></p>
+<p><img src="/en/MarkDownImages/image-20231105134359269.png" alt="image-20231105134359269"></p>
+<p><img src="/en/MarkDownImages/image-20231105134415086.png" alt="image-20231105134415086"></p>
+<p>$\forall i, values[i] \ge 1$，并且“从根节点出发，到任意叶子节点经过的路径上的节点值之和都不等于 0”。因此，我们在执行操作时，<strong>每条从根节点到叶节点的路径上，都要留一个节点不去操作</strong>。（多条路径可能共用一个不操作的节点）</p>
+<p>令图中所有节点的集合是 $V$，我们<strong>不操作</strong>的节点的集合为 $U$，则“对这棵树执行任意次操作，但要求执行完所有操作以后树是 <strong>健康的</strong> ”，得到的分数为 $\sum\limits_{v\in V} v - \sum\limits_{u\in U}u$。$\sum\limits_{v\in V} v $ 即为 <code>sum(values)</code>，因此，为了使分数最大，我们不操作的节点之和 $\sum\limits_{u\in U}u$ 应该尽可能地小。那么，应该不操作哪些节点呢？</p>
+<p>对于树的任意一棵子树，比如下图：</p>
+<p><img src="/en/MarkDownImages/image-20231105135510005.png" alt="image-20231105135510005"></p>
+<p>假设我们不操作根节点 0，那么剩余的节点都可以操作；假设我们操作了根节点 0，那么剩余的节点中存在不能操作的节点。这里的剩余节点可能是叶节点，也可能是多棵子树，无论是什么，都不影响该结论。</p>
+<p>那么什么时候操作根节点？定义一棵以 $u$ 为根节点的<strong>健康的</strong>子树中<strong>不操作</strong>的节点的<strong>最小和</strong>为 $res(u)$，则 $\forall x, x$ 是 $u$ 的子节点, $res(u) &#x3D; \min\set{values[u], \sum\limits_x res(x)}$</p>
+<p>该递归式的含义是：</p>
+<ul>
+<li>要么不操作根节点 $u$，此时这棵树是健康的，剩余的所有子节点都可以操作；</li>
+<li>要么操作根节点 $u$，但是 $u$ 的所有子树都需要保证自己是健康的；</li>
+<li>根据定义，我们要得到<strong>最小和</strong>，因此取两者情况的较小值；</li>
+</ul>
+<p>对于上述例子，$res(1) &#x3D; 2,res(2) &#x3D; 2,res(3) &#x3D; 5$</p>
+<p>$values[0] &#x3D; 5 &lt; \sum\limits_{x\in\set{1,2,3}}res(x) &#x3D; 9$，因此不操作根节点 $0$，而操作其所有子树中的节点。</p>
+<p>有了 $res(u)$ 的递推式，上述 $\sum\limits_{u\in U}u$ 的值就是 $res(0)$，因此，最大分数是 <code>sum(values) - res(0)</code></p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ArrayList&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maximumScoreAfterOperations</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] values)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> values.length;</span><br><span class="line">        <span class="comment">// 建树，实际上是建图</span></span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(values[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        visited[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// values[i] &lt;= 10^9，注意 mapToLong</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> Arrays.stream(values).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> dfs(nodes[<span class="number">0</span>], visited);</span><br><span class="line">        <span class="keyword">return</span> sum - min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> res(root)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">dfs</span><span class="params">(Node root, <span class="type">boolean</span>[] visited)</span> &#123;</span><br><span class="line">        <span class="comment">// count # visited neighbors</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// min = sum(res(children))</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited[child.index] = <span class="literal">true</span>;</span><br><span class="line">            min += dfs(child, visited);</span><br><span class="line">            visited[child.index] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此时该节点为叶节点，直接返回它的 val</span></span><br><span class="line">        <span class="keyword">if</span> (count == root.children.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> root.val;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.min(root.val, min);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、平衡子序列的最大和"><a href="#四、平衡子序列的最大和" class="headerlink" title="四、平衡子序列的最大和"></a>四、<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">平衡子序列的最大和</a></h1><p><img src="/en/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
+<p><img src="/en/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
+<p>重新读题：平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
+<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$ —— 左右两边的各项都只关于其下标，而与其他条件无关</p>
+<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
+<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> </p>
+<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (nums[j] - j \ge nums[i] - i)}$</p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[j] - j &gt;= nums[i] - i) &#123;</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题在于，这么做显然是 $O(n^2)$ 的时间复杂度，比赛时我也没想出如何优化。</p>
+<p>我准备在下一篇博客中详细描述如何做出这道题（基于大佬的题解），现在先让我去学习相关知识。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+        <category>算法竞赛</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>树</tag>
+        <tag>动态规划</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>力扣 369 周赛总结</title>
     <url>/en/2023/10/29/%E5%8A%9B%E6%89%A3-369-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
@@ -765,9 +840,9 @@
       </categories>
       <tags>
         <tag>模拟</tag>
-        <tag>位运算</tag>
-        <tag>动态规划</tag>
         <tag>树</tag>
+        <tag>动态规划</tag>
+        <tag>位运算</tag>
       </tags>
   </entry>
   <entry>
@@ -844,81 +919,6 @@
       </tags>
   </entry>
   <entry>
-    <title>力扣 370 周赛总结</title>
-    <url>/en/2023/11/05/%E5%8A%9B%E6%89%A3-370-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
-<p><a href="https://leetcode.cn/contest/weekly-contest-370/">力扣第 370 场周赛</a></p>
-</blockquote>
-<blockquote>
-<p>本文只是周赛的总结，我不准备详细地讨论每一道题，有些题只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
-</blockquote>
-<p>23 分钟 AC 前三题，使得排名在三百左右 —— 典型的比手速策略。做题情况简要描述：</p>
-<ul>
-<li>第一题：送分题，但是有点卡住了，花了 5 分钟😒；</li>
-<li>第二题：背景和第一题一样，同样是送分题，做得反而更快😋；</li>
-<li>第三题：一道符合难度的中等题，需要稍微想一下，15 分钟做出来，不错😋；</li>
-<li>第四题：没做出来。如果数据规模小的话是一道简单 dp，但没有优化思路 😒；</li>
-</ul>
-<span id="more"></span>
-
-
-
-<h1 id="一、找到冠军-I"><a href="#一、找到冠军-I" class="headerlink" title="一、找到冠军 I"></a>一、<a href="https://leetcode.cn/problems/find-champion-i/">找到冠军 I</a></h1><p><img src="/en/MarkDownImages/image-20231105132950645.png" alt="image-20231105132950645"></p>
-<p><img src="/en/MarkDownImages/image-20231105132958733.png" alt="image-20231105132958733"></p>
-<p>“如果不存在某支强于 <code>a</code> 队的队伍，则认为 <code>a</code> 队将会是 <strong>冠军</strong> ”，因此使用 <code>count[i]</code> 表示比 <code>i</code> 强的队伍数量。使得 $count[i] &#x3D; 0$ 的 $i$ 即为答案</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span>[][] grid)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> grid.length;</span><br><span class="line">        <span class="type">int</span>[] count = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == j) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">if</span> (grid[i][j] == <span class="number">1</span>) count[j]++;</span><br><span class="line">                <span class="keyword">else</span> count[i]++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (count[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="二、找到冠军-II"><a href="#二、找到冠军-II" class="headerlink" title="二、找到冠军 II"></a>二、<a href="https://leetcode.cn/problems/find-champion-ii/">找到冠军 II</a></h1><p><img src="/en/MarkDownImages/image-20231105133352267.png" alt="image-20231105133352267"></p>
-<p><img src="/en/MarkDownImages/image-20231105133528772.png" alt="image-20231105133528772"></p>
-<p><img src="/en/MarkDownImages/image-20231105133540889.png" alt="image-20231105133540889"></p>
-<p>用有向边表示谁比谁强，明显比第一题好理解。边 $(a,b)$ 表示 $a$ 比 $b$ 强，因此那些最强的队伍的入度为 $0$。统计入度即可。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span>[][] edges)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] inDeg = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="comment">// 统计入度</span></span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; inDeg[e[<span class="number">1</span>]]++);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> Arrays.stream(inDeg).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="comment">// 非唯一</span></span><br><span class="line">        <span class="keyword">if</span> (count != <span class="number">1</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDeg[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、在树上执行操作以后得到的最大分数"><a href="#三、在树上执行操作以后得到的最大分数" class="headerlink" title="三、在树上执行操作以后得到的最大分数"></a>三、<a href="https://leetcode.cn/problems/maximum-score-after-applying-operations-on-a-tree/">在树上执行操作以后得到的最大分数</a></h1><p><img src="/en/MarkDownImages/image-20231105134014234.png" alt="image-20231105134014234"></p>
-<p><img src="/en/MarkDownImages/image-20231105134359269.png" alt="image-20231105134359269"></p>
-<p><img src="/en/MarkDownImages/image-20231105134415086.png" alt="image-20231105134415086"></p>
-<p>$\forall i, values[i] \ge 1$，并且“从根节点出发，到任意叶子节点经过的路径上的节点值之和都不等于 0”。因此，我们在执行操作时，<strong>每条从根节点到叶节点的路径上，都要留一个节点不去操作</strong>。（多条路径可能共用一个不操作的节点）</p>
-<p>令图中所有节点的集合是 $V$，我们<strong>不操作</strong>的节点的集合为 $U$，则“对这棵树执行任意次操作，但要求执行完所有操作以后树是 <strong>健康的</strong> ”，得到的分数为 $\sum\limits_{v\in V} v - \sum\limits_{u\in U}u$。$\sum\limits_{v\in V} v $ 即为 <code>sum(values)</code>，因此，为了使分数最大，我们不操作的节点之和 $\sum\limits_{u\in U}u$ 应该尽可能地小。那么，应该不操作哪些节点呢？</p>
-<p>对于树的任意一棵子树，比如下图：</p>
-<p><img src="/en/MarkDownImages/image-20231105135510005.png" alt="image-20231105135510005"></p>
-<p>假设我们不操作根节点 0，那么剩余的节点都可以操作；假设我们操作了根节点 0，那么剩余的节点中存在不能操作的节点。这里的剩余节点可能是叶节点，也可能是多棵子树，无论是什么，都不影响该结论。</p>
-<p>那么什么时候操作根节点？定义一棵以 $u$ 为根节点的<strong>健康的</strong>子树中<strong>不操作</strong>的节点的<strong>最小和</strong>为 $res(u)$，则 $\forall x, x$ 是 $u$ 的子节点, $res(u) &#x3D; \min\set{values[u], \sum\limits_x res(x)}$</p>
-<p>该递归式的含义是：</p>
-<ul>
-<li>要么不操作根节点 $u$，此时这棵树是健康的，剩余的所有子节点都可以操作；</li>
-<li>要么操作根节点 $u$，但是 $u$ 的所有子树都需要保证自己是健康的；</li>
-<li>根据定义，我们要得到<strong>最小和</strong>，因此取两者情况的较小值；</li>
-</ul>
-<p>对于上述例子，$res(1) &#x3D; 2,res(2) &#x3D; 2,res(3) &#x3D; 5$</p>
-<p>$values[0] &#x3D; 5 &lt; \sum\limits_{x\in\set{1,2,3}}res(x) &#x3D; 9$，因此不操作根节点 $0$，而操作其所有子树中的节点。</p>
-<p>有了 $res(u)$ 的递推式，上述 $\sum\limits_{u\in U}u$ 的值就是 $res(0)$，因此，最大分数是 <code>sum(values) - res(0)</code></p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ArrayList&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maximumScoreAfterOperations</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] values)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> values.length;</span><br><span class="line">        <span class="comment">// 建树，实际上是建图</span></span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(values[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        visited[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// values[i] &lt;= 10^9，注意 mapToLong</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> Arrays.stream(values).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> dfs(nodes[<span class="number">0</span>], visited);</span><br><span class="line">        <span class="keyword">return</span> sum - min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> res(root)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">dfs</span><span class="params">(Node root, <span class="type">boolean</span>[] visited)</span> &#123;</span><br><span class="line">        <span class="comment">// count # visited neighbors</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// min = sum(res(children))</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited[child.index] = <span class="literal">true</span>;</span><br><span class="line">            min += dfs(child, visited);</span><br><span class="line">            visited[child.index] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此时该节点为叶节点，直接返回它的 val</span></span><br><span class="line">        <span class="keyword">if</span> (count == root.children.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> root.val;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.min(root.val, min);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="四、平衡子序列的最大和"><a href="#四、平衡子序列的最大和" class="headerlink" title="四、平衡子序列的最大和"></a>四、<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">平衡子序列的最大和</a></h1><p><img src="/en/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
-<p><img src="/en/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
-<p>重新读题：平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
-<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$ —— 左右两边的各项都只关于其下标，而与其他条件无关</p>
-<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
-<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> </p>
-<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (nums[j] - j \ge nums[i] - i)}$</p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[j] - j &gt;= nums[i] - i) &#123;</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>问题在于，这么做显然是 $O(n^2)$ 的时间复杂度，比赛时我也没想出如何优化。</p>
-<p>我准备在下一篇博客中详细描述如何做出这道题（基于大佬的题解），现在先让我去学习相关知识。</p>
-]]></content>
-      <categories>
-        <category>算法题</category>
-        <category>算法竞赛</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>动态规划</tag>
-        <tag>树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>算法题002：螺旋矩阵 II</title>
     <url>/en/2023/10/03/%E7%AE%97%E6%B3%95%E9%A2%98002%EF%BC%9A%E8%9E%BA%E6%97%8B%E7%9F%A9%E9%98%B5-II/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -979,6 +979,89 @@
       <tags>
         <tag>模拟</tag>
         <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>算法题005：平衡子序列的最大和</title>
+    <url>/en/2023/11/06/%E7%AE%97%E6%B3%95%E9%A2%98005%EF%BC%9A%E5%B9%B3%E8%A1%A1%E5%AD%90%E5%BA%8F%E5%88%97%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p>题目来源：<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">2926. 平衡子序列的最大和</a></p>
+<p>本文是对 <a href="/2023/11/05/%E5%8A%9B%E6%89%A3-370-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/">力扣第 370 场周赛</a> 没做出来的最后一题的题解的分析。题解参考了<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/solutions/2513121/shu-zhuang-shu-zu-you-hua-dp-by-endlessc-3zf4/">灵茶山艾府的文章</a>。</p>
+</blockquote>
+<p><img src="/en/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
+<span id="more"></span>
+
+<p><img src="/en/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><h2 id="DP"><a href="#DP" class="headerlink" title="DP"></a>DP</h2><p>重新读题：一个平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
+<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$</p>
+<p>令 $b[i] &#x3D; nums[i] - i$，则平衡子序列中每个元素需要满足的条件只和自身下标有关。</p>
+<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
+<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> 。</p>
+<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (b[j] \ge b[i]}$</p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="comment">// b[i] = nums[i] - i</span></span><br><span class="line">        <span class="type">int</span>[] b = IntStream.range(<span class="number">0</span>, n).map(i -&gt; nums[i] - i).toArray();</span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (b[j] &gt;= b[i])</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Arrays.stream(dp).max().getAsLong();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>显然，两层循环的时间复杂度是 $O(n^2)$，肯定会超时。我们应该如何优化呢？</p>
+<h2 id="树状数组-BIT"><a href="#树状数组-BIT" class="headerlink" title="树状数组 BIT"></a>树状数组 BIT</h2><p>根据上述递推式，我们的代码逻辑应该是这样的：</p>
+<ul>
+<li>对于每一个 $j$</li>
+<li>遍历区间 $[0, j)$，找到其中使得 $b[j] \ge b[i]$ 并且 $dp[i]$ 最大的下标 $i$ —— 区间查询最大值</li>
+<li>令 $dp[j] &#x3D; nums[j] + dp[i]$ —— 单点更新</li>
+</ul>
+<p>我们需要让 『区间查询』+ 『单点更新』的时间复杂度严格小于 $O(n)$，这样才不会超时。哪一种现有的数据结构能做到这一点？—— 树状数组（Binary Index Tree）。</p>
+<blockquote>
+<p>我本来以为 BIT 只适合区间查询求和（对于差分数组的优化），但这道题告诉了我们，区间查询的对象可以拓展到最小值和最大值。</p>
+</blockquote>
+<p>BIT 中存放的是什么？<code>&lt;b[j], dp[j]&gt;</code> 的键值对，即 <code>b[j]</code> 是下标，<code>dp[j]</code> 是数组元素。我们要查询所有下标 $\le b[j]$  的元素的最大值，即前缀区间的最大值。</p>
+<p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">BIT</span> &#123;</span><br><span class="line">        <span class="type">long</span>[] arr;</span><br><span class="line">        <span class="type">int</span> offset;</span><br><span class="line"></span><br><span class="line">        BIT(<span class="type">int</span> min, <span class="type">int</span> max) &#123;</span><br><span class="line">            <span class="comment">// 将区间 [min, max] 移动到从 0 开始</span></span><br><span class="line">            offset = -min;</span><br><span class="line">            <span class="comment">// BIT 的下标 0 必须留空，因此上述区间从 1 开始</span></span><br><span class="line">            offset++;</span><br><span class="line">            arr = <span class="keyword">new</span> <span class="title class_">long</span>[max - min + <span class="number">2</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="title function_">lsb</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> i &amp; -i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> <span class="title function_">setMax</span><span class="params">(<span class="type">int</span> i, <span class="type">long</span> val)</span> &#123;</span><br><span class="line">            i += offset;</span><br><span class="line">            <span class="comment">// 下标 i 会对之后所有区间产生影响，因此是加上 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &lt; arr.length; i += lsb(i)) &#123;</span><br><span class="line">                arr[i] = Math.max(arr[i], val);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="title function_">getMax</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            i += offset;</span><br><span class="line">            <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">            <span class="comment">// 前缀区间，因此是减去 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &gt; <span class="number">0</span>; i -= lsb(i)) &#123;</span><br><span class="line">                ans = Math.max(ans, arr[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ans;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="comment">// b[i] = nums[i] - i</span></span><br><span class="line">        <span class="type">int</span>[] b = IntStream.range(<span class="number">0</span>, n).map(i -&gt; nums[i] - i).toArray();</span><br><span class="line">        <span class="type">int</span> <span class="variable">max</span> <span class="operator">=</span> Arrays.stream(b).max().getAsInt();</span><br><span class="line">        <span class="type">int</span> <span class="variable">min</span> <span class="operator">=</span> Arrays.stream(b).min().getAsInt();</span><br><span class="line">        <span class="comment">// 根据 b 中元素的范围定制 BIT#arr 的大小</span></span><br><span class="line">        <span class="type">BIT</span> <span class="variable">tree</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BIT</span>(min, max);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            <span class="comment">// 区间查询最大值</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_i</span> <span class="operator">=</span> Math.max(tree.getMax(b[j]), <span class="number">0</span>);</span><br><span class="line">            <span class="comment">// 单点更新</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_j</span> <span class="operator">=</span> dp_i + nums[j];</span><br><span class="line">            tree.setMax(b[j], dp_j);</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp_j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>提交该代码：</p>
+<p><img src="/en/MarkDownImages/image-20231106113338051.png" alt="image-20231106113338051"></p>
+<p>注意题目的数据范围：$n \le 10^5$ ，$nums[i] \in[-10^9,10^9]$</p>
+<p>因此 <code>b[i]</code> 的取值范围约等于 32-bit 整型的取值范围，即 $2^{32}$，这显然会在创建 <code>BIT#arr</code> 时导致 OOM。如何优化空间呢？</p>
+<h2 id="离散化"><a href="#离散化" class="headerlink" title="离散化"></a>离散化</h2><blockquote>
+<p>参考 <a href="https://oi-wiki.org/misc/discrete/">OI-wiki</a> 的描述：</p>
+<p>离散化是一种数据处理的技巧，本质上可以看成是一种哈希，其保证数据在哈希以后仍然保持原来的全&#x2F;偏序关系。</p>
+<p>通俗地讲就是当<strong>有些数据</strong>因为本身很大或者类型不支持，自身<strong>无法作为数组的下标</strong>来方便地处理，而<strong>影响最终结果的只有元素之间的相对大小关系</strong>时，我们可以将原来的数据<strong>按照排名来处理问题</strong>，即离散化。</p>
+</blockquote>
+<p>结合本题来理解：</p>
+<ul>
+<li>我们要查询所有下标 $\le b[j]$  的元素的最大值 —— $b[j]$ 有 $2^{32}$ 个可能取值。</li>
+<li>而数组 <code>b</code> 只有 <code>n</code> 个元素。</li>
+<li>假设 <code>b[j]</code> 在排序后是第 $k$ 小的元素，那么我们只需要查询前 $k - 1$ 个比 <code>b[j]</code> 小的元素中的最大值。</li>
+<li>因此，<code>BIT#arr</code> 的长度也是 <code>n</code> ，且 $n \ll 2^{32}$。</li>
+<li>假设我们知道 <code>b[j]</code> 在排序后的下标 <code>k</code>，那么『查询所有下标 $\le b[j]$  的元素的最大值』就等价于 <code>getMax(k)</code>。</li>
+</ul>
+<blockquote>
+<p>从结果上来看，『离散化』应该叫做『归一化』更合适？🤔</p>
+</blockquote>
+<p>离散化的过程也是典型的模板，背出来就行了：</p>
+<blockquote>
+<ol>
+<li>创建原数组的副本。</li>
+<li>将副本中的值从小到大排序。</li>
+<li>将排序好的副本去重。</li>
+<li>查找原数组的每一个元素在副本中的位置，位置即为排名，将其作为离散化后的值。</li>
+</ol>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span> ans[i] 表示 b[i] 在排序后是第几小的元素</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">int</span>[] discretize(<span class="type">int</span>[] b) &#123;</span><br><span class="line">    <span class="type">int</span>[] arr = Arrays.stream(b).sorted().distinct().toArray();</span><br><span class="line">    <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> b.length;</span><br><span class="line">    <span class="type">int</span>[] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        <span class="comment">// b[i] 一定存在于 arr 中</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">order</span> <span class="operator">=</span> Arrays.binarySearch(arr, b[i]);</span><br><span class="line">        <span class="comment">// ans[i] &gt;= 1 是因为 BIT 的下标 0 必须留空。实际上可以不用加 1</span></span><br><span class="line">        ans[i] = order + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果不去重，C++ 使用 <code>std::lower_bound</code> 代替 <code>std::binary_search</code>。但是 Java 中没有这样的函数，因此一定要去重。</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">BIT</span> &#123;</span><br><span class="line">        <span class="type">long</span>[] arr;</span><br><span class="line"></span><br><span class="line">        BIT(<span class="type">int</span> n) &#123;</span><br><span class="line">            arr = <span class="keyword">new</span> <span class="title class_">long</span>[n + <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="title function_">lsb</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> i &amp; -i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> <span class="title function_">setMax</span><span class="params">(<span class="type">int</span> i, <span class="type">long</span> val)</span> &#123;</span><br><span class="line">            <span class="comment">// 下标 i 会对之后所有区间产生影响，因此是加上 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &lt; arr.length; i += lsb(i)) &#123;</span><br><span class="line">                arr[i] = Math.max(arr[i], val);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="title function_">getMax</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">            <span class="comment">// 前缀区间，因此是减去 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &gt; <span class="number">0</span>; i -= lsb(i)) &#123;</span><br><span class="line">                ans = Math.max(ans, arr[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ans;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> ans[i] 表示 b[i] 在排序后是第几小的元素</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span>[] discretize(<span class="type">int</span>[] b) &#123;</span><br><span class="line">        <span class="type">int</span>[] arr = Arrays.stream(b).sorted().distinct().toArray();</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> b.length;</span><br><span class="line">        <span class="type">int</span>[] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="comment">// b[i] 一定存在于 arr 中</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">order</span> <span class="operator">=</span> Arrays.binarySearch(arr, b[i]);</span><br><span class="line">            <span class="comment">// ans[i] &gt;= 1 是因为 BIT 的下标 0 必须留空。实际上可以不用加 1</span></span><br><span class="line">            ans[i] = order + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="comment">// b[i] = nums[i] - i</span></span><br><span class="line">        <span class="type">int</span>[] b = IntStream.range(<span class="number">0</span>, n).map(i -&gt; nums[i] - i).toArray();</span><br><span class="line">        <span class="comment">// 离散化</span></span><br><span class="line">        <span class="type">int</span>[] arr = discretize(b);</span><br><span class="line">        <span class="type">BIT</span> <span class="variable">tree</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BIT</span>(n + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            <span class="comment">// b[j] 是第 k 小的元素</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">k</span> <span class="operator">=</span> arr[j];</span><br><span class="line">            <span class="comment">// 区间查询最大值</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_i</span> <span class="operator">=</span> Math.max(tree.getMax(k), <span class="number">0</span>);</span><br><span class="line">            <span class="comment">// 单点更新</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_j</span> <span class="operator">=</span> dp_i + nums[j];</span><br><span class="line">            tree.setMax(k, dp_j);</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp_j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ul>
+<li><a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/solutions/2513121/shu-zhuang-shu-zu-you-hua-dp-by-endlessc-3zf4/">树状数组优化 DP（Python&#x2F;Java&#x2F;C++&#x2F;Go）</a></li>
+<li><a href="https://oi-wiki.org/misc/discrete/">离散化 - OI Wiki</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>动态规划</tag>
+        <tag>树状数组</tag>
+        <tag>离散化</tag>
       </tags>
   </entry>
   <entry>
@@ -1121,89 +1204,6 @@
       <tags>
         <tag>图</tag>
         <tag>拓扑排序</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>算法题005：平衡子序列的最大和</title>
-    <url>/en/2023/11/06/%E7%AE%97%E6%B3%95%E9%A2%98005%EF%BC%9A%E5%B9%B3%E8%A1%A1%E5%AD%90%E5%BA%8F%E5%88%97%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">2926. 平衡子序列的最大和</a></p>
-<p>本文是对 <a href="/2023/11/05/%E5%8A%9B%E6%89%A3-370-%E5%91%A8%E8%B5%9B%E6%80%BB%E7%BB%93/">力扣第 370 场周赛</a> 没做出来的最后一题的题解的分析。题解参考了<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/solutions/2513121/shu-zhuang-shu-zu-you-hua-dp-by-endlessc-3zf4/">灵茶山艾府的文章</a>。</p>
-</blockquote>
-<p><img src="/en/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
-<span id="more"></span>
-
-<p><img src="/en/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><h2 id="DP"><a href="#DP" class="headerlink" title="DP"></a>DP</h2><p>重新读题：一个平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
-<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$</p>
-<p>令 $b[i] &#x3D; nums[i] - i$，则平衡子序列中每个元素需要满足的条件只和自身下标有关。</p>
-<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
-<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> 。</p>
-<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (b[j] \ge b[i]}$</p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="comment">// b[i] = nums[i] - i</span></span><br><span class="line">        <span class="type">int</span>[] b = IntStream.range(<span class="number">0</span>, n).map(i -&gt; nums[i] - i).toArray();</span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (b[j] &gt;= b[i])</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Arrays.stream(dp).max().getAsLong();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>显然，两层循环的时间复杂度是 $O(n^2)$，肯定会超时。我们应该如何优化呢？</p>
-<h2 id="树状数组-BIT"><a href="#树状数组-BIT" class="headerlink" title="树状数组 BIT"></a>树状数组 BIT</h2><p>根据上述递推式，我们的代码逻辑应该是这样的：</p>
-<ul>
-<li>对于每一个 $j$</li>
-<li>遍历区间 $[0, j)$，找到其中使得 $b[j] \ge b[i]$ 并且 $dp[i]$ 最大的下标 $i$ —— 区间查询最大值</li>
-<li>令 $dp[j] &#x3D; nums[j] + dp[i]$ —— 单点更新</li>
-</ul>
-<p>我们需要让 『区间查询』+ 『单点更新』的时间复杂度严格小于 $O(n)$，这样才不会超时。哪一种现有的数据结构能做到这一点？—— 树状数组（Binary Index Tree）。</p>
-<blockquote>
-<p>我本来以为 BIT 只适合区间查询求和（对于差分数组的优化），但这道题告诉了我们，区间查询的对象可以拓展到最小值和最大值。</p>
-</blockquote>
-<p>BIT 中存放的是什么？<code>&lt;b[j], dp[j]&gt;</code> 的键值对，即 <code>b[j]</code> 是下标，<code>dp[j]</code> 是数组元素。我们要查询所有下标 $\le b[j]$  的元素的最大值，即前缀区间的最大值。</p>
-<p>代码如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">BIT</span> &#123;</span><br><span class="line">        <span class="type">long</span>[] arr;</span><br><span class="line">        <span class="type">int</span> offset;</span><br><span class="line"></span><br><span class="line">        BIT(<span class="type">int</span> min, <span class="type">int</span> max) &#123;</span><br><span class="line">            <span class="comment">// 将区间 [min, max] 移动到从 0 开始</span></span><br><span class="line">            offset = -min;</span><br><span class="line">            <span class="comment">// BIT 的下标 0 必须留空，因此上述区间从 1 开始</span></span><br><span class="line">            offset++;</span><br><span class="line">            arr = <span class="keyword">new</span> <span class="title class_">long</span>[max - min + <span class="number">2</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="title function_">lsb</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> i &amp; -i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> <span class="title function_">setMax</span><span class="params">(<span class="type">int</span> i, <span class="type">long</span> val)</span> &#123;</span><br><span class="line">            i += offset;</span><br><span class="line">            <span class="comment">// 下标 i 会对之后所有区间产生影响，因此是加上 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &lt; arr.length; i += lsb(i)) &#123;</span><br><span class="line">                arr[i] = Math.max(arr[i], val);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="title function_">getMax</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            i += offset;</span><br><span class="line">            <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">            <span class="comment">// 前缀区间，因此是减去 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &gt; <span class="number">0</span>; i -= lsb(i)) &#123;</span><br><span class="line">                ans = Math.max(ans, arr[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ans;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="comment">// b[i] = nums[i] - i</span></span><br><span class="line">        <span class="type">int</span>[] b = IntStream.range(<span class="number">0</span>, n).map(i -&gt; nums[i] - i).toArray();</span><br><span class="line">        <span class="type">int</span> <span class="variable">max</span> <span class="operator">=</span> Arrays.stream(b).max().getAsInt();</span><br><span class="line">        <span class="type">int</span> <span class="variable">min</span> <span class="operator">=</span> Arrays.stream(b).min().getAsInt();</span><br><span class="line">        <span class="comment">// 根据 b 中元素的范围定制 BIT#arr 的大小</span></span><br><span class="line">        <span class="type">BIT</span> <span class="variable">tree</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BIT</span>(min, max);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            <span class="comment">// 区间查询最大值</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_i</span> <span class="operator">=</span> Math.max(tree.getMax(b[j]), <span class="number">0</span>);</span><br><span class="line">            <span class="comment">// 单点更新</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_j</span> <span class="operator">=</span> dp_i + nums[j];</span><br><span class="line">            tree.setMax(b[j], dp_j);</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp_j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>提交该代码：</p>
-<p><img src="/en/MarkDownImages/image-20231106113338051.png" alt="image-20231106113338051"></p>
-<p>注意题目的数据范围：$n \le 10^5$ ，$nums[i] \in[-10^9,10^9]$</p>
-<p>因此 <code>b[i]</code> 的取值范围约等于 32-bit 整型的取值范围，即 $2^{32}$，这显然会在创建 <code>BIT#arr</code> 时导致 OOM。如何优化空间呢？</p>
-<h2 id="离散化"><a href="#离散化" class="headerlink" title="离散化"></a>离散化</h2><blockquote>
-<p>参考 <a href="https://oi-wiki.org/misc/discrete/">OI-wiki</a> 的描述：</p>
-<p>离散化是一种数据处理的技巧，本质上可以看成是一种哈希，其保证数据在哈希以后仍然保持原来的全&#x2F;偏序关系。</p>
-<p>通俗地讲就是当<strong>有些数据</strong>因为本身很大或者类型不支持，自身<strong>无法作为数组的下标</strong>来方便地处理，而<strong>影响最终结果的只有元素之间的相对大小关系</strong>时，我们可以将原来的数据<strong>按照排名来处理问题</strong>，即离散化。</p>
-</blockquote>
-<p>结合本题来理解：</p>
-<ul>
-<li>我们要查询所有下标 $\le b[j]$  的元素的最大值 —— $b[j]$ 有 $2^{32}$ 个可能取值。</li>
-<li>而数组 <code>b</code> 只有 <code>n</code> 个元素。</li>
-<li>假设 <code>b[j]</code> 在排序后是第 $k$ 小的元素，那么我们只需要查询前 $k - 1$ 个比 <code>b[j]</code> 小的元素中的最大值。</li>
-<li>因此，<code>BIT#arr</code> 的长度也是 <code>n</code> ，且 $n \ll 2^{32}$。</li>
-<li>假设我们知道 <code>b[j]</code> 在排序后的下标 <code>k</code>，那么『查询所有下标 $\le b[j]$  的元素的最大值』就等价于 <code>getMax(k)</code>。</li>
-</ul>
-<blockquote>
-<p>从结果上来看，『离散化』应该叫做『归一化』更合适？🤔</p>
-</blockquote>
-<p>离散化的过程也是典型的模板，背出来就行了：</p>
-<blockquote>
-<ol>
-<li>创建原数组的副本。</li>
-<li>将副本中的值从小到大排序。</li>
-<li>将排序好的副本去重。</li>
-<li>查找原数组的每一个元素在副本中的位置，位置即为排名，将其作为离散化后的值。</li>
-</ol>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return</span> ans[i] 表示 b[i] 在排序后是第几小的元素</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">int</span>[] discretize(<span class="type">int</span>[] b) &#123;</span><br><span class="line">    <span class="type">int</span>[] arr = Arrays.stream(b).sorted().distinct().toArray();</span><br><span class="line">    <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> b.length;</span><br><span class="line">    <span class="type">int</span>[] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        <span class="comment">// b[i] 一定存在于 arr 中</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">order</span> <span class="operator">=</span> Arrays.binarySearch(arr, b[i]);</span><br><span class="line">        <span class="comment">// ans[i] &gt;= 1 是因为 BIT 的下标 0 必须留空。实际上可以不用加 1</span></span><br><span class="line">        ans[i] = order + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果不去重，C++ 使用 <code>std::lower_bound</code> 代替 <code>std::binary_search</code>。但是 Java 中没有这样的函数，因此一定要去重。</p>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">BIT</span> &#123;</span><br><span class="line">        <span class="type">long</span>[] arr;</span><br><span class="line"></span><br><span class="line">        BIT(<span class="type">int</span> n) &#123;</span><br><span class="line">            arr = <span class="keyword">new</span> <span class="title class_">long</span>[n + <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="title function_">lsb</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> i &amp; -i;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> <span class="title function_">setMax</span><span class="params">(<span class="type">int</span> i, <span class="type">long</span> val)</span> &#123;</span><br><span class="line">            <span class="comment">// 下标 i 会对之后所有区间产生影响，因此是加上 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &lt; arr.length; i += lsb(i)) &#123;</span><br><span class="line">                arr[i] = Math.max(arr[i], val);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="title function_">getMax</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">            <span class="comment">// 前缀区间，因此是减去 lsb</span></span><br><span class="line">            <span class="keyword">for</span> (; i &gt; <span class="number">0</span>; i -= lsb(i)) &#123;</span><br><span class="line">                ans = Math.max(ans, arr[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> ans;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> ans[i] 表示 b[i] 在排序后是第几小的元素</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span>[] discretize(<span class="type">int</span>[] b) &#123;</span><br><span class="line">        <span class="type">int</span>[] arr = Arrays.stream(b).sorted().distinct().toArray();</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> b.length;</span><br><span class="line">        <span class="type">int</span>[] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="comment">// b[i] 一定存在于 arr 中</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">order</span> <span class="operator">=</span> Arrays.binarySearch(arr, b[i]);</span><br><span class="line">            <span class="comment">// ans[i] &gt;= 1 是因为 BIT 的下标 0 必须留空。实际上可以不用加 1</span></span><br><span class="line">            ans[i] = order + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="comment">// b[i] = nums[i] - i</span></span><br><span class="line">        <span class="type">int</span>[] b = IntStream.range(<span class="number">0</span>, n).map(i -&gt; nums[i] - i).toArray();</span><br><span class="line">        <span class="comment">// 离散化</span></span><br><span class="line">        <span class="type">int</span>[] arr = discretize(b);</span><br><span class="line">        <span class="type">BIT</span> <span class="variable">tree</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BIT</span>(n + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            <span class="comment">// b[j] 是第 k 小的元素</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">k</span> <span class="operator">=</span> arr[j];</span><br><span class="line">            <span class="comment">// 区间查询最大值</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_i</span> <span class="operator">=</span> Math.max(tree.getMax(k), <span class="number">0</span>);</span><br><span class="line">            <span class="comment">// 单点更新</span></span><br><span class="line">            <span class="type">long</span> <span class="variable">dp_j</span> <span class="operator">=</span> dp_i + nums[j];</span><br><span class="line">            tree.setMax(k, dp_j);</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp_j);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ul>
-<li><a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/solutions/2513121/shu-zhuang-shu-zu-you-hua-dp-by-endlessc-3zf4/">树状数组优化 DP（Python&#x2F;Java&#x2F;C++&#x2F;Go）</a></li>
-<li><a href="https://oi-wiki.org/misc/discrete/">离散化 - OI Wiki</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>动态规划</tag>
-        <tag>树状数组</tag>
-        <tag>离散化</tag>
       </tags>
   </entry>
   <entry>
