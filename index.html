@@ -160,7 +160,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/en/archives/">
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -171,7 +171,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/en/tags/">
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">43</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -284,6 +284,128 @@
         window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
     }
 </script>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://el-nino2020.github.io/en/2024/01/31/Docker-Nginx-SSL-Local-Network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/69737612?v=4">
+      <meta itemprop="name" content="El nino">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="El nino 的博客">
+      <meta itemprop="description" content="Hi, I am El nino🤗.">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | El nino 的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/" class="post-title-link" itemprop="url">在 Docker 中部署 Nginx，并在局域网配置 SSL 证书</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-01-31 14:03:43" itemprop="dateCreated datePublished" datetime="2024-01-31T14:03:43+08:00">2024-01-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/en/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/en/categories/tech/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span class="firestore-visitors-count"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>7 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>在上一篇博文里，我成功搭建了 LANraragi 服务器，并且分享给了家庭局域网内的其他设备。但是，又产生了新的问题：</p>
+<ul>
+<li>LANraragi 不需要登录就能访问其中的漫画；</li>
+<li>就算 LANraragi 有登录的功能，用的也还是 HTTP 明文传输，相当于没有密码；</li>
+</ul>
+<p>这些问题的根源是：可以联网的手机、智能家居都和 LANraragi 服务器在一个局域网内，这些设备并不可信，可能有后门（“用户自愿传输隐私数据以改善服务”）。无论如何，上述问题亟需解决。</p>
+<p>解决方案 —— Nginx：</p>
+<ul>
+<li>使用 Nginx 自带的 basic authentication，只有输入账号密码才能访问 URL；</li>
+<li>利用 Nginx 的反向代理。只要给 Nginx 配置了 HTTPS，被代理的软件都可以使用加密传输；</li>
+</ul>
+<p>因此，重点在于 Nginx 的配置和 SSL 证书的配置。麻烦之处在于，我要给内网 IP 请求证书，并且这个 IP 没有对应的域名。这篇文章探讨了这些解决方案，同时也是我第一次接触 Nginx 和 SSL 证书的配置。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -660,123 +782,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://el-nino2020.github.io/en/2023/12/20/Python-venv-use/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/69737612?v=4">
-      <meta itemprop="name" content="El nino">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="El nino 的博客">
-      <meta itemprop="description" content="Hi, I am El nino🤗.">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | El nino 的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/en/2023/12/20/Python-venv-use/" class="post-title-link" itemprop="url">Python venv 使用</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2023-12-20 19:03:21" itemprop="dateCreated datePublished" datetime="2023-12-20T19:03:21+08:00">2023-12-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/en/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
-        </span>
-          , 
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/en/categories/tech/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="Views">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">Views: </span>
-      <span class="firestore-visitors-count"></span>
-    </span>
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="Word count in article">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">Word count in article: </span>
-      <span>316</span>
-    </span>
-    <span class="post-meta-item" title="Reading time">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>1 mins.</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Python 以其模块丰富而著称。但是，不同于 Java 开发中 Maven 使用 group Id、artifact Id 和 version 来唯一确定一个依赖。在实践中，绝大多数 Python 项目<strong>只</strong>通过模块名来区分模块。<code>pip install &lt;module&gt;</code>，一个模块就装好了。那么模块的版本呢？大部分项目的 requirements 都不会提及版本，造成后来者跑项目时不停地报错。</p>
-<p>因此，弱化版本号的概念无疑<strong>弊大于利</strong>。如何解决？使用 venv（虚拟环境）。</p>
-<p>如果直接使用 <code>pip install</code> ，那么所有 Python 项目共用这些模块，会产生版本会兼容。venv 将原始的 Python 环境拷贝一份。虚拟环境的运行只依赖于拷贝后的 Python，安装的模块也只会存在于该虚拟环境中。多个虚拟环境间相互隔离。</p>
-<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>1️⃣创建  venv :</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv C:\Users\Elnino\Desktop\test\venv</span><br></pre></td></tr></table></figure>
-
-<p><code>C:\Users\Elnino\Desktop\test\venv</code> 目录就是该虚拟环境</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/en/2023/12/20/Python-venv-use/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/en/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/en/page/4/">4</a><a class="extend next" rel="next" title="Next page" aria-label="Next page" href="/en/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -801,14 +806,14 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Word count total: </span>
-    <span title="Word count total">18k</span>
+    <span title="Word count total">19k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:04</span>
+    <span title="Reading time total">1:11</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
