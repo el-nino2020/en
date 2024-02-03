@@ -1,142 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>算法题001：求数组可能的最大得分</title>
-    <url>/en/2023/09/21/Algorithm-Problem-001-Calculate-Maximum-Possible-Score-of-an-Array/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p> 题目来源：牛客笔试</p>
-</blockquote>
-<p>给定一个从 $0$ 开始的数组 $nums$ 和一个非负整数 $k$。</p>
-<p>在一次操作中，你可以做以下操作：</p>
-<ul>
-<li>选择一个之前未选择过的下标 $i$，范围为 $[0, nums.length - 1]$ 。</li>
-<li>将 $nums[i]$ 替换为范围 $[nums[i] - k, nums[i] + k]$ 内的任意整数（包含两端）。</li>
-</ul>
-<p>在应用任意次数的操作后，返回数组 $nums$ 的最大可能分数。</p>
-<p>数组<strong>分数</strong>是“数组中最多的重复元素个数”</p>
-<p>注意，你<strong>只能</strong>对每个下标应用<strong>一次</strong>操作。</p>
-<span id="more"></span>
-
-
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="number">4</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">]</span></span><br><span class="line"><span class="number">2</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<p>在这个示例中，我们进行了以下操作：</p>
-<ul>
-<li>选择下标1，将其替换为4（范围为[4, 8]），nums &#x3D; [4,4,1,2]。</li>
-<li>选择下标3，将其替换为4（范围为[0, 4]），nums &#x3D; [4,4,1,4]。</li>
-</ul>
-<p>应用这些操作后，数组 nums 的得分为3（由下标 0、1 和 3 组成的子序列）。可以证明，3 是我们可以达到的最大可能长度。</p>
-<h2 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">]</span></span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">4</span></span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<p>在这个示例中，我们无需执行任何操作。</p>
-<p>数组nums的得分是4（整个数组）。</p>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><h2 id="重新读题"><a href="#重新读题" class="headerlink" title="重新读题"></a>重新读题</h2><p>题目的表述有一股浓重的机翻味，我们不妨重新表述一下：</p>
-<p>给定一个数组 $nums$ 和一个自然数 $k$</p>
-<p>对于任意下标 $i$，我们可以将该元素 $nums[i]$ 替换为 $[nums[i] - k, nums[i] + k]$ 中的任意整数。一个下标只能操作一次，也可以不操作。</p>
-<p>返回任意次操作后，$nums$ 中最大可能的重复元素数量。</p>
-<h2 id="观察1：排序"><a href="#观察1：排序" class="headerlink" title="观察1：排序"></a>观察1：排序</h2><p>为了得到尽可能多的重复元素，我们需要地将<strong>大小接近</strong>的元素进行操作，使它们的值相等。</p>
-<p>如何找出大小接近的元素呢？—— 排序</p>
-<h2 id="观察2：找规律"><a href="#观察2：找规律" class="headerlink" title="观察2：找规律"></a>观察2：找规律</h2><p>假设在排序后，我们试图使区间 $[i, j]$内的元素在操作后的值相等。那么此时 $i$ 和 $j$ 需要满足什么条件呢？</p>
-<ul>
-<li>在排序后，已知 $nums[i] \le nums[i + 1] \le … \le nums[j - 1] \le nums[j]$</li>
-<li>$nums[i]$ 的替换范围是 $[nums[i] - k, nums[i] + k]$ ；$nums[j]$ 的替换范围是 $[nums[j] - k, nums[j] + k]$ </li>
-<li>则 $nums[i] + k \ge nums[j] - k$</li>
-<li>化简，得到  <strong>$0 \le nums[j] - nums[i] \le 2k$</strong></li>
-</ul>
-<p>可以看出，当 $i$ 固定时，为了尽可能使区间范围 $j - i + 1$ 变大，我们需要找到一个 $j$ ，使得 $nums[j] - nums[i]$ 尽可能地接近 $2k$。此时的区间范围 $j - i + 1$才有可能是我们想要的答案。</p>
-<h2 id="观察3：滑动窗口"><a href="#观察3：滑动窗口" class="headerlink" title="观察3：滑动窗口"></a>观察3：滑动窗口</h2><p>经过我们的分析，这道题变成了：</p>
-<ul>
-<li>对于一个有序数组 $nums$，和一个自然数 $k$</li>
-<li>当下标 $i$ 固定，我们需要找到一个尽可能大的下标 $j$，并且满足 $0 \le nums[j] - nums[i] \le 2k$</li>
-<li>在所有满足条件的区间 $[i, j]$ 中，最大的 $j - i + 1$ 即为答案</li>
-</ul>
-<p>那么，使用<strong>滑动窗口</strong>算法能够将暴力遍历的时间复杂度从 $O(n^2)$ 降低到 $O(n)$</p>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumScore</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line"></span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// sliding window</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>, j = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (j &lt; n &amp;&amp; nums[j] &lt;= nums[i] + <span class="number">2</span> * k) j++;</span><br><span class="line">            ans = Math.max(ans, j - i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>排序</tag>
-        <tag>滑动窗口</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>算法题002：螺旋矩阵 II</title>
-    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
-</blockquote>
-<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
-<span id="more"></span>
-
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
-<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
-<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
-<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
-<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
-<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
-<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
-<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
-<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
-<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
-<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
-<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
-
-<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
-<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>改一改思路 2 的代码即可。</p>
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>数组</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>算法题003：对角线遍历 II</title>
     <url>/en/2023/10/29/Algorithm-Problem-003-diagonal-traverse-ii/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -207,6 +71,79 @@
       <tags>
         <tag>模拟</tag>
         <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>算法题001：求数组可能的最大得分</title>
+    <url>/en/2023/09/21/Algorithm-Problem-001-Calculate-Maximum-Possible-Score-of-an-Array/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p> 题目来源：牛客笔试</p>
+</blockquote>
+<p>给定一个从 $0$ 开始的数组 $nums$ 和一个非负整数 $k$。</p>
+<p>在一次操作中，你可以做以下操作：</p>
+<ul>
+<li>选择一个之前未选择过的下标 $i$，范围为 $[0, nums.length - 1]$ 。</li>
+<li>将 $nums[i]$ 替换为范围 $[nums[i] - k, nums[i] + k]$ 内的任意整数（包含两端）。</li>
+</ul>
+<p>在应用任意次数的操作后，返回数组 $nums$ 的最大可能分数。</p>
+<p>数组<strong>分数</strong>是“数组中最多的重复元素个数”</p>
+<p>注意，你<strong>只能</strong>对每个下标应用<strong>一次</strong>操作。</p>
+<span id="more"></span>
+
+
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="number">4</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">]</span></span><br><span class="line"><span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<p>在这个示例中，我们进行了以下操作：</p>
+<ul>
+<li>选择下标1，将其替换为4（范围为[4, 8]），nums &#x3D; [4,4,1,2]。</li>
+<li>选择下标3，将其替换为4（范围为[0, 4]），nums &#x3D; [4,4,1,4]。</li>
+</ul>
+<p>应用这些操作后，数组 nums 的得分为3（由下标 0、1 和 3 组成的子序列）。可以证明，3 是我们可以达到的最大可能长度。</p>
+<h2 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">,</span><span class="number">1</span><span class="punctuation">]</span></span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">4</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<p>在这个示例中，我们无需执行任何操作。</p>
+<p>数组nums的得分是4（整个数组）。</p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><h2 id="重新读题"><a href="#重新读题" class="headerlink" title="重新读题"></a>重新读题</h2><p>题目的表述有一股浓重的机翻味，我们不妨重新表述一下：</p>
+<p>给定一个数组 $nums$ 和一个自然数 $k$</p>
+<p>对于任意下标 $i$，我们可以将该元素 $nums[i]$ 替换为 $[nums[i] - k, nums[i] + k]$ 中的任意整数。一个下标只能操作一次，也可以不操作。</p>
+<p>返回任意次操作后，$nums$ 中最大可能的重复元素数量。</p>
+<h2 id="观察1：排序"><a href="#观察1：排序" class="headerlink" title="观察1：排序"></a>观察1：排序</h2><p>为了得到尽可能多的重复元素，我们需要地将<strong>大小接近</strong>的元素进行操作，使它们的值相等。</p>
+<p>如何找出大小接近的元素呢？—— 排序</p>
+<h2 id="观察2：找规律"><a href="#观察2：找规律" class="headerlink" title="观察2：找规律"></a>观察2：找规律</h2><p>假设在排序后，我们试图使区间 $[i, j]$内的元素在操作后的值相等。那么此时 $i$ 和 $j$ 需要满足什么条件呢？</p>
+<ul>
+<li>在排序后，已知 $nums[i] \le nums[i + 1] \le … \le nums[j - 1] \le nums[j]$</li>
+<li>$nums[i]$ 的替换范围是 $[nums[i] - k, nums[i] + k]$ ；$nums[j]$ 的替换范围是 $[nums[j] - k, nums[j] + k]$ </li>
+<li>则 $nums[i] + k \ge nums[j] - k$</li>
+<li>化简，得到  <strong>$0 \le nums[j] - nums[i] \le 2k$</strong></li>
+</ul>
+<p>可以看出，当 $i$ 固定时，为了尽可能使区间范围 $j - i + 1$ 变大，我们需要找到一个 $j$ ，使得 $nums[j] - nums[i]$ 尽可能地接近 $2k$。此时的区间范围 $j - i + 1$才有可能是我们想要的答案。</p>
+<h2 id="观察3：滑动窗口"><a href="#观察3：滑动窗口" class="headerlink" title="观察3：滑动窗口"></a>观察3：滑动窗口</h2><p>经过我们的分析，这道题变成了：</p>
+<ul>
+<li>对于一个有序数组 $nums$，和一个自然数 $k$</li>
+<li>当下标 $i$ 固定，我们需要找到一个尽可能大的下标 $j$，并且满足 $0 \le nums[j] - nums[i] \le 2k$</li>
+<li>在所有满足条件的区间 $[i, j]$ 中，最大的 $j - i + 1$ 即为答案</li>
+</ul>
+<p>那么，使用<strong>滑动窗口</strong>算法能够将暴力遍历的时间复杂度从 $O(n^2)$ 降低到 $O(n)$</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumScore</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line"></span><br><span class="line">        Arrays.sort(nums);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// sliding window</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>, j = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (j &lt; n &amp;&amp; nums[j] &lt;= nums[i] + <span class="number">2</span> * k) j++;</span><br><span class="line">            ans = Math.max(ans, j - i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>排序</tag>
+        <tag>滑动窗口</tag>
       </tags>
   </entry>
   <entry>
@@ -362,6 +299,69 @@
       </tags>
   </entry>
   <entry>
+    <title>算法题002：螺旋矩阵 II</title>
+    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
+</blockquote>
+<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
+<span id="more"></span>
+
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
+<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
+<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
+<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
+<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
+<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
+<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
+<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
+<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
+<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
+<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
+
+<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
+<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>改一改思路 2 的代码即可。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Azure Pipelines 架构解析</title>
     <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
     <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
@@ -449,6 +449,154 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Deploying Nginx in Docker and Configuring SSL Certificate for Local Network</title>
+    <url>/en/2024/01/31/Docker-Nginx-SSL-Local-Network/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>In my previous post, I successfully set up a LANraragi server and shared it with other devices in my home LAN. However, new issues arose:</p>
+<ul>
+<li>LANraragi could be accessed without logging in.</li>
+<li>Even if LANraragi had a login feature, it still used HTTP plaintext transmission, which is equivalent to no password protection.</li>
+</ul>
+<p>The root cause of these issues was that devices like smartphones and smart home devices, connected to the LAN, were not trustworthy. They could potentially have backdoors (or ‘users voluntarily transmitting private data to improve service’). Anyway, these issues needed urgent resolution.</p>
+<p>The solution is Nginx:</p>
+<ul>
+<li>Use Nginx’s built-in basic authentication to allow access only with a correct username and password.</li>
+<li>Utilize Nginx’s reverse proxy feature. Once Nginx is configured with HTTPS, any software being proxied can use the encrypted transmission.</li>
+</ul>
+<p>Therefore, the key lies in the configuration of Nginx and SSL certificates. The challenge is that I need to request a certificate for an internal IP address without a corresponding domain name. This article explores these solutions, marking my first encounter with Nginx and SSL certificate configuration.</p>
+<span id="more"></span>
+
+<h1 id="Nginx-Container"><a href="#Nginx-Container" class="headerlink" title="Nginx Container"></a>Nginx Container</h1><h2 id="New-Nginx-Image"><a href="#New-Nginx-Image" class="headerlink" title="New Nginx Image"></a>New Nginx Image</h2><p>The official image only exposes port 80, while HTTPS requires port 443.</p>
+<p>Create a <code>Dockerfile</code> on our own:</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
+
+<p>Build the image:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker build -t elnino2024/nginx:1.24 .</span><br></pre></td></tr></table></figure>
+
+<h2 id="Obtain-the-Default-Configuration-File"><a href="#Obtain-the-Default-Configuration-File" class="headerlink" title="Obtain the Default Configuration File"></a>Obtain the Default Configuration File</h2><p>Create a temporary container, copy the <code>nginx.conf</code> from it:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker run --name tmp-nginx-container -d elnino2024/nginx:1.24</span><br><span class="line">docker <span class="built_in">cp</span> tmp-nginx-container:/etc/nginx/nginx.conf /opt/nginx.conf</span><br><span class="line">docker <span class="built_in">rm</span> -f tmp-nginx-container</span><br></pre></td></tr></table></figure>
+
+<h2 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">nginx:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">elnino2024/nginx:1.24</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/nginx_ssl:/etc/nginx/ssl/:ro</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">50443</span><span class="string">:443</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Besides the configuration file, map a directory to store SSL private key and certificate.</li>
+<li>Choose the bridge network mode; otherwise, other containers cannot be accessed.</li>
+<li>Only map the <code>443</code> port, while I have no intention to open the <code>80</code> port.</li>
+</ul>
+<h1 id="SSL-Certificate"><a href="#SSL-Certificate" class="headerlink" title="SSL Certificate"></a>SSL Certificate</h1><h2 id="Create-a-CA"><a href="#Create-a-CA" class="headerlink" title="Create a CA"></a>Create a CA</h2><p>Create a CA key <code>myCAPK.key</code> and a (self-signed) certificate <code>myCACertificate.crt</code>:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -x509 -sha256 -nodes -days 3650 -newkey rsa:4096 -keyout myCAPK.key -out myCACertificate.crt</span><br></pre></td></tr></table></figure>
+
+<p>The private key and certificate generated by this command can be directly used for Nginx server. However, if another server also needs an SSL certificate, client devices need to manually trust the new certificate, which is troublesome.</p>
+<p>If this certificate is used as a CA certificate, as long as devices trust this certificate, all other certificates signed by this CA will be automatically trusted. Therefore, devices only need to manually add the CA certificate only once.</p>
+<h2 id="Check-Certificate-Information"><a href="#Check-Certificate-Information" class="headerlink" title="Check Certificate Information"></a>Check Certificate Information</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -text -noout -<span class="keyword">in</span> myCACertificate.crt</span><br></pre></td></tr></table></figure>
+
+<h2 id="Trust-the-CA"><a href="#Trust-the-CA" class="headerlink" title="Trust the CA"></a>Trust the CA</h2><p>As this CA certificate is self-created, the system won’t recognize it, so it needs to be installed.</p>
+<p>Without this step, the browser can still establish an HTTPS connection but will prompt that the connection is not secure.</p>
+<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>Control Panel | Internet Options | Content | Certificates</p>
+<p><img src="/en/MarkDownImages/image-20240131172736021.png" alt="image-20240131172736021"></p>
+<p>Trust the CA as a root certificate authority.</p>
+<p><img src="/en/MarkDownImages/image-20240131172831043.png" alt="image-20240131172831043"></p>
+<h3 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h3><p>Different systems have different locations for installing certificates, but the basic options are the same. Here’s an example for Samsung:</p>
+<p>Either choose ‘CA certificates’ or ‘VPN and app user certificates’. Do not choose ‘WLAN certificates’; it does not work.</p>
+<p><img src="/en/MarkDownImages/Screenshot_20240201_113254_Settings.png" alt="Screenshot_20240201_113254_Settings"></p>
+<h3 id="IOS"><a href="#IOS" class="headerlink" title="IOS"></a>IOS</h3><blockquote>
+<p>Using iPadOS 15.7 as an example</p>
+</blockquote>
+<ol>
+<li><p>Open your email, send the CA certificate as an attachment to yourself.</p>
+</li>
+<li><p>Using the Safari browser, log in to your email, click the attachment, and select “Download Profile” (a prompt will appear:  ‘go to settings to confirm installation’).</p>
+</li>
+<li><p>Go to settings, select “Install Profile,” enter your lock screen password.</p>
+</li>
+<li><p>Settings | General | About | Certificate Trust Settings: Enable full trust.</p>
+<p> <img src="/en/MarkDownImages/IMG_2032.PNG" alt="IMG_2032"></p>
+</li>
+</ol>
+<hr>
+<p>According to Apple’s <a href="https://support.apple.com/en-us/102028">new policy</a>，server’s certificate cannot exceed 398 days, otherwise SSL connection errors occur（<code>NET::ERR_CERT_VALIDITY_TOO_LONG</code>.</p>
+<h2 id="Create-Server-Key"><a href="#Create-Server-Key" class="headerlink" title="Create Server Key"></a>Create Server Key</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out nginx_server.key 4096</span><br></pre></td></tr></table></figure>
+
+<h2 id="Create-Server-CSR-Certificate-Signing-Request"><a href="#Create-Server-CSR-Certificate-Signing-Request" class="headerlink" title="Create Server CSR (Certificate Signing Request)"></a>Create Server CSR (Certificate Signing Request)</h2><p>Create <code>openssl.cnf</code> with the following content:</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">authorityKeyIdentifier</span>=<span class="string">keyid,issuer</span></span><br><span class="line"><span class="attr">basicConstraints</span>=<span class="string">CA:FALSE</span></span><br><span class="line"><span class="attr">subjectAltName</span> = <span class="string">@alt_names</span></span><br><span class="line"><span class="attr">[alt_names]</span></span><br><span class="line"><span class="comment"># 虚拟机</span></span><br><span class="line"><span class="attr">DNS.1</span> = <span class="string">CentOS100</span></span><br><span class="line"><span class="attr">IP.1</span> = <span class="string">192.168.169.132</span></span><br><span class="line"><span class="comment"># 主机</span></span><br><span class="line"><span class="attr">IP.2</span> = <span class="string">192.168.0.105</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>The configuration file can be more complex, but for this case, these few configurations are sufficient.</p>
+</blockquote>
+<ul>
+<li><code>DNS.x</code> corresponds to hostname&#x2F;domain.</li>
+<li><code>IP.x</code> corresponds to IP addresses.</li>
+</ul>
+<blockquote>
+<p> <code>x</code> is a positive integer.</p>
+</blockquote>
+<p>The only purpose of this file is to bind the server’s domain name and IP with the certificate during CA signing, indicating that the certificate indeed belongs to that server and not someone else pretending. Without this configuration, the browser would show an error: <code>NET::ERR_CERT_COMMON_NAME_INVALID</code>.</p>
+<p>Use the following command to create the CSR:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key nginx_server.key -out nginx_server.csr</span><br></pre></td></tr></table></figure>
+
+<h2 id="CA-Signing"><a href="#CA-Signing" class="headerlink" title="CA Signing"></a>CA Signing</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -extfile openssl.cnf  -<span class="keyword">in</span> nginx_server.csr -CA /opt/MyOwnCA/myCACertificate.crt -CAkey /opt/MyOwnCA/myCAPK.key -CAcreateserial -out nginx_server.crt -days 3650</span><br></pre></td></tr></table></figure>
+
+<p>After signing, you will get the private key <code>nginx_server.key</code> and certificate <code>nginx_server.crt</code> ready to be used in Nginx.</p>
+<h1 id="Nginx-Configuration"><a href="#Nginx-Configuration" class="headerlink" title="Nginx Configuration"></a>Nginx Configuration</h1><h2 id="SSL"><a href="#SSL" class="headerlink" title="SSL"></a>SSL</h2><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">443</span> default_server ssl http2;</span><br><span class="line">    <span class="attribute">listen</span> [::]:<span class="number">443</span> ssl http2;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/nginx/ssl/nginx_server.crt;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/nginx/ssl/nginx_server.key;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> /... &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> ...;  </span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>This is just the basic configuration; there are more SSL directives in practice, but these are sufficient for now.</p>
+</blockquote>
+<h2 id="Basic-Authentication"><a href="#Basic-Authentication" class="headerlink" title="Basic Authentication"></a>Basic Authentication</h2><p>1️⃣First, create a username and password:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Create the file if it doesn&#x27;t exist</span></span><br><span class="line"><span class="built_in">touch</span> /opt/docker/nginx_auth/.htpasswd-lanraragi</span><br><span class="line"><span class="comment"># Add user alpha to this configuration file</span></span><br><span class="line">htpasswd /opt/docker/nginx_auth/.htpasswd-lanraragi alpha</span><br></pre></td></tr></table></figure>
+
+<p>Then, the system will prompt to set a password for the <code>alpha</code> user. To add multiple users, use the same command:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">htpasswd /opt/docker/nginx_auth/.htpasswd-lanraragi beta</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>On CentOS, the <code>htpasswd</code> command belongs to <code>httpd-tools</code>. If not installed, the system will prompt to install it.</p>
+</blockquote>
+<hr>
+<p>2️⃣Configure in Nginx：</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">location</span> /api &#123;</span><br><span class="line">    <span class="attribute">auth_basic</span>           <span class="string">&quot;Administrator’s Area&quot;</span>;</span><br><span class="line">    <span class="attribute">auth_basic_user_file</span> /etc/nginx/.htpasswd; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>auth_basic</code> prompts a message to user on the login page；</li>
+<li><code>auth_basic_user_file</code> points to the previously created <code>.htpasswd</code>；</li>
+</ul>
+<p>It can also be enabled globally and disabled for specific URLs:</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attribute">auth_basic</span>           <span class="string">&quot;Administrator’s Area&quot;</span>;</span><br><span class="line">    <span class="attribute">auth_basic_user_file</span> conf/.htpasswd;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> /public/ &#123;</span><br><span class="line">      <span class="attribute">auth_basic</span> <span class="literal">off</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Example-Lanraragi"><a href="#Example-Lanraragi" class="headerlink" title="Example: Lanraragi"></a>Example: Lanraragi</h1><p>Let’s come back to the initial demand: reverse proxy Lanraragi and provide a login feature.</p>
+<p>Docker compose:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">nginx:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">elnino2024/nginx:1.24</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nginx-lanraragi</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx_conf/nginx-lanraragi.conf:/etc/nginx/nginx.conf:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx_ssl:/etc/nginx/ssl/:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx_auth:/etc/nginx/auth/:ro</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">43000</span><span class="string">:443</span></span><br><span class="line">  <span class="attr">lanraragi:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">difegue/lanraragi:v.0.9.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">lanraragi</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/doujinshiArchives:/home/koyomi/lanraragi/content:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-database:/home/koyomi/lanraragi/database</span></span><br><span class="line">    <span class="attr">depends_on:</span> </span><br><span class="line">      <span class="bullet">-</span> <span class="string">nginx</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">lanraragi-database:</span></span><br></pre></td></tr></table></figure>
+
+<p>Nginx configuration:</p>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">user</span>  nginx;</span><br><span class="line"><span class="attribute">worker_processes</span>  auto;</span><br><span class="line"></span><br><span class="line"><span class="attribute">error_log</span>  /var/log/nginx/<span class="literal">error</span>.log <span class="literal">notice</span>;</span><br><span class="line"><span class="attribute">pid</span>        /var/run/nginx.pid;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       /etc/nginx/mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    </span><br><span class="line">    <span class="attribute">log_format</span>  main  <span class="string">&#x27;<span class="variable">$remote_addr</span> - <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] &quot;<span class="variable">$request</span>&quot; &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> &quot;<span class="variable">$http_referer</span>&quot; &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;&quot;<span class="variable">$http_user_agent</span>&quot; &quot;<span class="variable">$http_x_forwarded_for</span>&quot;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">access_log</span>  /var/log/nginx/access.log  main;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> default_server ssl http2;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> ssl http2;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">ssl_certificate</span> /etc/nginx/ssl/nginx_server.crt;</span><br><span class="line">        <span class="attribute">ssl_certificate_key</span> /etc/nginx/ssl/nginx_server.key;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">auth_basic</span>           <span class="string">&quot;Login to view any content&quot;</span>;</span><br><span class="line">        <span class="attribute">auth_basic_user_file</span> /etc/nginx/auth/.htpasswd-lanraragi;</span><br><span class="line"></span><br><span class="line">        <span class="section">location</span> / &#123;</span><br><span class="line">            <span class="comment"># Access directly through service name in the same network</span></span><br><span class="line">            <span class="comment"># No need to map any port for lanraragi</span></span><br><span class="line">            <span class="attribute">proxy_pass</span> http://lanraragi:3000;</span><br><span class="line">            <span class="attribute">proxy_http_version</span> <span class="number">1</span>.<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="attribute">proxy_set_header</span> Upgrade <span class="variable">$http_upgrade</span>;</span><br><span class="line">            <span class="attribute">http2_push_preload</span> <span class="literal">on</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Lanraragi’s own routing strategy cannot be changed, which means <code>/</code> must be mapped as-is to Lanraragi’s URI. In other words, Lanraragi needs a separate Nginx instance.</p>
+<p>From a computational resources perspective, this isn’t a big deal, as one Nginx instance uses less than 20 MB of memory.</p>
+<p>If each existing software gets its own Nginx, these Nginx instances can share a single SSL certificate. After all, when accessing the Linux host, it tells Nginx instances from each other by port, and the certificate is bound to IP&#x2F;domain. Although this is a solution, I’m not sure if it’s the best practice. However, in a home LAN scenario, it is clearly sufficient.</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li>ChatGPT</li>
+<li><a href="https://mindsers.blog/en/post/https-using-nginx-certbot-docker/">HTTPS using Nginx and Let’s encrypt in Docker</a></li>
+<li><a href="https://www.baeldung.com/openssl-self-signed-cert">Creating a Self-Signed Certificate With OpenSSL</a></li>
+<li><a href="https://hub.docker.com/_/nginx">Nginx Docker hub</a></li>
+<li><a href="https://www.tangyuecan.com/2021/12/17/%E5%B1%80%E5%9F%9F%E7%BD%91%E5%86%85%E6%90%AD%E5%BB%BA%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%AF%E4%BF%A1%E4%BB%BB%E7%9A%84ssl%E8%AF%81%E4%B9%A6/">局域网内搭建浏览器可信任的SSL证书</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04">How To Create a Self-Signed SSL Certificate for Nginx in Ubuntu 16.04</a></li>
+<li><a href="https://stackoverflow.com/questions/10175812/how-to-generate-a-self-signed-ssl-certificate-using-openssl">How to generate a self-signed SSL certificate using OpenSSL?</a></li>
+<li><a href="https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/">Restricting Access with HTTP Basic Authentication</a></li>
+<li><a href="https://support.hcltechsw.com/csm?id=kb_article&sysparm_article=KB0098768">在iOS设备上安装根证书(CA)</a></li>
+<li><a href="https://discussions.apple.com/thread/253667401?sortBy=best">Enabling self-signed certificates in iOS 15</a></li>
+<li><a href="https://support.apple.com/en-us/102028">Apple: About upcoming limits on trusted certificates</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+        <tag>Nginx</tag>
+        <tag>SSL</tag>
       </tags>
   </entry>
   <entry>
@@ -563,157 +711,9 @@
         <category>Docker</category>
       </categories>
       <tags>
+        <tag>Docker</tag>
         <tag>NAS</tag>
-        <tag>Docker</tag>
         <tag>LANraragi</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>在 Docker 中部署 Nginx，并在局域网配置 SSL 证书</title>
-    <url>/en/2024/01/31/Docker-Nginx-SSL-Local-Network/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>在上一篇博文里，我成功搭建了 LANraragi 服务器，并且分享给了家庭局域网内的其他设备。但是，又产生了新的问题：</p>
-<ul>
-<li>LANraragi 不需要登录就能访问其中的漫画；</li>
-<li>就算 LANraragi 有登录的功能，用的也还是 HTTP 明文传输，相当于没有密码；</li>
-</ul>
-<p>这些问题的根源是：可以联网的手机、智能家居都和 LANraragi 服务器在一个局域网内，这些设备并不可信，可能有后门（“用户自愿传输隐私数据以改善服务”）。无论如何，上述问题亟需解决。</p>
-<p>解决方案 —— Nginx：</p>
-<ul>
-<li>使用 Nginx 自带的 basic authentication，只有输入账号密码才能访问 URL；</li>
-<li>利用 Nginx 的反向代理。只要给 Nginx 配置了 HTTPS，被代理的软件都可以使用加密传输；</li>
-</ul>
-<p>因此，重点在于 Nginx 的配置和 SSL 证书的配置。麻烦之处在于，我要给内网 IP 请求证书，并且这个 IP 没有对应的域名。这篇文章探讨了这些解决方案，同时也是我第一次接触 Nginx 和 SSL 证书的配置。</p>
-<span id="more"></span>
-
-<h1 id="Nginx-容器"><a href="#Nginx-容器" class="headerlink" title="Nginx 容器"></a>Nginx 容器</h1><h2 id="新的-Nginx-镜像"><a href="#新的-Nginx-镜像" class="headerlink" title="新的 Nginx 镜像"></a>新的 Nginx 镜像</h2><p>官方镜像只开放 80 端口，而 HTTPS 需要 443 端口。</p>
-<p>自己创建一个 <code>dockerfile</code>：</p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
-
-<p>编译成镜像：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker build -t elnino2024/nginx:1.24 .</span><br></pre></td></tr></table></figure>
-
-<h2 id="拿到默认配置文件"><a href="#拿到默认配置文件" class="headerlink" title="拿到默认配置文件"></a>拿到默认配置文件</h2><p>创建一个临时的容器，从里面复制 <code>nginx.conf</code></p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker run --name tmp-nginx-container -d elnino2024/nginx:1.24</span><br><span class="line">docker <span class="built_in">cp</span> tmp-nginx-container:/etc/nginx/nginx.conf /opt/nginx.conf</span><br><span class="line">docker <span class="built_in">rm</span> -f tmp-nginx-container</span><br></pre></td></tr></table></figure>
-
-<h2 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h2><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">nginx:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">elnino2024/nginx:1.24</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/nginx_ssl:/etc/nginx/ssl/:ro</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">50443</span><span class="string">:443</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>除了配置文件，还要映射一个目录，存放 SSL 私钥和证书；</li>
-<li>网络模式要选桥接，不然访问不了其他容器；</li>
-<li>只映射了 <code>443</code> 端口，不准备开放 <code>80</code> 端口 ；</li>
-</ul>
-<h1 id="SSL-证书"><a href="#SSL-证书" class="headerlink" title="SSL 证书"></a>SSL 证书</h1><h2 id="创建-CA"><a href="#创建-CA" class="headerlink" title="创建 CA"></a>创建 CA</h2><p>创建 CA 密钥 <code>myCAPK.key</code> 和（自签名）证书 <code>myCACertificate.crt</code> </p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -x509 -sha256 -nodes -days 3650 -newkey rsa:4096 -keyout myCAPK.key -out myCACertificate.crt</span><br></pre></td></tr></table></figure>
-
-<p>用这个命令生成的私钥和证书可以直接作为 Nginx 的 SSL 配置。但是，如果一个新的服务器也需要配置 SSL 证书，那么我们就需要手动让客户端设备信任这个新的证书，很麻烦。</p>
-<p>如果把这个证书用作 CA 证书，那么只要设备信任了这个证书，使用 CA 签字的所有其他证书就自动地被信任了。因此，设备上只要手动添加一次 CA 证书。</p>
-<h2 id="查看证书信息"><a href="#查看证书信息" class="headerlink" title="查看证书信息"></a>查看证书信息</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -text -noout -<span class="keyword">in</span> myCACertificate.crt</span><br></pre></td></tr></table></figure>
-
-<h2 id="信任-CA"><a href="#信任-CA" class="headerlink" title="信任 CA"></a>信任 CA</h2><p>这个 CA 证书是我们自己创建的，系统是肯定不认的，我们需要安装到系统中。</p>
-<p>如果没有这一步，浏览器可以建立 HTTPS 连接，但会提示连接不安全。</p>
-<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h3><p>控制面板 | internet 选项 | 内容 | 证书 </p>
-<p><img src="/en/MarkDownImages/image-20240131172736021.png" alt="image-20240131172736021"></p>
-<p>以根证书颁发机构的身份信任 CA</p>
-<p><img src="/en/MarkDownImages/image-20240131172831043.png" alt="image-20240131172831043"></p>
-<h3 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h3><p>不同系统安装证书的位置不一样，但基本的选项是一样的。这里以三星为例：</p>
-<p>要么选 『CA 证书』，要么选 『VPN 和 app 用户证书』。不要选『WLAN 证书』，这个没用。</p>
-<p><img src="/en/MarkDownImages/Screenshot_20240201_113254_Settings.png" alt="Screenshot_20240201_113254_Settings"></p>
-<h3 id="IOS"><a href="#IOS" class="headerlink" title="IOS"></a>IOS</h3><blockquote>
-<p>这里以 iPadOS 15.7 为例</p>
-</blockquote>
-<ol>
-<li><p>打开 email，将 CA 证书作为附件发给自己；</p>
-</li>
-<li><p>用 Safari 浏览器登录邮箱，点击附件，选择“下载描述文件”（此时弹出提示，进入设置界面确认安装）；</p>
-</li>
-<li><p>进入设置，选择“安装描述文件”，输入锁屏密码；</p>
-</li>
-<li><p>设置 | 通用 | 关于本机 | 证书信任设置：开启完全信任</p>
-<p> <img src="/en/MarkDownImages/IMG_2032.PNG" alt="IMG_2032"></p>
-</li>
-</ol>
-<hr>
-<p>根据苹果的<a href="https://support.apple.com/en-us/102028">新政策</a>，服务器证书不能超过 398 天，否则 SSL 连接出错（<code>NET::ERR_CERT_VALIDITY_TOO_LONG</code>）</p>
-<h2 id="创建服务器密钥"><a href="#创建服务器密钥" class="headerlink" title="创建服务器密钥"></a>创建服务器密钥</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl genrsa -out nginx_server.key 4096</span><br></pre></td></tr></table></figure>
-
-<h2 id="创建服务器-CSR（证书签名请求）"><a href="#创建服务器-CSR（证书签名请求）" class="headerlink" title="创建服务器 CSR（证书签名请求）"></a>创建服务器 CSR（证书签名请求）</h2><p>创建 <code>openssl.cnf</code>，内容如下：</p>
-<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">authorityKeyIdentifier</span>=<span class="string">keyid,issuer</span></span><br><span class="line"><span class="attr">basicConstraints</span>=<span class="string">CA:FALSE</span></span><br><span class="line"><span class="attr">subjectAltName</span> = <span class="string">@alt_names</span></span><br><span class="line"><span class="attr">[alt_names]</span></span><br><span class="line"><span class="comment"># 虚拟机</span></span><br><span class="line"><span class="attr">DNS.1</span> = <span class="string">CentOS100</span></span><br><span class="line"><span class="attr">IP.1</span> = <span class="string">192.168.169.132</span></span><br><span class="line"><span class="comment"># 主机</span></span><br><span class="line"><span class="attr">IP.2</span> = <span class="string">192.168.0.105</span></span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>这个文件的配置其实很复杂，但是对于这个案例，只需要这几个配置项。</p>
-</blockquote>
-<ul>
-<li><code>DNS.x</code> 对应主机名&#x2F;域名；</li>
-<li><code>IP.x</code> 对应 IP 地址；</li>
-</ul>
-<blockquote>
-<p> <code>x</code> 都是正整数</p>
-</blockquote>
-<p>这里使用配置文件的唯一目的：在 CA 签字时，将服务器的域名和 IP 与证书绑定，表示这个证书确实属于该服务器，而不是别人伪装的。如果没有这个配置，浏览器会提示错误：<code>NET::ERR_CERT_COMMON_NAME_INVALID</code>。</p>
-<p>使用如下命令：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl req -new -key nginx_server.key -out nginx_server.csr</span><br></pre></td></tr></table></figure>
-
-<h2 id="CA-签字"><a href="#CA-签字" class="headerlink" title="CA 签字"></a>CA 签字</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl x509 -req -extfile openssl.cnf  -<span class="keyword">in</span> nginx_server.csr -CA /opt/MyOwnCA/myCACertificate.crt -CAkey /opt/MyOwnCA/myCAPK.key -CAcreateserial -out nginx_server.crt -days 3650</span><br></pre></td></tr></table></figure>
-
-<p>签字完毕后，就有了最终需要的私钥 <code>nginx_server.key</code> 和证书 <code>nginx_server.crt</code>。</p>
-<h1 id="Nginx-配置"><a href="#Nginx-配置" class="headerlink" title="Nginx 配置"></a>Nginx 配置</h1><h2 id="SSL"><a href="#SSL" class="headerlink" title="SSL"></a>SSL</h2><figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">443</span> default_server ssl http2;</span><br><span class="line">    <span class="attribute">listen</span> [::]:<span class="number">443</span> ssl http2;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">ssl_certificate</span> /etc/nginx/ssl/nginx_server.crt;</span><br><span class="line">    <span class="attribute">ssl_certificate_key</span> /etc/nginx/ssl/nginx_server.key;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> /... &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> ...;  </span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>这只是最基本的配置，实际有更多 SSL 的配置，但目前够用了。</p>
-</blockquote>
-<h2 id="Basic-Authentication"><a href="#Basic-Authentication" class="headerlink" title="Basic Authentication"></a>Basic Authentication</h2><p>1️⃣首先要创建用户名和密码：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 没有该文件就先创建一个</span></span><br><span class="line"><span class="built_in">touch</span> /opt/docker/nginx_auth/.htpasswd-lanraragi</span><br><span class="line"><span class="comment"># 向这个配置文件里添加 alpha 用户</span></span><br><span class="line">htpasswd /opt/docker/nginx_auth/.htpasswd-lanraragi alpha</span><br></pre></td></tr></table></figure>
-
-<p>然后系统提示给 <code>alpha</code> 用户设置密码。要填加多个用户，用相同命令即可：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">htpasswd /opt/docker/nginx_auth/.htpasswd-lanraragi beta</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>在 CentOS 中，<code>htpasswd </code> 命令属于 <code>httpd-tools</code> 。如果没有安装，系统会提示安装。</p>
-</blockquote>
-<hr>
-<p>2️⃣在 Nginx 中配置：</p>
-<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">location</span> /api &#123;</span><br><span class="line">    <span class="attribute">auth_basic</span>           <span class="string">&quot;Administrator’s Area&quot;</span>;</span><br><span class="line">    <span class="attribute">auth_basic_user_file</span> /etc/nginx/.htpasswd; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>auth_basic</code> 在登录界面会提示用户；</li>
-<li><code>auth_basic_user_file</code> 指向之前创建的 <code>.htpasswd</code>；</li>
-</ul>
-<p>也可以全局启用，但在具体的路径里关闭认证：</p>
-<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="attribute">auth_basic</span>           <span class="string">&quot;Administrator’s Area&quot;</span>;</span><br><span class="line">    <span class="attribute">auth_basic_user_file</span> conf/.htpasswd;</span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> /public/ &#123;</span><br><span class="line">      <span class="attribute">auth_basic</span> <span class="literal">off</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="例子：Lanraragi"><a href="#例子：Lanraragi" class="headerlink" title="例子：Lanraragi"></a>例子：Lanraragi</h1><p>回到最初的需求：反向代理 Lanraragi，并提供登录功能。</p>
-<p>Docker compose:</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">nginx:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">elnino2024/nginx:1.24</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">nginx-lanraragi</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx_conf/nginx-lanraragi.conf:/etc/nginx/nginx.conf:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx_ssl:/etc/nginx/ssl/:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/nginx_auth:/etc/nginx/auth/:ro</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">43000</span><span class="string">:443</span></span><br><span class="line">  <span class="attr">lanraragi:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">difegue/lanraragi:v.0.9.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">lanraragi</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/doujinshiArchives:/home/koyomi/lanraragi/content:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-database:/home/koyomi/lanraragi/database</span></span><br><span class="line">    <span class="attr">depends_on:</span> </span><br><span class="line">      <span class="bullet">-</span> <span class="string">nginx</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">lanraragi-database:</span></span><br></pre></td></tr></table></figure>
-
-<p>Nginx 配置：</p>
-<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">user</span>  nginx;</span><br><span class="line"><span class="attribute">worker_processes</span>  auto;</span><br><span class="line"></span><br><span class="line"><span class="attribute">error_log</span>  /var/log/nginx/<span class="literal">error</span>.log <span class="literal">notice</span>;</span><br><span class="line"><span class="attribute">pid</span>        /var/run/nginx.pid;</span><br><span class="line"></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">worker_connections</span>  <span class="number">1024</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">    <span class="attribute">include</span>       /etc/nginx/mime.types;</span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    </span><br><span class="line">    <span class="attribute">log_format</span>  main  <span class="string">&#x27;<span class="variable">$remote_addr</span> - <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] &quot;<span class="variable">$request</span>&quot; &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> &quot;<span class="variable">$http_referer</span>&quot; &#x27;</span></span><br><span class="line">                      <span class="string">&#x27;&quot;<span class="variable">$http_user_agent</span>&quot; &quot;<span class="variable">$http_x_forwarded_for</span>&quot;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">access_log</span>  /var/log/nginx/access.log  main;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">sendfile</span>        <span class="literal">on</span>;</span><br><span class="line"></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;</span><br><span class="line"></span><br><span class="line">    <span class="section">server</span> &#123;</span><br><span class="line">        <span class="attribute">listen</span> <span class="number">443</span> default_server ssl http2;</span><br><span class="line">        <span class="attribute">listen</span> [::]:<span class="number">443</span> ssl http2;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">ssl_certificate</span> /etc/nginx/ssl/nginx_server.crt;</span><br><span class="line">        <span class="attribute">ssl_certificate_key</span> /etc/nginx/ssl/nginx_server.key;</span><br><span class="line"></span><br><span class="line">        <span class="attribute">auth_basic</span>           <span class="string">&quot;Login to view any content&quot;</span>;</span><br><span class="line">        <span class="attribute">auth_basic_user_file</span> /etc/nginx/auth/.htpasswd-lanraragi;</span><br><span class="line"></span><br><span class="line">        <span class="section">location</span> / &#123;</span><br><span class="line">            <span class="comment"># 在同一个网络中，直接通过服务名访问</span></span><br><span class="line">            <span class="comment"># lanraragi 也不需要映射任何端口</span></span><br><span class="line">            <span class="attribute">proxy_pass</span> http://lanraragi:3000;</span><br><span class="line">            <span class="attribute">proxy_http_version</span> <span class="number">1</span>.<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">            <span class="attribute">proxy_set_header</span> Upgrade <span class="variable">$http_upgrade</span>;</span><br><span class="line">            <span class="attribute">http2_push_preload</span> <span class="literal">on</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Lanraragi 本身的路由策略没法改，这意味着必须把 <code>/</code> 原封不动地映射到 Lanraragi 的 URI。也就是说，需要给 Lanraragi 一个单独的 Nginx 实例。</p>
-<p>从计算资源的角度，问题并不大，因为一个 Nginx 实例占用不到 20 MB 的内存。</p>
-<p>如果给每个现有的软件都用一个 Nginx ，那么这些 Nginx 实例可以共享一个 SSL 证书。毕竟访问 Linux 主机时，是通过端口区分 Nginx，而证书是和 IP &#x2F; 域名 绑定的。尽管可以这么做，我不太清楚这是不是最佳实践。但在家庭局域网的场景中，这显然够用了。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li>ChatGPT</li>
-<li><a href="https://mindsers.blog/en/post/https-using-nginx-certbot-docker/">HTTPS using Nginx and Let’s encrypt in Docker</a></li>
-<li><a href="https://www.baeldung.com/openssl-self-signed-cert">Creating a Self-Signed Certificate With OpenSSL</a></li>
-<li><a href="https://hub.docker.com/_/nginx">Nginx Docker hub</a></li>
-<li><a href="https://www.tangyuecan.com/2021/12/17/%E5%B1%80%E5%9F%9F%E7%BD%91%E5%86%85%E6%90%AD%E5%BB%BA%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%AF%E4%BF%A1%E4%BB%BB%E7%9A%84ssl%E8%AF%81%E4%B9%A6/">局域网内搭建浏览器可信任的SSL证书</a></li>
-<li><a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04">How To Create a Self-Signed SSL Certificate for Nginx in Ubuntu 16.04</a></li>
-<li><a href="https://stackoverflow.com/questions/10175812/how-to-generate-a-self-signed-ssl-certificate-using-openssl">How to generate a self-signed SSL certificate using OpenSSL?</a></li>
-<li><a href="https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/">Restricting Access with HTTP Basic Authentication</a></li>
-<li><a href="https://support.hcltechsw.com/csm?id=kb_article&sysparm_article=KB0098768">在iOS设备上安装根证书(CA)</a></li>
-<li><a href="https://discussions.apple.com/thread/253667401?sortBy=best">Enabling self-signed certificates in iOS 15</a></li>
-<li><a href="https://support.apple.com/en-us/102028">Apple: About upcoming limits on trusted certificates</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Docker</category>
-      </categories>
-      <tags>
-        <tag>Docker</tag>
-        <tag>Nginx</tag>
-        <tag>SSL</tag>
       </tags>
   </entry>
   <entry>
@@ -839,34 +839,44 @@
       </tags>
   </entry>
   <entry>
-    <title>Python venv 使用</title>
-    <url>/en/2023/12/20/Python-venv-use/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Python 以其模块丰富而著称。但是，不同于 Java 开发中 Maven 使用 group Id、artifact Id 和 version 来唯一确定一个依赖。在实践中，绝大多数 Python 项目<strong>只</strong>通过模块名来区分模块。<code>pip install &lt;module&gt;</code>，一个模块就装好了。那么模块的版本呢？大部分项目的 requirements 都不会提及版本，造成后来者跑项目时不停地报错。</p>
-<p>因此，弱化版本号的概念无疑<strong>弊大于利</strong>。如何解决？使用 venv（虚拟环境）。</p>
-<p>如果直接使用 <code>pip install</code> ，那么所有 Python 项目共用这些模块，会产生版本会兼容。venv 将原始的 Python 环境拷贝一份。虚拟环境的运行只依赖于拷贝后的 Python，安装的模块也只会存在于该虚拟环境中。多个虚拟环境间相互隔离。</p>
-<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>1️⃣创建  venv :</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv C:\Users\Elnino\Desktop\test\venv</span><br></pre></td></tr></table></figure>
-
-<p><code>C:\Users\Elnino\Desktop\test\venv</code> 目录就是该虚拟环境</p>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
 <span id="more"></span>
 
-<p>2️⃣启动：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">venv\Scripts\activate</span><br></pre></td></tr></table></figure>
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
 
-<p>如果提示符前出现 <code>(venv)</code>，就说明启动成功，在里面可以随便玩了。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;pip list</span><br></pre></td></tr></table></figure>
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
 
-<p>3️⃣退出：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;deactivate</span><br><span class="line">C:\Users\Elnino\Desktop\test&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.python.org/3/library/venv.html">venv — Creation of virtual environments</a></p>
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
 ]]></content>
       <categories>
-        <category>tech</category>
-        <category>Python</category>
+        <category>softwares</category>
+        <category>PotPlayer</category>
       </categories>
       <tags>
-        <tag>Python</tag>
-        <tag>venv</tag>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
       </tags>
   </entry>
   <entry>
@@ -936,44 +946,34 @@
       </tags>
   </entry>
   <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+    <title>Python venv 使用</title>
+    <url>/en/2023/12/20/Python-venv-use/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Python 以其模块丰富而著称。但是，不同于 Java 开发中 Maven 使用 group Id、artifact Id 和 version 来唯一确定一个依赖。在实践中，绝大多数 Python 项目<strong>只</strong>通过模块名来区分模块。<code>pip install &lt;module&gt;</code>，一个模块就装好了。那么模块的版本呢？大部分项目的 requirements 都不会提及版本，造成后来者跑项目时不停地报错。</p>
+<p>因此，弱化版本号的概念无疑<strong>弊大于利</strong>。如何解决？使用 venv（虚拟环境）。</p>
+<p>如果直接使用 <code>pip install</code> ，那么所有 Python 项目共用这些模块，会产生版本会兼容。venv 将原始的 Python 环境拷贝一份。虚拟环境的运行只依赖于拷贝后的 Python，安装的模块也只会存在于该虚拟环境中。多个虚拟环境间相互隔离。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>1️⃣创建  venv :</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv C:\Users\Elnino\Desktop\test\venv</span><br></pre></td></tr></table></figure>
+
+<p><code>C:\Users\Elnino\Desktop\test\venv</code> 目录就是该虚拟环境</p>
 <span id="more"></span>
 
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+<p>2️⃣启动：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">venv\Scripts\activate</span><br></pre></td></tr></table></figure>
 
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+<p>如果提示符前出现 <code>(venv)</code>，就说明启动成功，在里面可以随便玩了。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;pip list</span><br></pre></td></tr></table></figure>
 
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+<p>3️⃣退出：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;deactivate</span><br><span class="line">C:\Users\Elnino\Desktop\test&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://docs.python.org/3/library/venv.html">venv — Creation of virtual environments</a></p>
 ]]></content>
       <categories>
-        <category>softwares</category>
-        <category>PotPlayer</category>
+        <category>tech</category>
+        <category>Python</category>
       </categories>
       <tags>
-        <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
+        <tag>Python</tag>
+        <tag>venv</tag>
       </tags>
   </entry>
   <entry>
@@ -1034,6 +1034,67 @@
         <tag>Spring Boot</tag>
         <tag>Spring MVC</tag>
         <tag>Controller</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>VS Code Remote SSH Login By Key</title>
+    <url>/en/2024/01/01/VS-Code-Remote-SSH-Login-By-Key/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>The Remote SSH extension in VS Code provides the functionality to connect to other remote hosts. While the basic way of connection requires a username and password, using a key allows for direct login without the effort to type the password every time.</p>
+<p>However, it’s crucial to understand that VS Code merely provides a GUI, and how to use a SSH key to login is a separate matter. These two aspects should not be confused.</p>
+<p>This article will primarily explain how to configure SSH keys on both the local machine and the remote machine. Subsequently, it will delve into the usage of the VS Code Remote SSH extension.</p>
+<span id="more"></span>
+
+<h1 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h1><ul>
+<li>Local Machine: Windows 10</li>
+<li>Remote Machine: Local virtual machine CentOS 8, root user</li>
+</ul>
+<h1 id="Local-SSH-Configuration"><a href="#Local-SSH-Configuration" class="headerlink" title="Local SSH Configuration"></a>Local SSH Configuration</h1><p>Using the <code>ssh-keygen</code> command will create the RSA public-private key pair for the <strong>local</strong> machine in the <code>C:\users\&lt;user&gt;\.ssh</code> directory:</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\.ssh&gt; <span class="built_in">dir</span></span><br><span class="line">    Directory: C:\Users\Elnino\.ssh</span><br><span class="line">Mode                 LastWriteTime         Length Name</span><br><span class="line"><span class="literal">----</span>                 <span class="literal">-------------</span>         <span class="literal">------</span> <span class="literal">----</span></span><br><span class="line"><span class="literal">-a----</span>          <span class="number">2024</span>/<span class="number">1</span>/<span class="number">1</span>     <span class="number">12</span>:<span class="number">26</span>             <span class="number">91</span> config</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>           <span class="number">2610</span> id_rsa</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>            <span class="number">576</span> id_rsa.pub</span><br><span class="line"><span class="literal">-a----</span>        <span class="number">2023</span>/<span class="number">12</span>/<span class="number">18</span>     <span class="number">20</span>:<span class="number">42</span>           <span class="number">1398</span> known_hosts</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>             <span class="number">92</span> known_hosts.old</span><br></pre></td></tr></table></figure>
+
+<p><code>id_rsa</code> is the private key, and <code>id_rsa.pub</code> is the public key.</p>
+<h1 id="Remote-Host-SSH-Configuration"><a href="#Remote-Host-SSH-Configuration" class="headerlink" title="Remote Host SSH Configuration"></a>Remote Host SSH Configuration</h1><p>Upload the <strong>local</strong> <code>id_rsa.pub</code> to the <code>~/ssh</code> directory on the Linux remote host and rename it to <code>authorized_keys</code>:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@CentOS100 .ssh]<span class="comment"># ll</span></span><br><span class="line">total 16</span><br><span class="line">-rw-r--r--. 1 root root 576 Jan  1 11:50 authorized_keys</span><br><span class="line">-rw-------. 1 root root 411 Jul  1  2023 id_ed25519</span><br><span class="line">-rw-r--r--. 1 root root  96 Jul  1  2023 id_ed25519.pub</span><br><span class="line">-rw-r--r--. 1 root root 880 Dec 18 21:07 known_hosts</span><br></pre></td></tr></table></figure>
+
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>The steps above complete the configuration needed for SSH key login. Open PowerShell on the local machine and test the connection using <code>ssh &lt;user&gt;@&lt;ip&gt;</code>. It should allow direct login without entering a password.</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino&gt; ssh root@CentOS100</span><br><span class="line">Activate the web console with: systemctl enable <span class="literal">--now</span> cockpit.socket</span><br><span class="line"></span><br><span class="line">Last login: Mon Jan  <span class="number">1</span> <span class="number">12</span>:<span class="number">26</span>:<span class="number">15</span> <span class="number">2024</span> from &lt;ip&gt;</span><br><span class="line">[<span class="type">root</span>@<span class="type">CentOS100</span> ~]<span class="comment"># pwd</span></span><br><span class="line">/root</span><br></pre></td></tr></table></figure>
+
+<h1 id="VS-Code-Configuration"><a href="#VS-Code-Configuration" class="headerlink" title="VS Code Configuration"></a>VS Code Configuration</h1><ol>
+<li><p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh">Remote - SSH</a> extension:</p>
+<p> <img src="/en/MarkDownImages/image-20240101130622357.png" alt="image-20240101130622357"></p>
+</li>
+<li><p>Click these three buttons sequentially to access the configuration file:</p>
+<p> <img src="/en/MarkDownImages/image-20240101130733756.png" alt="image-20240101130733756"></p>
+</li>
+<li><p>Fill in the configuration file (this file is essentially the SSH configuration for the host):</p>
+<p> <img src="/en/MarkDownImages/image-20240101130804525.png" alt="image-20240101130804525"></p>
+<ul>
+<li><code>Host</code>: an ID for this remote connection; you can choose any name.</li>
+<li><code>HostName</code>: Domain name or IP address of the remote host.</li>
+<li><code>User</code>: User to login to the remote host.</li>
+<li><code>IdentityFile</code>: Path to the <strong>private key</strong>, whose public key is in <code>authorized_keys</code>.</li>
+</ul>
+</li>
+</ol>
+<p>A few notes about the configuration file:</p>
+<ul>
+<li>If <code>authorized_keys</code> is not configured on the remote host, the <code>IdentityFile</code> property will not take effect, and it will prompt for a password during login.</li>
+<li>In this case, <code>IdentityFile</code> is not necessary because <code>authorized_keys</code> is the local machine’s public key, and SSH defaults to using the local machine’s private key for connection attempts.</li>
+<li>Generally, <code>authorized_keys</code> won’t be the local machine’s public key, and in such cases, <code>IdentityFile</code> must be configured; otherwise, a password will be required.</li>
+</ul>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a href="https://medium.com/@sean4deepak/using-ssh-key-authentication-in-visual-studio-codes-remote-ssh-extension-4e5b922448e7">Using SSH Key Authentication in Visual Studio Code’ s Remote SSH Extension</a></li>
+<li><a href="https://adamtheautomator.com/add-ssh-key-to-vs-code/">Add SSH Key to VS Code and Connect to a Host</a></li>
+<li><a href="https://stackoverflow.com/questions/48328446/id-rsa-pub-file-ssh-error-invalid-format">id_rsa.pub file SSH Error: invalid format</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>VS Code</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>VS Code</tag>
+        <tag>SSH</tag>
       </tags>
   </entry>
   <entry>
@@ -1128,142 +1189,6 @@
       </tags>
   </entry>
   <entry>
-    <title>VS Code Remote SSH Login By Key</title>
-    <url>/en/2024/01/01/VS-Code-Remote-SSH-Login-By-Key/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>The Remote SSH extension in VS Code provides the functionality to connect to other remote hosts. While the basic way of connection requires a username and password, using a key allows for direct login without the effort to type the password every time.</p>
-<p>However, it’s crucial to understand that VS Code merely provides a GUI, and how to use a SSH key to login is a separate matter. These two aspects should not be confused.</p>
-<p>This article will primarily explain how to configure SSH keys on both the local machine and the remote machine. Subsequently, it will delve into the usage of the VS Code Remote SSH extension.</p>
-<span id="more"></span>
-
-<h1 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h1><ul>
-<li>Local Machine: Windows 10</li>
-<li>Remote Machine: Local virtual machine CentOS 8, root user</li>
-</ul>
-<h1 id="Local-SSH-Configuration"><a href="#Local-SSH-Configuration" class="headerlink" title="Local SSH Configuration"></a>Local SSH Configuration</h1><p>Using the <code>ssh-keygen</code> command will create the RSA public-private key pair for the <strong>local</strong> machine in the <code>C:\users\&lt;user&gt;\.ssh</code> directory:</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\.ssh&gt; <span class="built_in">dir</span></span><br><span class="line">    Directory: C:\Users\Elnino\.ssh</span><br><span class="line">Mode                 LastWriteTime         Length Name</span><br><span class="line"><span class="literal">----</span>                 <span class="literal">-------------</span>         <span class="literal">------</span> <span class="literal">----</span></span><br><span class="line"><span class="literal">-a----</span>          <span class="number">2024</span>/<span class="number">1</span>/<span class="number">1</span>     <span class="number">12</span>:<span class="number">26</span>             <span class="number">91</span> config</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>           <span class="number">2610</span> id_rsa</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>            <span class="number">576</span> id_rsa.pub</span><br><span class="line"><span class="literal">-a----</span>        <span class="number">2023</span>/<span class="number">12</span>/<span class="number">18</span>     <span class="number">20</span>:<span class="number">42</span>           <span class="number">1398</span> known_hosts</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>             <span class="number">92</span> known_hosts.old</span><br></pre></td></tr></table></figure>
-
-<p><code>id_rsa</code> is the private key, and <code>id_rsa.pub</code> is the public key.</p>
-<h1 id="Remote-Host-SSH-Configuration"><a href="#Remote-Host-SSH-Configuration" class="headerlink" title="Remote Host SSH Configuration"></a>Remote Host SSH Configuration</h1><p>Upload the <strong>local</strong> <code>id_rsa.pub</code> to the <code>~/ssh</code> directory on the Linux remote host and rename it to <code>authorized_keys</code>:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@CentOS100 .ssh]<span class="comment"># ll</span></span><br><span class="line">total 16</span><br><span class="line">-rw-r--r--. 1 root root 576 Jan  1 11:50 authorized_keys</span><br><span class="line">-rw-------. 1 root root 411 Jul  1  2023 id_ed25519</span><br><span class="line">-rw-r--r--. 1 root root  96 Jul  1  2023 id_ed25519.pub</span><br><span class="line">-rw-r--r--. 1 root root 880 Dec 18 21:07 known_hosts</span><br></pre></td></tr></table></figure>
-
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>The steps above complete the configuration needed for SSH key login. Open PowerShell on the local machine and test the connection using <code>ssh &lt;user&gt;@&lt;ip&gt;</code>. It should allow direct login without entering a password.</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino&gt; ssh root@CentOS100</span><br><span class="line">Activate the web console with: systemctl enable <span class="literal">--now</span> cockpit.socket</span><br><span class="line"></span><br><span class="line">Last login: Mon Jan  <span class="number">1</span> <span class="number">12</span>:<span class="number">26</span>:<span class="number">15</span> <span class="number">2024</span> from &lt;ip&gt;</span><br><span class="line">[<span class="type">root</span>@<span class="type">CentOS100</span> ~]<span class="comment"># pwd</span></span><br><span class="line">/root</span><br></pre></td></tr></table></figure>
-
-<h1 id="VS-Code-Configuration"><a href="#VS-Code-Configuration" class="headerlink" title="VS Code Configuration"></a>VS Code Configuration</h1><ol>
-<li><p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh">Remote - SSH</a> extension:</p>
-<p> <img src="/en/MarkDownImages/image-20240101130622357.png" alt="image-20240101130622357"></p>
-</li>
-<li><p>Click these three buttons sequentially to access the configuration file:</p>
-<p> <img src="/en/MarkDownImages/image-20240101130733756.png" alt="image-20240101130733756"></p>
-</li>
-<li><p>Fill in the configuration file (this file is essentially the SSH configuration for the host):</p>
-<p> <img src="/en/MarkDownImages/image-20240101130804525.png" alt="image-20240101130804525"></p>
-<ul>
-<li><code>Host</code>: an ID for this remote connection; you can choose any name.</li>
-<li><code>HostName</code>: Domain name or IP address of the remote host.</li>
-<li><code>User</code>: User to login to the remote host.</li>
-<li><code>IdentityFile</code>: Path to the <strong>private key</strong>, whose public key is in <code>authorized_keys</code>.</li>
-</ul>
-</li>
-</ol>
-<p>A few notes about the configuration file:</p>
-<ul>
-<li>If <code>authorized_keys</code> is not configured on the remote host, the <code>IdentityFile</code> property will not take effect, and it will prompt for a password during login.</li>
-<li>In this case, <code>IdentityFile</code> is not necessary because <code>authorized_keys</code> is the local machine’s public key, and SSH defaults to using the local machine’s private key for connection attempts.</li>
-<li>Generally, <code>authorized_keys</code> won’t be the local machine’s public key, and in such cases, <code>IdentityFile</code> must be configured; otherwise, a password will be required.</li>
-</ul>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
-<li><a href="https://medium.com/@sean4deepak/using-ssh-key-authentication-in-visual-studio-codes-remote-ssh-extension-4e5b922448e7">Using SSH Key Authentication in Visual Studio Code’ s Remote SSH Extension</a></li>
-<li><a href="https://adamtheautomator.com/add-ssh-key-to-vs-code/">Add SSH Key to VS Code and Connect to a Host</a></li>
-<li><a href="https://stackoverflow.com/questions/48328446/id-rsa-pub-file-ssh-error-invalid-format">id_rsa.pub file SSH Error: invalid format</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>VS Code</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-        <tag>SSH</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>力扣 370 周赛总结</title>
-    <url>/en/2023/11/05/leetcode-370-weekly-contest-summary/</url>
-    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
-<p><a href="https://leetcode.cn/contest/weekly-contest-370/">力扣第 370 场周赛</a></p>
-</blockquote>
-<blockquote>
-<p>本文只是周赛的总结，我不准备详细地讨论每一道题，有些题只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
-</blockquote>
-<p>23 分钟 AC 前三题，使得排名在三百左右 —— 典型的比手速策略。做题情况简要描述：</p>
-<ul>
-<li>第一题：送分题，但是有点卡住了，花了 5 分钟😒；</li>
-<li>第二题：背景和第一题一样，同样是送分题，做得反而更快😋；</li>
-<li>第三题：一道符合难度的中等题，需要稍微想一下，15 分钟做出来，不错😋；</li>
-<li>第四题：没做出来。如果数据规模小的话是一道简单 dp，但没有优化思路 😒；</li>
-</ul>
-<span id="more"></span>
-
-
-
-<h1 id="一、找到冠军-I"><a href="#一、找到冠军-I" class="headerlink" title="一、找到冠军 I"></a>一、<a href="https://leetcode.cn/problems/find-champion-i/">找到冠军 I</a></h1><p><img src="/en/MarkDownImages/image-20231105132950645.png" alt="image-20231105132950645"></p>
-<p><img src="/en/MarkDownImages/image-20231105132958733.png" alt="image-20231105132958733"></p>
-<p>“如果不存在某支强于 <code>a</code> 队的队伍，则认为 <code>a</code> 队将会是 <strong>冠军</strong> ”，因此使用 <code>count[i]</code> 表示比 <code>i</code> 强的队伍数量。使得 $count[i] &#x3D; 0$ 的 $i$ 即为答案</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span>[][] grid)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> grid.length;</span><br><span class="line">        <span class="type">int</span>[] count = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == j) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">if</span> (grid[i][j] == <span class="number">1</span>) count[j]++;</span><br><span class="line">                <span class="keyword">else</span> count[i]++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (count[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="二、找到冠军-II"><a href="#二、找到冠军-II" class="headerlink" title="二、找到冠军 II"></a>二、<a href="https://leetcode.cn/problems/find-champion-ii/">找到冠军 II</a></h1><p><img src="/en/MarkDownImages/image-20231105133352267.png" alt="image-20231105133352267"></p>
-<p><img src="/en/MarkDownImages/image-20231105133528772.png" alt="image-20231105133528772"></p>
-<p><img src="/en/MarkDownImages/image-20231105133540889.png" alt="image-20231105133540889"></p>
-<p>用有向边表示谁比谁强，明显比第一题好理解。边 $(a,b)$ 表示 $a$ 比 $b$ 强，因此那些最强的队伍的入度为 $0$。统计入度即可。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span>[][] edges)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] inDeg = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="comment">// 统计入度</span></span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; inDeg[e[<span class="number">1</span>]]++);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> Arrays.stream(inDeg).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="comment">// 非唯一</span></span><br><span class="line">        <span class="keyword">if</span> (count != <span class="number">1</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDeg[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="三、在树上执行操作以后得到的最大分数"><a href="#三、在树上执行操作以后得到的最大分数" class="headerlink" title="三、在树上执行操作以后得到的最大分数"></a>三、<a href="https://leetcode.cn/problems/maximum-score-after-applying-operations-on-a-tree/">在树上执行操作以后得到的最大分数</a></h1><p><img src="/en/MarkDownImages/image-20231105134014234.png" alt="image-20231105134014234"></p>
-<p><img src="/en/MarkDownImages/image-20231105134359269.png" alt="image-20231105134359269"></p>
-<p><img src="/en/MarkDownImages/image-20231105134415086.png" alt="image-20231105134415086"></p>
-<p>$\forall i, values[i] \ge 1$，并且“从根节点出发，到任意叶子节点经过的路径上的节点值之和都不等于 0”。因此，我们在执行操作时，<strong>每条从根节点到叶节点的路径上，都要留一个节点不去操作</strong>。（多条路径可能共用一个不操作的节点）</p>
-<p>令图中所有节点的集合是 $V$，我们<strong>不操作</strong>的节点的集合为 $U$，则“对这棵树执行任意次操作，但要求执行完所有操作以后树是 <strong>健康的</strong> ”，得到的分数为 $\sum\limits_{v\in V} v - \sum\limits_{u\in U}u$。$\sum\limits_{v\in V} v $ 即为 <code>sum(values)</code>，因此，为了使分数最大，我们不操作的节点之和 $\sum\limits_{u\in U}u$ 应该尽可能地小。那么，应该不操作哪些节点呢？</p>
-<p>对于树的任意一棵子树，比如下图：</p>
-<p><img src="/en/MarkDownImages/image-20231105135510005.png" alt="image-20231105135510005"></p>
-<p>假设我们不操作根节点 0，那么剩余的节点都可以操作；假设我们操作了根节点 0，那么剩余的节点中存在不能操作的节点。这里的剩余节点可能是叶节点，也可能是多棵子树，无论是什么，都不影响该结论。</p>
-<p>那么什么时候操作根节点？定义一棵以 $u$ 为根节点的<strong>健康的</strong>子树中<strong>不操作</strong>的节点的<strong>最小和</strong>为 $res(u)$，则 $\forall x, x$ 是 $u$ 的子节点, $res(u) &#x3D; \min\set{values[u], \sum\limits_x res(x)}$</p>
-<p>该递归式的含义是：</p>
-<ul>
-<li>要么不操作根节点 $u$，此时这棵树是健康的，剩余的所有子节点都可以操作；</li>
-<li>要么操作根节点 $u$，但是 $u$ 的所有子树都需要保证自己是健康的；</li>
-<li>根据定义，我们要得到<strong>最小和</strong>，因此取两者情况的较小值；</li>
-</ul>
-<p>对于上述例子，$res(1) &#x3D; 2,res(2) &#x3D; 2,res(3) &#x3D; 5$</p>
-<p>$values[0] &#x3D; 5 &lt; \sum\limits_{x\in\set{1,2,3}}res(x) &#x3D; 9$，因此不操作根节点 $0$，而操作其所有子树中的节点。</p>
-<p>有了 $res(u)$ 的递推式，上述 $\sum\limits_{u\in U}u$ 的值就是 $res(0)$，因此，最大分数是 <code>sum(values) - res(0)</code></p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ArrayList&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maximumScoreAfterOperations</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] values)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> values.length;</span><br><span class="line">        <span class="comment">// 建树，实际上是建图</span></span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(values[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        visited[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// values[i] &lt;= 10^9，注意 mapToLong</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> Arrays.stream(values).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> dfs(nodes[<span class="number">0</span>], visited);</span><br><span class="line">        <span class="keyword">return</span> sum - min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> res(root)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">dfs</span><span class="params">(Node root, <span class="type">boolean</span>[] visited)</span> &#123;</span><br><span class="line">        <span class="comment">// count # visited neighbors</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// min = sum(res(children))</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited[child.index] = <span class="literal">true</span>;</span><br><span class="line">            min += dfs(child, visited);</span><br><span class="line">            visited[child.index] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此时该节点为叶节点，直接返回它的 val</span></span><br><span class="line">        <span class="keyword">if</span> (count == root.children.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> root.val;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.min(root.val, min);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="四、平衡子序列的最大和"><a href="#四、平衡子序列的最大和" class="headerlink" title="四、平衡子序列的最大和"></a>四、<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">平衡子序列的最大和</a></h1><p><img src="/en/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
-<p><img src="/en/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
-<p>重新读题：平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
-<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$ —— 左右两边的各项都只关于其下标，而与其他条件无关</p>
-<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
-<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> </p>
-<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (nums[j] - j \ge nums[i] - i)}$</p>
-<p>代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[j] - j &gt;= nums[i] - i) &#123;</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>问题在于，这么做显然是 $O(n^2)$ 的时间复杂度，比赛时我也没想出如何优化。</p>
-<p>我准备在下一篇博客中详细描述如何做出这道题（基于大佬的题解），现在先让我去学习相关知识。</p>
-]]></content>
-      <categories>
-        <category>算法题</category>
-        <category>算法竞赛</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>动态规划</tag>
-        <tag>树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Common Commands for pip &amp; conda</title>
     <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
     <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
@@ -1351,6 +1276,81 @@
         <tag>Python</tag>
         <tag>pip</tag>
         <tag>conda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>力扣 370 周赛总结</title>
+    <url>/en/2023/11/05/leetcode-370-weekly-contest-summary/</url>
+    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
+<p><a href="https://leetcode.cn/contest/weekly-contest-370/">力扣第 370 场周赛</a></p>
+</blockquote>
+<blockquote>
+<p>本文只是周赛的总结，我不准备详细地讨论每一道题，有些题只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
+</blockquote>
+<p>23 分钟 AC 前三题，使得排名在三百左右 —— 典型的比手速策略。做题情况简要描述：</p>
+<ul>
+<li>第一题：送分题，但是有点卡住了，花了 5 分钟😒；</li>
+<li>第二题：背景和第一题一样，同样是送分题，做得反而更快😋；</li>
+<li>第三题：一道符合难度的中等题，需要稍微想一下，15 分钟做出来，不错😋；</li>
+<li>第四题：没做出来。如果数据规模小的话是一道简单 dp，但没有优化思路 😒；</li>
+</ul>
+<span id="more"></span>
+
+
+
+<h1 id="一、找到冠军-I"><a href="#一、找到冠军-I" class="headerlink" title="一、找到冠军 I"></a>一、<a href="https://leetcode.cn/problems/find-champion-i/">找到冠军 I</a></h1><p><img src="/en/MarkDownImages/image-20231105132950645.png" alt="image-20231105132950645"></p>
+<p><img src="/en/MarkDownImages/image-20231105132958733.png" alt="image-20231105132958733"></p>
+<p>“如果不存在某支强于 <code>a</code> 队的队伍，则认为 <code>a</code> 队将会是 <strong>冠军</strong> ”，因此使用 <code>count[i]</code> 表示比 <code>i</code> 强的队伍数量。使得 $count[i] &#x3D; 0$ 的 $i$ 即为答案</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span>[][] grid)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> grid.length;</span><br><span class="line">        <span class="type">int</span>[] count = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (i == j) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">if</span> (grid[i][j] == <span class="number">1</span>) count[j]++;</span><br><span class="line">                <span class="keyword">else</span> count[i]++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (count[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="二、找到冠军-II"><a href="#二、找到冠军-II" class="headerlink" title="二、找到冠军 II"></a>二、<a href="https://leetcode.cn/problems/find-champion-ii/">找到冠军 II</a></h1><p><img src="/en/MarkDownImages/image-20231105133352267.png" alt="image-20231105133352267"></p>
+<p><img src="/en/MarkDownImages/image-20231105133528772.png" alt="image-20231105133528772"></p>
+<p><img src="/en/MarkDownImages/image-20231105133540889.png" alt="image-20231105133540889"></p>
+<p>用有向边表示谁比谁强，明显比第一题好理解。边 $(a,b)$ 表示 $a$ 比 $b$ 强，因此那些最强的队伍的入度为 $0$。统计入度即可。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findChampion</span><span class="params">(<span class="type">int</span> n, <span class="type">int</span>[][] edges)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] inDeg = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="comment">// 统计入度</span></span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; inDeg[e[<span class="number">1</span>]]++);</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> Arrays.stream(inDeg).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="comment">// 非唯一</span></span><br><span class="line">        <span class="keyword">if</span> (count != <span class="number">1</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDeg[i] == <span class="number">0</span>) <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="三、在树上执行操作以后得到的最大分数"><a href="#三、在树上执行操作以后得到的最大分数" class="headerlink" title="三、在树上执行操作以后得到的最大分数"></a>三、<a href="https://leetcode.cn/problems/maximum-score-after-applying-operations-on-a-tree/">在树上执行操作以后得到的最大分数</a></h1><p><img src="/en/MarkDownImages/image-20231105134014234.png" alt="image-20231105134014234"></p>
+<p><img src="/en/MarkDownImages/image-20231105134359269.png" alt="image-20231105134359269"></p>
+<p><img src="/en/MarkDownImages/image-20231105134415086.png" alt="image-20231105134415086"></p>
+<p>$\forall i, values[i] \ge 1$，并且“从根节点出发，到任意叶子节点经过的路径上的节点值之和都不等于 0”。因此，我们在执行操作时，<strong>每条从根节点到叶节点的路径上，都要留一个节点不去操作</strong>。（多条路径可能共用一个不操作的节点）</p>
+<p>令图中所有节点的集合是 $V$，我们<strong>不操作</strong>的节点的集合为 $U$，则“对这棵树执行任意次操作，但要求执行完所有操作以后树是 <strong>健康的</strong> ”，得到的分数为 $\sum\limits_{v\in V} v - \sum\limits_{u\in U}u$。$\sum\limits_{v\in V} v $ 即为 <code>sum(values)</code>，因此，为了使分数最大，我们不操作的节点之和 $\sum\limits_{u\in U}u$ 应该尽可能地小。那么，应该不操作哪些节点呢？</p>
+<p>对于树的任意一棵子树，比如下图：</p>
+<p><img src="/en/MarkDownImages/image-20231105135510005.png" alt="image-20231105135510005"></p>
+<p>假设我们不操作根节点 0，那么剩余的节点都可以操作；假设我们操作了根节点 0，那么剩余的节点中存在不能操作的节点。这里的剩余节点可能是叶节点，也可能是多棵子树，无论是什么，都不影响该结论。</p>
+<p>那么什么时候操作根节点？定义一棵以 $u$ 为根节点的<strong>健康的</strong>子树中<strong>不操作</strong>的节点的<strong>最小和</strong>为 $res(u)$，则 $\forall x, x$ 是 $u$ 的子节点, $res(u) &#x3D; \min\set{values[u], \sum\limits_x res(x)}$</p>
+<p>该递归式的含义是：</p>
+<ul>
+<li>要么不操作根节点 $u$，此时这棵树是健康的，剩余的所有子节点都可以操作；</li>
+<li>要么操作根节点 $u$，但是 $u$ 的所有子树都需要保证自己是健康的；</li>
+<li>根据定义，我们要得到<strong>最小和</strong>，因此取两者情况的较小值；</li>
+</ul>
+<p>对于上述例子，$res(1) &#x3D; 2,res(2) &#x3D; 2,res(3) &#x3D; 5$</p>
+<p>$values[0] &#x3D; 5 &lt; \sum\limits_{x\in\set{1,2,3}}res(x) &#x3D; 9$，因此不操作根节点 $0$，而操作其所有子树中的节点。</p>
+<p>有了 $res(u)$ 的递推式，上述 $\sum\limits_{u\in U}u$ 的值就是 $res(0)$，因此，最大分数是 <code>sum(values) - res(0)</code></p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ArrayList&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maximumScoreAfterOperations</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] values)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> values.length;</span><br><span class="line">        <span class="comment">// 建树，实际上是建图</span></span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(values[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        Arrays.stream(edges).forEach(e -&gt; &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        visited[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// values[i] &lt;= 10^9，注意 mapToLong</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum</span> <span class="operator">=</span> Arrays.stream(values).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> dfs(nodes[<span class="number">0</span>], visited);</span><br><span class="line">        <span class="keyword">return</span> sum - min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> res(root)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">dfs</span><span class="params">(Node root, <span class="type">boolean</span>[] visited)</span> &#123;</span><br><span class="line">        <span class="comment">// count # visited neighbors</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// min = sum(res(children))</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">min</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) &#123;</span><br><span class="line">                count++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            visited[child.index] = <span class="literal">true</span>;</span><br><span class="line">            min += dfs(child, visited);</span><br><span class="line">            visited[child.index] = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此时该节点为叶节点，直接返回它的 val</span></span><br><span class="line">        <span class="keyword">if</span> (count == root.children.size()) &#123;</span><br><span class="line">            <span class="keyword">return</span> root.val;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.min(root.val, min);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、平衡子序列的最大和"><a href="#四、平衡子序列的最大和" class="headerlink" title="四、平衡子序列的最大和"></a>四、<a href="https://leetcode.cn/problems/maximum-balanced-subsequence-sum/">平衡子序列的最大和</a></h1><p><img src="/en/MarkDownImages/image-20231105162645031.png" alt="image-20231105162645031"></p>
+<p><img src="/en/MarkDownImages/image-20231105162654150.png" alt="image-20231105162654150"></p>
+<p>重新读题：平衡子序列中连续的两个元素 <code>nums[i]</code> 和 <code>nums[j]</code> 需要满足 $i &lt; j$ 且 $nums[j] - nums[i] \ge j -i$</p>
+<p>对上述不等式移项，得到 $nums[j] - j \ge nums[i] - i$ —— 左右两边的各项都只关于其下标，而与其他条件无关</p>
+<p>因此，这道题类似于最长递增子序列，用 DP 解决：</p>
+<p>DP 定义：<code>dp[j]</code> 表示以 <code>nums[j]</code> <strong>结尾</strong>的 <strong>平衡</strong> 子序列里面的 <strong>最大元素和</strong> </p>
+<p>递推式：$dp[j] &#x3D; nums[j] + \max\set{dp[i] | (i &lt; j) ∧ (nums[j] - j \ge nums[i] - i)}$</p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">maxBalancedSubsequenceSum</span><span class="params">(<span class="type">int</span>[] nums)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Long.MIN_VALUE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dp[i]： 以 nums[i] 结尾的子序列的最大元素和</span></span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            dp[j] = nums[j];</span><br><span class="line">            <span class="type">long</span> <span class="variable">max</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; j; i++) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nums[j] - j &gt;= nums[i] - i) &#123;</span><br><span class="line">                    max = Math.max(max, dp[i]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dp[j] += max;</span><br><span class="line"></span><br><span class="line">            ans = Math.max(ans, dp[j]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题在于，这么做显然是 $O(n^2)$ 的时间复杂度，比赛时我也没想出如何优化。</p>
+<p>我准备在下一篇博客中详细描述如何做出这道题（基于大佬的题解），现在先让我去学习相关知识。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+        <category>算法竞赛</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>动态规划</tag>
+        <tag>树</tag>
       </tags>
   </entry>
   <entry>

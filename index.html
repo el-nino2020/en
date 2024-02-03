@@ -320,7 +320,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/" class="post-title-link" itemprop="url">在 Docker 中部署 Nginx，并在局域网配置 SSL 证书</a>
+          <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/" class="post-title-link" itemprop="url">Deploying Nginx in Docker and Configuring SSL Certificate for Local Network</a>
         </h2>
 
         <div class="post-meta-container">
@@ -354,14 +354,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>1.9k</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>7 mins.</span>
+      <span>5 mins.</span>
     </span>
 </div>
 
@@ -372,18 +372,18 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>在上一篇博文里，我成功搭建了 LANraragi 服务器，并且分享给了家庭局域网内的其他设备。但是，又产生了新的问题：</p>
+          <h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>In my previous post, I successfully set up a LANraragi server and shared it with other devices in my home LAN. However, new issues arose:</p>
 <ul>
-<li>LANraragi 不需要登录就能访问其中的漫画；</li>
-<li>就算 LANraragi 有登录的功能，用的也还是 HTTP 明文传输，相当于没有密码；</li>
+<li>LANraragi could be accessed without logging in.</li>
+<li>Even if LANraragi had a login feature, it still used HTTP plaintext transmission, which is equivalent to no password protection.</li>
 </ul>
-<p>这些问题的根源是：可以联网的手机、智能家居都和 LANraragi 服务器在一个局域网内，这些设备并不可信，可能有后门（“用户自愿传输隐私数据以改善服务”）。无论如何，上述问题亟需解决。</p>
-<p>解决方案 —— Nginx：</p>
+<p>The root cause of these issues was that devices like smartphones and smart home devices, connected to the LAN, were not trustworthy. They could potentially have backdoors (or ‘users voluntarily transmitting private data to improve service’). Anyway, these issues needed urgent resolution.</p>
+<p>The solution is Nginx:</p>
 <ul>
-<li>使用 Nginx 自带的 basic authentication，只有输入账号密码才能访问 URL；</li>
-<li>利用 Nginx 的反向代理。只要给 Nginx 配置了 HTTPS，被代理的软件都可以使用加密传输；</li>
+<li>Use Nginx’s built-in basic authentication to allow access only with a correct username and password.</li>
+<li>Utilize Nginx’s reverse proxy feature. Once Nginx is configured with HTTPS, any software being proxied can use the encrypted transmission.</li>
 </ul>
-<p>因此，重点在于 Nginx 的配置和 SSL 证书的配置。麻烦之处在于，我要给内网 IP 请求证书，并且这个 IP 没有对应的域名。这篇文章探讨了这些解决方案，同时也是我第一次接触 Nginx 和 SSL 证书的配置。</p>
+<p>Therefore, the key lies in the configuration of Nginx and SSL certificates. The challenge is that I need to request a certificate for an internal IP address without a corresponding domain name. This article explores these solutions, marking my first encounter with Nginx and SSL certificate configuration.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#more" rel="contents">
@@ -778,7 +778,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:11</span>
+    <span title="Reading time total">1:09</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
