@@ -1,79 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>算法题003：对角线遍历 II</title>
-    <url>/en/2023/10/29/Algorithm-Problem-003-diagonal-traverse-ii/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a href="https://leetcode.cn/problems/diagonal-traverse-ii/">1424. 对角线遍历 II</a></p>
-</blockquote>
-<p>给你一个列表 <code>nums</code> ，里面每一个元素都是一个整数列表。请你依照下面各图的规则，按顺序返回 <code>nums</code> 中对角线上的整数。</p>
-<h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p><img src="/en/MarkDownImages/image-20231029115351760.png" alt="image-20231029115351760"></p>
-<blockquote>
-<p>输入：nums &#x3D; <code>[[1,2,3,4,5],[6,7],[8],[9,10,11],[12,13,14,15,16]]</code><br>输出：<code>[1,6,2,8,7,3,9,4,12,10,5,13,11,14,15,16]</code></p>
-</blockquote>
-<span id="more"></span>
-
-<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p><img src="/en/MarkDownImages/image-20231029115127660.png" alt="image-20231029115127660"></p>
-<blockquote>
-<p>输入：nums &#x3D; <code>[[1,2,3],[4,5,6],[7,8,9]]</code><br>输出：<code>[1,4,2,7,5,3,8,6,9]</code></p>
-</blockquote>
-<h2 id="示例-3"><a href="#示例-3" class="headerlink" title="示例 3"></a>示例 3</h2><blockquote>
-<p>输入：nums &#x3D; <code>[[1,2,3],[4],[5,6,7],[8],[9,10,11]]</code><br>输出：<code>[1,4,2,5,3,8,6,9,7,10,11]</code></p>
-</blockquote>
-<h2 id="数据范围"><a href="#数据范围" class="headerlink" title="数据范围"></a>数据范围</h2><ul>
-<li><code>1 &lt;= nums.length &lt;= 10^5</code></li>
-<li><code>1 &lt;= nums[i].length &lt;= 10^5</code></li>
-<li><code>1 &lt;= nums[i][j] &lt;= 10^9</code></li>
-<li><code>nums</code> 中最多有 <code>10^5</code> 个数字。</li>
-</ul>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>对于自然数 $k \in \mathbb{N}$，第 $k + 1$ 条对角线上的元素坐标为 $\set{(i,j) | i + j &#x3D; k}$。例如，当 $k &#x3D; 2$ 时，第 $3$ 条对角线的元素坐标是 $\set{(0,2),(1,1),(2,0)}$</p>
-<p>如果 <code>nums</code> 是个矩阵，那这题是一道简单模拟题，按照对角线遍历即可，时间复杂度为 $O(mn)$。</p>
-<p>但是，<code>nums</code> 的行数 $m \le 10^5$，列数 $n \le 10^5$，$O(mn)$ 的时间复杂度会超时。因此，我们不应该把 <code>nums</code> 当作一个矩阵来遍历，否则会访问大量的空格子。</p>
-<p>观察示例1：</p>
-<p><img src="/en/MarkDownImages/image-20231029115351760.png" alt="image-20231029115351760"></p>
-<p>观察1️⃣：对于任意的 $k \in \mathbb{N}$，第 $k + 1$ 条对角线的元素遍历顺序是从左下到右上，即 $(k, 0), (k - 1,1),\cdots,(0,k)$。因此，如果我们要获得第 $k + 1$ 条对角线上的元素，我们应该<strong>倒序遍历</strong> <code>nums</code> 中每一行的对应元素。</p>
-<p>观察2️⃣：易得，对于<code>nums</code>中的每一行 <code>nums[j]</code>，其中的元素都属于不同的对角线，因此是<strong>相互独立</strong>的。</p>
-<p>观察3️⃣：<strong>倒序遍历</strong> <code>nums</code> 中每一行时：</p>
-<ul>
-<li>对于<strong>最后一行</strong>的元素 $12,13,14,15,16$，它们都是自己对角线上的<strong>第一个</strong>元素，尽管后 4 个元素所属的对角线在第一列上不存在元素。</li>
-<li>对于<strong>倒数第二行</strong>的元素 $9,10,11$，它们都是所属对角线的<strong>下一个</strong>应该遍历的元素</li>
-<li>以此类推……</li>
-</ul>
-<p>我们的目标是要收集 <code>nums</code> 中的所有元素，收集方式是按照对角线元素顺序收集。</p>
-<p>因此，我们可以先为每个对角线创建一个 list，将对应元素放入该 list 中。然后再正序遍历每个对角线 list，获得最终的结果。如果这样做，我们需要首先创建 <code>m + n - 1</code> 个 list。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> nums.size();</span><br><span class="line"><span class="comment">// n 为最大列数</span></span><br><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.stream().mapToInt(List::size).max().getAsInt();</span><br><span class="line"><span class="comment">// ans 中存放 m + n - 1 个 list，代表各个对角线中遍历到的元素</span></span><br><span class="line">List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">IntStream.range(<span class="number">0</span>, m + n - <span class="number">1</span>).forEach(i -&gt; ans.add(<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;()));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 核心：如何遍历？？？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正序收集 ans 中每行的元素</span></span><br><span class="line"><span class="keyword">return</span> ans.stream().flatMap(l -&gt; l.stream()).mapToInt(i -&gt; i).toArray();</span><br></pre></td></tr></table></figure>
-
-<p>那么如何遍历呢？为了不超时，肯定是按照行遍历。</p>
-<ul>
-<li>根据『观察1️⃣』，倒序遍历 <code>nums</code> ；</li>
-<li>根据『观察2️⃣』，对于每一行，每遍历到一个元素 <code>nums[i][j]</code>，就把它放入第 $i+j + 1$ 个 list 中</li>
-<li>根据『观察3️⃣』，上述元素 <code>nums[i][j]</code> 应该添加到对应 list 最后。因为前 $n - i - 1$ 行（$n -1,n - 2 ,\cdots, i + 1$）中该对角线上的元素已经遍历过了，并且它们已经按照同样的方法、有序存放在该 list 中了—— 使用递归或者数学归纳法证明</li>
-</ul>
-<p>代码是简单的：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 倒序遍历 nums</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> m - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    List&lt;Integer&gt; row = nums.get(i);</span><br><span class="line">    <span class="comment">// 每遍历到一个元素 nums[i][j]，就把它放入第 i + j + 1 个 list 中</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; row.size(); j++) &#123;</span><br><span class="line">        ans.get(i + j).add(row.get(j));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>时间复杂度是 $O(m + n + \text{(nums 元素个数)})$</p>
-<p>空间复杂度是 $O(m+n)$</p>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[] findDiagonalOrder(List&lt;List&lt;Integer&gt;&gt; nums) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> nums.size();</span><br><span class="line">        <span class="comment">// n 为最大列数</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.stream().mapToInt(List::size).max().getAsInt();</span><br><span class="line">        <span class="comment">// ans 中存放 m + n - 1 个 list，代表各个对角线中遍历到的元素</span></span><br><span class="line">        List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        IntStream.range(<span class="number">0</span>, m + n - <span class="number">1</span>).forEach(i -&gt; ans.add(<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 倒序遍历 nums</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> m - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            List&lt;Integer&gt; row = nums.get(i);</span><br><span class="line">            <span class="comment">// 每遍历到一个元素 nums[i][j]，就把它放入第 i + j + 1 个 list 中</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; row.size(); j++) &#123;</span><br><span class="line">                ans.get(i + j).add(row.get(j));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 正序收集 ans 中每行的元素</span></span><br><span class="line">        <span class="keyword">return</span> ans.stream().flatMap(l -&gt; l.stream()).mapToInt(i -&gt; i).toArray();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>数组</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>算法题001：求数组可能的最大得分</title>
     <url>/en/2023/09/21/Algorithm-Problem-001-Calculate-Maximum-Possible-Score-of-an-Array/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -147,6 +74,69 @@
       </tags>
   </entry>
   <entry>
+    <title>算法题002：螺旋矩阵 II</title>
+    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
+</blockquote>
+<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
+<span id="more"></span>
+
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
+<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
+<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
+<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
+<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
+<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
+<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
+<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
+<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
+<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
+<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
+
+<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
+<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>改一改思路 2 的代码即可。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>算法题004：参加会议的最多员工数</title>
     <url>/en/2023/11/01/Algorithm-Problem-004-maximum-employees-to-be-invited-to-a-meeting/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -213,6 +203,79 @@
       <tags>
         <tag>图</tag>
         <tag>拓扑排序</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>算法题003：对角线遍历 II</title>
+    <url>/en/2023/10/29/Algorithm-Problem-003-diagonal-traverse-ii/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p>题目来源：<a href="https://leetcode.cn/problems/diagonal-traverse-ii/">1424. 对角线遍历 II</a></p>
+</blockquote>
+<p>给你一个列表 <code>nums</code> ，里面每一个元素都是一个整数列表。请你依照下面各图的规则，按顺序返回 <code>nums</code> 中对角线上的整数。</p>
+<h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p><img src="/en/MarkDownImages/image-20231029115351760.png" alt="image-20231029115351760"></p>
+<blockquote>
+<p>输入：nums &#x3D; <code>[[1,2,3,4,5],[6,7],[8],[9,10,11],[12,13,14,15,16]]</code><br>输出：<code>[1,6,2,8,7,3,9,4,12,10,5,13,11,14,15,16]</code></p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p><img src="/en/MarkDownImages/image-20231029115127660.png" alt="image-20231029115127660"></p>
+<blockquote>
+<p>输入：nums &#x3D; <code>[[1,2,3],[4,5,6],[7,8,9]]</code><br>输出：<code>[1,4,2,7,5,3,8,6,9]</code></p>
+</blockquote>
+<h2 id="示例-3"><a href="#示例-3" class="headerlink" title="示例 3"></a>示例 3</h2><blockquote>
+<p>输入：nums &#x3D; <code>[[1,2,3],[4],[5,6,7],[8],[9,10,11]]</code><br>输出：<code>[1,4,2,5,3,8,6,9,7,10,11]</code></p>
+</blockquote>
+<h2 id="数据范围"><a href="#数据范围" class="headerlink" title="数据范围"></a>数据范围</h2><ul>
+<li><code>1 &lt;= nums.length &lt;= 10^5</code></li>
+<li><code>1 &lt;= nums[i].length &lt;= 10^5</code></li>
+<li><code>1 &lt;= nums[i][j] &lt;= 10^9</code></li>
+<li><code>nums</code> 中最多有 <code>10^5</code> 个数字。</li>
+</ul>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>对于自然数 $k \in \mathbb{N}$，第 $k + 1$ 条对角线上的元素坐标为 $\set{(i,j) | i + j &#x3D; k}$。例如，当 $k &#x3D; 2$ 时，第 $3$ 条对角线的元素坐标是 $\set{(0,2),(1,1),(2,0)}$</p>
+<p>如果 <code>nums</code> 是个矩阵，那这题是一道简单模拟题，按照对角线遍历即可，时间复杂度为 $O(mn)$。</p>
+<p>但是，<code>nums</code> 的行数 $m \le 10^5$，列数 $n \le 10^5$，$O(mn)$ 的时间复杂度会超时。因此，我们不应该把 <code>nums</code> 当作一个矩阵来遍历，否则会访问大量的空格子。</p>
+<p>观察示例1：</p>
+<p><img src="/en/MarkDownImages/image-20231029115351760.png" alt="image-20231029115351760"></p>
+<p>观察1️⃣：对于任意的 $k \in \mathbb{N}$，第 $k + 1$ 条对角线的元素遍历顺序是从左下到右上，即 $(k, 0), (k - 1,1),\cdots,(0,k)$。因此，如果我们要获得第 $k + 1$ 条对角线上的元素，我们应该<strong>倒序遍历</strong> <code>nums</code> 中每一行的对应元素。</p>
+<p>观察2️⃣：易得，对于<code>nums</code>中的每一行 <code>nums[j]</code>，其中的元素都属于不同的对角线，因此是<strong>相互独立</strong>的。</p>
+<p>观察3️⃣：<strong>倒序遍历</strong> <code>nums</code> 中每一行时：</p>
+<ul>
+<li>对于<strong>最后一行</strong>的元素 $12,13,14,15,16$，它们都是自己对角线上的<strong>第一个</strong>元素，尽管后 4 个元素所属的对角线在第一列上不存在元素。</li>
+<li>对于<strong>倒数第二行</strong>的元素 $9,10,11$，它们都是所属对角线的<strong>下一个</strong>应该遍历的元素</li>
+<li>以此类推……</li>
+</ul>
+<p>我们的目标是要收集 <code>nums</code> 中的所有元素，收集方式是按照对角线元素顺序收集。</p>
+<p>因此，我们可以先为每个对角线创建一个 list，将对应元素放入该 list 中。然后再正序遍历每个对角线 list，获得最终的结果。如果这样做，我们需要首先创建 <code>m + n - 1</code> 个 list。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> nums.size();</span><br><span class="line"><span class="comment">// n 为最大列数</span></span><br><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.stream().mapToInt(List::size).max().getAsInt();</span><br><span class="line"><span class="comment">// ans 中存放 m + n - 1 个 list，代表各个对角线中遍历到的元素</span></span><br><span class="line">List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">IntStream.range(<span class="number">0</span>, m + n - <span class="number">1</span>).forEach(i -&gt; ans.add(<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;()));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 核心：如何遍历？？？</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正序收集 ans 中每行的元素</span></span><br><span class="line"><span class="keyword">return</span> ans.stream().flatMap(l -&gt; l.stream()).mapToInt(i -&gt; i).toArray();</span><br></pre></td></tr></table></figure>
+
+<p>那么如何遍历呢？为了不超时，肯定是按照行遍历。</p>
+<ul>
+<li>根据『观察1️⃣』，倒序遍历 <code>nums</code> ；</li>
+<li>根据『观察2️⃣』，对于每一行，每遍历到一个元素 <code>nums[i][j]</code>，就把它放入第 $i+j + 1$ 个 list 中</li>
+<li>根据『观察3️⃣』，上述元素 <code>nums[i][j]</code> 应该添加到对应 list 最后。因为前 $n - i - 1$ 行（$n -1,n - 2 ,\cdots, i + 1$）中该对角线上的元素已经遍历过了，并且它们已经按照同样的方法、有序存放在该 list 中了—— 使用递归或者数学归纳法证明</li>
+</ul>
+<p>代码是简单的：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 倒序遍历 nums</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> m - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    List&lt;Integer&gt; row = nums.get(i);</span><br><span class="line">    <span class="comment">// 每遍历到一个元素 nums[i][j]，就把它放入第 i + j + 1 个 list 中</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; row.size(); j++) &#123;</span><br><span class="line">        ans.get(i + j).add(row.get(j));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>时间复杂度是 $O(m + n + \text{(nums 元素个数)})$</p>
+<p>空间复杂度是 $O(m+n)$</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[] findDiagonalOrder(List&lt;List&lt;Integer&gt;&gt; nums) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">m</span> <span class="operator">=</span> nums.size();</span><br><span class="line">        <span class="comment">// n 为最大列数</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.stream().mapToInt(List::size).max().getAsInt();</span><br><span class="line">        <span class="comment">// ans 中存放 m + n - 1 个 list，代表各个对角线中遍历到的元素</span></span><br><span class="line">        List&lt;List&lt;Integer&gt;&gt; ans = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        IntStream.range(<span class="number">0</span>, m + n - <span class="number">1</span>).forEach(i -&gt; ans.add(<span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 倒序遍历 nums</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> m - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            List&lt;Integer&gt; row = nums.get(i);</span><br><span class="line">            <span class="comment">// 每遍历到一个元素 nums[i][j]，就把它放入第 i + j + 1 个 list 中</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; row.size(); j++) &#123;</span><br><span class="line">                ans.get(i + j).add(row.get(j));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 正序收集 ans 中每行的元素</span></span><br><span class="line">        <span class="keyword">return</span> ans.stream().flatMap(l -&gt; l.stream()).mapToInt(i -&gt; i).toArray();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>数组</tag>
       </tags>
   </entry>
   <entry>
@@ -296,69 +359,6 @@
         <tag>动态规划</tag>
         <tag>树状数组</tag>
         <tag>离散化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>算法题002：螺旋矩阵 II</title>
-    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
-</blockquote>
-<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
-<span id="more"></span>
-
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
-<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
-<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
-<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
-<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
-<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
-<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
-<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
-<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
-<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
-<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
-<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
-
-<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
-<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>改一改思路 2 的代码即可。</p>
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>数组</tag>
       </tags>
   </entry>
   <entry>
@@ -717,76 +717,6 @@
       </tags>
   </entry>
   <entry>
-    <title>LocalSend：局域网文件传输利器</title>
-    <url>/en/2023/09/04/LocalSend-A-powerful-tool-for-local-file-transfer/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
-<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
-<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
-<span id="more"></span>
-
-<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
-<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
-<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
-<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
-<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
-<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
-</li>
-<li><p>进入『配置防火墙和安全设置』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
-</li>
-<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
-</li>
-<li><p>重启 LocalSend，等待找到目标主机</p>
-</li>
-</ol>
-<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
-<ol>
-<li><p>打开『Windows Defender 防火墙』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
-</li>
-<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
-</li>
-<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
-</li>
-</ol>
-<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
-<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
-<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
-<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
-<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
-<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
-<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>LocalSend</category>
-      </categories>
-      <tags>
-        <tag>LocalSend</tag>
-        <tag>settings</tag>
-        <tag>Firewall</tag>
-        <tag>Windows</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
     <url>/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
@@ -836,47 +766,6 @@
         <tag>MyBatis-Plus</tag>
         <tag>JDBC</tag>
         <tag>Repository</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
-<span id="more"></span>
-
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
-
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
-
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>PotPlayer</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
       </tags>
   </entry>
   <entry>
@@ -943,6 +832,117 @@
         <tag>VS Code</tag>
         <tag>Typora</tag>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LocalSend：局域网文件传输利器</title>
+    <url>/en/2023/09/04/LocalSend-A-powerful-tool-for-local-file-transfer/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
+<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
+<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
+<span id="more"></span>
+
+<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
+<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
+<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
+<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
+<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
+<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
+</li>
+<li><p>进入『配置防火墙和安全设置』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
+</li>
+<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
+</li>
+<li><p>重启 LocalSend，等待找到目标主机</p>
+</li>
+</ol>
+<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
+<ol>
+<li><p>打开『Windows Defender 防火墙』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
+</li>
+<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
+</li>
+<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
+</li>
+</ol>
+<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
+<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
+<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
+<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
+<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
+<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
+<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>LocalSend</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>LocalSend</tag>
+        <tag>Firewall</tag>
+        <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
+
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
       </tags>
   </entry>
   <entry>
@@ -1098,97 +1098,6 @@
       </tags>
   </entry>
   <entry>
-    <title>力扣 369 周赛总结</title>
-    <url>/en/2023/10/29/leetcode-369-weekly-contest-summary/</url>
-    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
-<p><a href="https://leetcode.cn/contest/weekly-contest-369/">力扣第 369 场周赛</a></p>
-</blockquote>
-<blockquote>
-<p>本文只是周赛的总结，我不准备详细地讨论每一道题，只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
-</blockquote>
-<p>赛后来看，这场比赛难度不大。做题情况简要描述：</p>
-<ul>
-<li>第一题：简单模拟，送分题；</li>
-<li>第二题：难度不大，但要考虑多种情况，我没有静下心来细想，造成了 3 个 WA 😒；</li>
-<li>第三题：难度中等的 DP，一开始没有想出来，转而去做最终没做出来的第四题，浪费了时间。好在后来很快做出来了😋；</li>
-<li>第四题：虽然是困难题，并且没有做出来，但比赛的代码最终也只是超时，赛后我也自己想出来了优化的方法——不难。值得注意的是，写代码时的逻辑混乱还是造成了 2 个 WA 😒；</li>
-</ul>
-<span id="more"></span>
-
-<h1 id="一、找出数组中的-K-or-值"><a href="#一、找出数组中的-K-or-值" class="headerlink" title="一、找出数组中的 K-or 值"></a>一、<a href="https://leetcode.cn/problems/find-the-k-or-of-an-array/">找出数组中的 K-or 值</a></h1><p><img src="/en/MarkDownImages/image-20231029195438014.png" alt="image-20231029195438014"></p>
-<p><img src="/en/MarkDownImages/image-20231029195448237.png" alt="image-20231029195448237"></p>
-<p><img src="/en/MarkDownImages/image-20231029195455078.png" alt="image-20231029195455078"></p>
-<p>题目描述有点难懂，比赛时需要结合示例才能快速读懂</p>
-<p>逐比特模拟：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findKOr</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> <span class="number">1</span> &lt;&lt; i;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> num : nums) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((num &amp; val) &gt; <span class="number">0</span>) count++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (count &gt;= k)  &#123;</span><br><span class="line">                ans |= val;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>时间复杂度：$O(n)$</p>
-<h1 id="二、数组的最小相等和"><a href="#二、数组的最小相等和" class="headerlink" title="二、数组的最小相等和"></a>二、<a href="https://leetcode.cn/problems/minimum-equal-sum-of-two-arrays-after-replacing-zeros/">数组的最小相等和</a></h1><p><img src="/en/MarkDownImages/image-20231029195518874.png" alt="image-20231029195518874"></p>
-<p><img src="/en/MarkDownImages/image-20231029195534194.png" alt="image-20231029195534194"></p>
-<ul>
-<li>如果 <code>nums1</code> 中有 <code>k</code> 个 <code>0</code>，那么它的和在替换后必须要增加至少 <code>k</code></li>
-<li>如果 <code>nums1</code> 中至少有一个 <code>0</code>，那么它在替换后的和可以等于任意大于 <code>sum(nums1)</code> 的值</li>
-<li><code>nums2</code> 同理</li>
-</ul>
-<p>函数的返回类型为 <code>long</code>；数组长度最大为 $10^5$，元素最大为 $10^6$，数组和最大为 $10^{11}$，超过 32-bit int 的上限。这提醒我们中间步骤的计算结果需要用 <code>long</code> 存储。事实上，算法题应该都用 <code>long </code> 代替 <code>int</code>，避免整数溢出，并且开销也不大。</p>
-<p>重点在于判断无法相等的条件，在这上面的失误造成了 3 个 WA：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">minSum</span><span class="params">(<span class="type">int</span>[] nums1, <span class="type">int</span>[] nums2)</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">sum1</span> <span class="operator">=</span> Arrays.stream(nums1).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">sum2</span> <span class="operator">=</span> Arrays.stream(nums2).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">c1</span> <span class="operator">=</span> Arrays.stream(nums1).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="type">long</span> <span class="variable">c2</span> <span class="operator">=</span> Arrays.stream(nums2).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断无法相等的情况</span></span><br><span class="line">        <span class="keyword">if</span> (sum1 &gt; sum2) &#123;</span><br><span class="line">            <span class="comment">// sum2 无法增加</span></span><br><span class="line">            <span class="keyword">if</span> (c2 == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="comment">// sum1 无法增加，sum2 有 c2 个 0，至少会增加 c2</span></span><br><span class="line">            <span class="keyword">if</span> (c1 == <span class="number">0</span> &amp;&amp; c2 + sum2 &gt; sum1) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sum1 == sum2) &#123;</span><br><span class="line">            <span class="comment">// sum1 或 sum2 一方必须增加，但另一方不会变</span></span><br><span class="line">            <span class="keyword">if</span> (c1 == <span class="number">0</span> &amp;&amp; c2 != <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (c1 != <span class="number">0</span> &amp;&amp; c2 == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 和 sum1 &gt; sum2 的代码逻辑一致</span></span><br><span class="line">            <span class="keyword">if</span> (c1 == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (c2 == <span class="number">0</span> &amp;&amp; c1 + sum1 &gt; sum2) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.max(sum1 + c1, sum2 + c2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="三、使数组变美的最小增量运算数"><a href="#三、使数组变美的最小增量运算数" class="headerlink" title="三、使数组变美的最小增量运算数"></a>三、<a href="https://leetcode.cn/problems/minimum-increment-operations-to-make-array-beautiful/">使数组变美的最小增量运算数</a></h1><p><img src="/en/MarkDownImages/image-20231029195556639.png" alt="image-20231029195556639"></p>
-<p><img src="/en/MarkDownImages/image-20231029195611424.png" alt="image-20231029195611424"></p>
-<p><img src="/en/MarkDownImages/image-20231029195617587.png" alt="image-20231029195617587"></p>
-<blockquote>
-<p>如果数组中任何长度 <strong>大于或等于 3</strong> 的子数组，其 <strong>最大</strong> 元素都大于或等于 <code>k</code> ，则认为数组是一个 <strong>美丽数组</strong> 。</p>
-</blockquote>
-<p>上述条件等价于 <strong>每个长度为 3 的子数组</strong> 中的最大元素都 $\ge k$</p>
-<p>很明显，我们应该尽量地使每 3 个连续元素中，有一个元素 $\ge k$。但是应该使哪些元素增加到 $k$ 呢？不清楚，那就用 DP —— 局部暴力解</p>
-<p>1️⃣DP定义：<code>dp[i]</code>：使得 <strong><code>nums[0:i]</code></strong> 为美丽数组，并且 <strong><code>nums[i]</code></strong> $\ge k$ 的<strong>最小</strong>递增运算数。—— 这里有 3 个加粗的重点</p>
-<p> <code>nums[i]</code> $\ge k$，那么 <code>nums[i - 2 : i]</code> 这个长度为 3 的子数组肯定能被覆盖，满足美丽数组的条件。这一覆盖同时表明，我们至少需要保证<code>nums[0:(i-3)]</code> 是美丽数组，才能使得 <code>nums[0:i]</code> 成为美丽数组。<code>dp[i - 3]</code>、<code>dp[i - 2]</code>、<code>dp[i - 1]</code> 的结果都可以满足这一点，取最小值值即可：</p>
-<p>2️⃣递归式：$dp[i] &#x3D; \max\set{0,k-nums[i]} + \min\set{dp[i - 1], dp[i - 2], dp[i - 3]}$</p>
-<p>3️⃣答案：<code>dp[n - 3]</code>、<code>dp[n - 2]</code> 和 <code>dp[n - 1]</code> 按照定义都可以使 <code>nums</code> 成为美丽数组，取三者最小值即可</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">minIncrementOperations</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="comment">// base case</span></span><br><span class="line">        Arrays.fill(dp, Long.MAX_VALUE);</span><br><span class="line">        <span class="comment">// n &gt;= 3 保证了初始条件不需要根据 n 判断元素是否存在</span></span><br><span class="line">        dp[<span class="number">0</span>] = Math.max(<span class="number">0</span>, k - nums[<span class="number">0</span>]);</span><br><span class="line">        dp[<span class="number">1</span>] = Math.max(<span class="number">0</span>, k - nums[<span class="number">1</span>]);</span><br><span class="line">        dp[<span class="number">2</span>] = Math.max(<span class="number">0</span>, k - nums[<span class="number">2</span>]);</span><br><span class="line">        <span class="comment">// recursively</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">3</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">v</span> <span class="operator">=</span> Math.max(<span class="number">0</span>, k - nums[i]);</span><br><span class="line">            dp[i] = Math.min(dp[i], dp[i - <span class="number">1</span>] + v);</span><br><span class="line">            dp[i] = Math.min(dp[i], dp[i - <span class="number">2</span>] + v);</span><br><span class="line">            dp[i] = Math.min(dp[i], dp[i - <span class="number">3</span>] + v);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// answer</span></span><br><span class="line">        <span class="keyword">return</span> Math.min(dp[n - <span class="number">1</span>], Math.min(dp[n - <span class="number">2</span>], dp[n - <span class="number">3</span>]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="四、收集所有金币可获得的最大积分"><a href="#四、收集所有金币可获得的最大积分" class="headerlink" title="四、收集所有金币可获得的最大积分"></a>四、<a href="https://leetcode.cn/problems/maximum-points-after-collecting-coins-from-all-nodes/">收集所有金币可获得的最大积分</a></h1><p><img src="/en/MarkDownImages/image-20231029195640792.png" alt="image-20231029195640792"></p>
-<p><img src="/en/MarkDownImages/image-20231029195650693.png" alt="image-20231029195650693"></p>
-<p><img src="/en/MarkDownImages/image-20231029195700814.png" alt="image-20231029195700814"></p>
-<p>1️⃣建树。其实是建图，只是我们要从节点 0 开始 dfs，模拟树遍历的过程</p>
-<p>2️⃣收集金币的两个方案（题目故意写得复杂，需要化简）：</p>
-<ul>
-<li>方案 1：当前收集到的金币加上 <code>coins[i] - k</code> （无论正负）</li>
-<li>方案 2：<code>floor(coins[i] / 2)</code> 就是整数除法，需要用位运算优化，即 <code>coins[i] &gt;&gt; 1</code>。位运算还有一个好处，假设当前节点有 $k$ 个祖先节点选择了方案 2，那么该节点的金币数就是 <code>coins[i] &gt;&gt; k</code>，免去了计算和除以 $2^k$ 的开销。</li>
-</ul>
-<p>根据这两个方案，我们可以写出一个前序遍历的递归函数：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 前序遍历，收集金币</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> root 子树的根节点</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> half 子树的祖先节点选择过多少次方案 2</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 该子树能够收集的最大金币数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">recur</span><span class="params">(Node root, <span class="type">long</span> half)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// node 是图中的节点，遍历需要 visited 数组辅助</span></span><br><span class="line">    <span class="comment">// 前序遍历本质上是 dfs</span></span><br><span class="line">    visited[root.index] = <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">// 方案一</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">res1</span> <span class="operator">=</span> (root.val &gt;&gt; half) - k;</span><br><span class="line">    <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">        <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">        res1 += recur(child, half);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 方案二</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">res2</span> <span class="operator">=</span> (root.val &gt;&gt; (<span class="number">1</span> + half));</span><br><span class="line">    <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">        <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">        res2 += recur(child, half + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    visited[root.index] = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> Math.max(res1, res2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>到这一步为止，我在比赛中都写了出来，但还是超时了。之后，我又想到了如下的优化思路：</p>
-<p>3️⃣ $\forall i, coins[i] \le 10^4$ ，并且 $\log_2(10^4) \approx 13.8$ ，因此，只要当前子树的祖先节点选择了至少 14 次方案 2，该子树中的所有节点的金币数都会不断减半至 0</p>
-<p>这相当于一个剪枝，在 <code>recur</code> 函数开始处判断：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (half &gt;= <span class="number">14</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-
-<p>4️⃣说到递归，就想到分治算法范式，又会联想到 DP 算法范式。两者的区别是什么？—— DP 会复用子问题的结果，因此效率更高。</p>
-<p>尽管遍历树的过程没法写成迭代，但我们可以用 map 来缓存子问题的结果：key 是 <code>(nodes[i], half)</code>，value 是收集到的金币数</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;Node, HashMap&lt;Long, Long&gt;&gt; dpMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">recur</span><span class="params">(Node root, <span class="type">long</span> half)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 查询缓存，查到就直接返回</span></span><br><span class="line">    HashMap&lt;Long, Long&gt; mp = dpMap.get(root);</span><br><span class="line">    <span class="keyword">if</span> (mp != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="type">Long</span> <span class="variable">ans</span> <span class="operator">=</span> mp.get(half);</span><br><span class="line">        <span class="keyword">if</span> (ans != <span class="literal">null</span>) <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 方案 1 和方案 2 的代码......</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 插入缓存</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Math.max(res1, res2);</span><br><span class="line">    dpMap.putIfAbsent(root, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;());</span><br><span class="line">    dpMap.get(root).put(half, ans);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>加上了这两步优化，成功 AC 了：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        List&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> k;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span>[] visited;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumPoints</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] coins, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.k = k;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> coins.length;</span><br><span class="line">        visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(coins[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span>[] e : edges) &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (<span class="type">int</span>) recur(nodes[<span class="number">0</span>], <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 递归结果缓存，通过缓存将分治算法晋升为DP算法，提升效率</span></span><br><span class="line"><span class="comment">     * &lt;node, &lt;half, result&gt;&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;Node, HashMap&lt;Long, Long&gt;&gt; dpMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前序遍历，收集金币</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 子树的根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> half 子树的祖先节点选择过多少次方案 2</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 该子树能够收集的最大金币数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">recur</span><span class="params">(Node root, <span class="type">long</span> half)</span> &#123;</span><br><span class="line">        <span class="comment">// coins[i] &lt;= 10^4 -&gt; log_2 (10^4) &lt; 14</span></span><br><span class="line">        <span class="keyword">if</span> (half &gt;= <span class="number">14</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 查询缓存，查到就直接返回</span></span><br><span class="line">        HashMap&lt;Long, Long&gt; mp = dpMap.get(root);</span><br><span class="line">        <span class="keyword">if</span> (mp != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">Long</span> <span class="variable">ans</span> <span class="operator">=</span> mp.get(half);</span><br><span class="line">            <span class="keyword">if</span> (ans != <span class="literal">null</span>) <span class="keyword">return</span> ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// node 是图中的节点，遍历需要 visited 数组辅助</span></span><br><span class="line">        <span class="comment">// 前序遍历本质上是 dfs</span></span><br><span class="line">        visited[root.index] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// 方案一</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">res1</span> <span class="operator">=</span> (root.val &gt;&gt; half) - k;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">            res1 += recur(child, half);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 方案二</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">res2</span> <span class="operator">=</span> (root.val &gt;&gt; (<span class="number">1</span> + half));</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">            res2 += recur(child, half + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        visited[root.index] = <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">// 插入缓存</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Math.max(res1, res2);</span><br><span class="line">        dpMap.putIfAbsent(root, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;());</span><br><span class="line">        dpMap.get(root).put(half, ans);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>算法题</category>
-        <category>算法竞赛</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>动态规划</tag>
-        <tag>位运算</tag>
-        <tag>树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Common Commands for pip &amp; conda</title>
     <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
     <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
@@ -1279,6 +1188,19 @@
       </tags>
   </entry>
   <entry>
+    <title>Messages for reader</title>
+    <url>/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
+    <content><![CDATA[<ul>
+<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
+<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
+</ul>
+<script>
+    function jump() {
+        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
+    }
+</script>]]></content>
+  </entry>
+  <entry>
     <title>力扣 370 周赛总结</title>
     <url>/en/2023/11/05/leetcode-370-weekly-contest-summary/</url>
     <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
@@ -1354,16 +1276,94 @@
       </tags>
   </entry>
   <entry>
-    <title>Messages for reader</title>
-    <url>/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
-    <content><![CDATA[<ul>
-<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
-<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
+    <title>力扣 369 周赛总结</title>
+    <url>/en/2023/10/29/leetcode-369-weekly-contest-summary/</url>
+    <content><![CDATA[<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
+<p><a href="https://leetcode.cn/contest/weekly-contest-369/">力扣第 369 场周赛</a></p>
+</blockquote>
+<blockquote>
+<p>本文只是周赛的总结，我不准备详细地讨论每一道题，只会给出大致思路。重点还是在于自己的总结、反思和提高。</p>
+</blockquote>
+<p>赛后来看，这场比赛难度不大。做题情况简要描述：</p>
+<ul>
+<li>第一题：简单模拟，送分题；</li>
+<li>第二题：难度不大，但要考虑多种情况，我没有静下心来细想，造成了 3 个 WA 😒；</li>
+<li>第三题：难度中等的 DP，一开始没有想出来，转而去做最终没做出来的第四题，浪费了时间。好在后来很快做出来了😋；</li>
+<li>第四题：虽然是困难题，并且没有做出来，但比赛的代码最终也只是超时，赛后我也自己想出来了优化的方法——不难。值得注意的是，写代码时的逻辑混乱还是造成了 2 个 WA 😒；</li>
 </ul>
-<script>
-    function jump() {
-        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
-    }
-</script>]]></content>
+<span id="more"></span>
+
+<h1 id="一、找出数组中的-K-or-值"><a href="#一、找出数组中的-K-or-值" class="headerlink" title="一、找出数组中的 K-or 值"></a>一、<a href="https://leetcode.cn/problems/find-the-k-or-of-an-array/">找出数组中的 K-or 值</a></h1><p><img src="/en/MarkDownImages/image-20231029195438014.png" alt="image-20231029195438014"></p>
+<p><img src="/en/MarkDownImages/image-20231029195448237.png" alt="image-20231029195448237"></p>
+<p><img src="/en/MarkDownImages/image-20231029195455078.png" alt="image-20231029195455078"></p>
+<p>题目描述有点难懂，比赛时需要结合示例才能快速读懂</p>
+<p>逐比特模拟：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">findKOr</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">ans</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">            <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> <span class="number">1</span> &lt;&lt; i;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> num : nums) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((num &amp; val) &gt; <span class="number">0</span>) count++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (count &gt;= k)  &#123;</span><br><span class="line">                ans |= val;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>时间复杂度：$O(n)$</p>
+<h1 id="二、数组的最小相等和"><a href="#二、数组的最小相等和" class="headerlink" title="二、数组的最小相等和"></a>二、<a href="https://leetcode.cn/problems/minimum-equal-sum-of-two-arrays-after-replacing-zeros/">数组的最小相等和</a></h1><p><img src="/en/MarkDownImages/image-20231029195518874.png" alt="image-20231029195518874"></p>
+<p><img src="/en/MarkDownImages/image-20231029195534194.png" alt="image-20231029195534194"></p>
+<ul>
+<li>如果 <code>nums1</code> 中有 <code>k</code> 个 <code>0</code>，那么它的和在替换后必须要增加至少 <code>k</code></li>
+<li>如果 <code>nums1</code> 中至少有一个 <code>0</code>，那么它在替换后的和可以等于任意大于 <code>sum(nums1)</code> 的值</li>
+<li><code>nums2</code> 同理</li>
+</ul>
+<p>函数的返回类型为 <code>long</code>；数组长度最大为 $10^5$，元素最大为 $10^6$，数组和最大为 $10^{11}$，超过 32-bit int 的上限。这提醒我们中间步骤的计算结果需要用 <code>long</code> 存储。事实上，算法题应该都用 <code>long </code> 代替 <code>int</code>，避免整数溢出，并且开销也不大。</p>
+<p>重点在于判断无法相等的条件，在这上面的失误造成了 3 个 WA：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">minSum</span><span class="params">(<span class="type">int</span>[] nums1, <span class="type">int</span>[] nums2)</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">sum1</span> <span class="operator">=</span> Arrays.stream(nums1).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">sum2</span> <span class="operator">=</span> Arrays.stream(nums2).mapToLong(i -&gt; i).sum();</span><br><span class="line">        <span class="type">long</span> <span class="variable">c1</span> <span class="operator">=</span> Arrays.stream(nums1).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line">        <span class="type">long</span> <span class="variable">c2</span> <span class="operator">=</span> Arrays.stream(nums2).filter(i -&gt; i == <span class="number">0</span>).count();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断无法相等的情况</span></span><br><span class="line">        <span class="keyword">if</span> (sum1 &gt; sum2) &#123;</span><br><span class="line">            <span class="comment">// sum2 无法增加</span></span><br><span class="line">            <span class="keyword">if</span> (c2 == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="comment">// sum1 无法增加，sum2 有 c2 个 0，至少会增加 c2</span></span><br><span class="line">            <span class="keyword">if</span> (c1 == <span class="number">0</span> &amp;&amp; c2 + sum2 &gt; sum1) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (sum1 == sum2) &#123;</span><br><span class="line">            <span class="comment">// sum1 或 sum2 一方必须增加，但另一方不会变</span></span><br><span class="line">            <span class="keyword">if</span> (c1 == <span class="number">0</span> &amp;&amp; c2 != <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (c1 != <span class="number">0</span> &amp;&amp; c2 == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 和 sum1 &gt; sum2 的代码逻辑一致</span></span><br><span class="line">            <span class="keyword">if</span> (c1 == <span class="number">0</span>) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (c2 == <span class="number">0</span> &amp;&amp; c1 + sum1 &gt; sum2) <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.max(sum1 + c1, sum2 + c2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="三、使数组变美的最小增量运算数"><a href="#三、使数组变美的最小增量运算数" class="headerlink" title="三、使数组变美的最小增量运算数"></a>三、<a href="https://leetcode.cn/problems/minimum-increment-operations-to-make-array-beautiful/">使数组变美的最小增量运算数</a></h1><p><img src="/en/MarkDownImages/image-20231029195556639.png" alt="image-20231029195556639"></p>
+<p><img src="/en/MarkDownImages/image-20231029195611424.png" alt="image-20231029195611424"></p>
+<p><img src="/en/MarkDownImages/image-20231029195617587.png" alt="image-20231029195617587"></p>
+<blockquote>
+<p>如果数组中任何长度 <strong>大于或等于 3</strong> 的子数组，其 <strong>最大</strong> 元素都大于或等于 <code>k</code> ，则认为数组是一个 <strong>美丽数组</strong> 。</p>
+</blockquote>
+<p>上述条件等价于 <strong>每个长度为 3 的子数组</strong> 中的最大元素都 $\ge k$</p>
+<p>很明显，我们应该尽量地使每 3 个连续元素中，有一个元素 $\ge k$。但是应该使哪些元素增加到 $k$ 呢？不清楚，那就用 DP —— 局部暴力解</p>
+<p>1️⃣DP定义：<code>dp[i]</code>：使得 <strong><code>nums[0:i]</code></strong> 为美丽数组，并且 <strong><code>nums[i]</code></strong> $\ge k$ 的<strong>最小</strong>递增运算数。—— 这里有 3 个加粗的重点</p>
+<p> <code>nums[i]</code> $\ge k$，那么 <code>nums[i - 2 : i]</code> 这个长度为 3 的子数组肯定能被覆盖，满足美丽数组的条件。这一覆盖同时表明，我们至少需要保证<code>nums[0:(i-3)]</code> 是美丽数组，才能使得 <code>nums[0:i]</code> 成为美丽数组。<code>dp[i - 3]</code>、<code>dp[i - 2]</code>、<code>dp[i - 1]</code> 的结果都可以满足这一点，取最小值值即可：</p>
+<p>2️⃣递归式：$dp[i] &#x3D; \max\set{0,k-nums[i]} + \min\set{dp[i - 1], dp[i - 2], dp[i - 3]}$</p>
+<p>3️⃣答案：<code>dp[n - 3]</code>、<code>dp[n - 2]</code> 和 <code>dp[n - 1]</code> 按照定义都可以使 <code>nums</code> 成为美丽数组，取三者最小值即可</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">minIncrementOperations</span><span class="params">(<span class="type">int</span>[] nums, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">long</span>[] dp = <span class="keyword">new</span> <span class="title class_">long</span>[n];</span><br><span class="line">        <span class="comment">// base case</span></span><br><span class="line">        Arrays.fill(dp, Long.MAX_VALUE);</span><br><span class="line">        <span class="comment">// n &gt;= 3 保证了初始条件不需要根据 n 判断元素是否存在</span></span><br><span class="line">        dp[<span class="number">0</span>] = Math.max(<span class="number">0</span>, k - nums[<span class="number">0</span>]);</span><br><span class="line">        dp[<span class="number">1</span>] = Math.max(<span class="number">0</span>, k - nums[<span class="number">1</span>]);</span><br><span class="line">        dp[<span class="number">2</span>] = Math.max(<span class="number">0</span>, k - nums[<span class="number">2</span>]);</span><br><span class="line">        <span class="comment">// recursively</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">3</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="type">long</span> <span class="variable">v</span> <span class="operator">=</span> Math.max(<span class="number">0</span>, k - nums[i]);</span><br><span class="line">            dp[i] = Math.min(dp[i], dp[i - <span class="number">1</span>] + v);</span><br><span class="line">            dp[i] = Math.min(dp[i], dp[i - <span class="number">2</span>] + v);</span><br><span class="line">            dp[i] = Math.min(dp[i], dp[i - <span class="number">3</span>] + v);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// answer</span></span><br><span class="line">        <span class="keyword">return</span> Math.min(dp[n - <span class="number">1</span>], Math.min(dp[n - <span class="number">2</span>], dp[n - <span class="number">3</span>]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="四、收集所有金币可获得的最大积分"><a href="#四、收集所有金币可获得的最大积分" class="headerlink" title="四、收集所有金币可获得的最大积分"></a>四、<a href="https://leetcode.cn/problems/maximum-points-after-collecting-coins-from-all-nodes/">收集所有金币可获得的最大积分</a></h1><p><img src="/en/MarkDownImages/image-20231029195640792.png" alt="image-20231029195640792"></p>
+<p><img src="/en/MarkDownImages/image-20231029195650693.png" alt="image-20231029195650693"></p>
+<p><img src="/en/MarkDownImages/image-20231029195700814.png" alt="image-20231029195700814"></p>
+<p>1️⃣建树。其实是建图，只是我们要从节点 0 开始 dfs，模拟树遍历的过程</p>
+<p>2️⃣收集金币的两个方案（题目故意写得复杂，需要化简）：</p>
+<ul>
+<li>方案 1：当前收集到的金币加上 <code>coins[i] - k</code> （无论正负）</li>
+<li>方案 2：<code>floor(coins[i] / 2)</code> 就是整数除法，需要用位运算优化，即 <code>coins[i] &gt;&gt; 1</code>。位运算还有一个好处，假设当前节点有 $k$ 个祖先节点选择了方案 2，那么该节点的金币数就是 <code>coins[i] &gt;&gt; k</code>，免去了计算和除以 $2^k$ 的开销。</li>
+</ul>
+<p>根据这两个方案，我们可以写出一个前序遍历的递归函数：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 前序遍历，收集金币</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> root 子树的根节点</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> half 子树的祖先节点选择过多少次方案 2</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 该子树能够收集的最大金币数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">recur</span><span class="params">(Node root, <span class="type">long</span> half)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// node 是图中的节点，遍历需要 visited 数组辅助</span></span><br><span class="line">    <span class="comment">// 前序遍历本质上是 dfs</span></span><br><span class="line">    visited[root.index] = <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">// 方案一</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">res1</span> <span class="operator">=</span> (root.val &gt;&gt; half) - k;</span><br><span class="line">    <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">        <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">        res1 += recur(child, half);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 方案二</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">res2</span> <span class="operator">=</span> (root.val &gt;&gt; (<span class="number">1</span> + half));</span><br><span class="line">    <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">        <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">        res2 += recur(child, half + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    visited[root.index] = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> Math.max(res1, res2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到这一步为止，我在比赛中都写了出来，但还是超时了。之后，我又想到了如下的优化思路：</p>
+<p>3️⃣ $\forall i, coins[i] \le 10^4$ ，并且 $\log_2(10^4) \approx 13.8$ ，因此，只要当前子树的祖先节点选择了至少 14 次方案 2，该子树中的所有节点的金币数都会不断减半至 0</p>
+<p>这相当于一个剪枝，在 <code>recur</code> 函数开始处判断：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (half &gt;= <span class="number">14</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>4️⃣说到递归，就想到分治算法范式，又会联想到 DP 算法范式。两者的区别是什么？—— DP 会复用子问题的结果，因此效率更高。</p>
+<p>尽管遍历树的过程没法写成迭代，但我们可以用 map 来缓存子问题的结果：key 是 <code>(nodes[i], half)</code>，value 是收集到的金币数</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;Node, HashMap&lt;Long, Long&gt;&gt; dpMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="type">long</span> <span class="title function_">recur</span><span class="params">(Node root, <span class="type">long</span> half)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 查询缓存，查到就直接返回</span></span><br><span class="line">    HashMap&lt;Long, Long&gt; mp = dpMap.get(root);</span><br><span class="line">    <span class="keyword">if</span> (mp != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="type">Long</span> <span class="variable">ans</span> <span class="operator">=</span> mp.get(half);</span><br><span class="line">        <span class="keyword">if</span> (ans != <span class="literal">null</span>) <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 方案 1 和方案 2 的代码......</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 插入缓存</span></span><br><span class="line">    <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Math.max(res1, res2);</span><br><span class="line">    dpMap.putIfAbsent(root, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;());</span><br><span class="line">    dpMap.get(root).put(half, ans);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>加上了这两步优化，成功 AC 了：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.IntStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Node</span> &#123;</span><br><span class="line">        List&lt;Node&gt; children = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> val;</span><br><span class="line">        <span class="type">int</span> index;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(<span class="type">int</span> val, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.val = val;</span><br><span class="line">            <span class="built_in">this</span>.index = index;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> k;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span>[] visited;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumPoints</span><span class="params">(<span class="type">int</span>[][] edges, <span class="type">int</span>[] coins, <span class="type">int</span> k)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.k = k;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> coins.length;</span><br><span class="line">        visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        Node[] nodes = IntStream.range(<span class="number">0</span>, n).mapToObj(i -&gt; <span class="keyword">new</span> <span class="title class_">Node</span>(coins[i], i)).toArray(Node[]::<span class="keyword">new</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span>[] e : edges) &#123;</span><br><span class="line">            nodes[e[<span class="number">0</span>]].children.add(nodes[e[<span class="number">1</span>]]);</span><br><span class="line">            nodes[e[<span class="number">1</span>]].children.add(nodes[e[<span class="number">0</span>]]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (<span class="type">int</span>) recur(nodes[<span class="number">0</span>], <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 递归结果缓存，通过缓存将分治算法晋升为DP算法，提升效率</span></span><br><span class="line"><span class="comment">     * &lt;node, &lt;half, result&gt;&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;Node, HashMap&lt;Long, Long&gt;&gt; dpMap = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前序遍历，收集金币</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> root 子树的根节点</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> half 子树的祖先节点选择过多少次方案 2</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 该子树能够收集的最大金币数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="title function_">recur</span><span class="params">(Node root, <span class="type">long</span> half)</span> &#123;</span><br><span class="line">        <span class="comment">// coins[i] &lt;= 10^4 -&gt; log_2 (10^4) &lt; 14</span></span><br><span class="line">        <span class="keyword">if</span> (half &gt;= <span class="number">14</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (root == <span class="literal">null</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 查询缓存，查到就直接返回</span></span><br><span class="line">        HashMap&lt;Long, Long&gt; mp = dpMap.get(root);</span><br><span class="line">        <span class="keyword">if</span> (mp != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">Long</span> <span class="variable">ans</span> <span class="operator">=</span> mp.get(half);</span><br><span class="line">            <span class="keyword">if</span> (ans != <span class="literal">null</span>) <span class="keyword">return</span> ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// node 是图中的节点，遍历需要 visited 数组辅助</span></span><br><span class="line">        <span class="comment">// 前序遍历本质上是 dfs</span></span><br><span class="line">        visited[root.index] = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">// 方案一</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">res1</span> <span class="operator">=</span> (root.val &gt;&gt; half) - k;</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">            res1 += recur(child, half);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 方案二</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">res2</span> <span class="operator">=</span> (root.val &gt;&gt; (<span class="number">1</span> + half));</span><br><span class="line">        <span class="keyword">for</span> (Node child : root.children) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[child.index]) <span class="keyword">continue</span>;</span><br><span class="line">            res2 += recur(child, half + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        visited[root.index] = <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">// 插入缓存</span></span><br><span class="line">        <span class="type">long</span> <span class="variable">ans</span> <span class="operator">=</span> Math.max(res1, res2);</span><br><span class="line">        dpMap.putIfAbsent(root, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;());</span><br><span class="line">        dpMap.get(root).put(half, ans);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>算法题</category>
+        <category>算法竞赛</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>动态规划</tag>
+        <tag>树</tag>
+        <tag>位运算</tag>
+      </tags>
   </entry>
 </search>
