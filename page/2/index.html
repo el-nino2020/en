@@ -229,7 +229,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/en/2023/12/20/Python-venv-use/" class="post-title-link" itemprop="url">Python venv 使用</a>
+          <a href="/en/2023/12/20/Python-venv-use/" class="post-title-link" itemprop="url">Using Python venv</a>
         </h2>
 
         <div class="post-meta-container">
@@ -263,7 +263,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>316</span>
+      <span>227</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
@@ -281,13 +281,13 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Python 以其模块丰富而著称。但是，不同于 Java 开发中 Maven 使用 group Id、artifact Id 和 version 来唯一确定一个依赖。在实践中，绝大多数 Python 项目<strong>只</strong>通过模块名来区分模块。<code>pip install &lt;module&gt;</code>，一个模块就装好了。那么模块的版本呢？大部分项目的 requirements 都不会提及版本，造成后来者跑项目时不停地报错。</p>
-<p>因此，弱化版本号的概念无疑<strong>弊大于利</strong>。如何解决？使用 venv（虚拟环境）。</p>
-<p>如果直接使用 <code>pip install</code> ，那么所有 Python 项目共用这些模块，会产生版本会兼容。venv 将原始的 Python 环境拷贝一份。虚拟环境的运行只依赖于拷贝后的 Python，安装的模块也只会存在于该虚拟环境中。多个虚拟环境间相互隔离。</p>
-<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>1️⃣创建  venv :</p>
+          <h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>Python is renowned for its rich set of modules. However, unlike in Java development where Maven uses group Id, artifact Id, and version to uniquely identify a dependency, in practice, most Python projects differentiate modules <strong>solely</strong> by their names. Run <code>pip install &lt;module&gt;</code>, and you’ve got the module. But what about the module version? Most project requirements do not specify versions, leading to constant errors for those who run the project later.</p>
+<p>Hence, the concept of a weakened version number undoubtedly does more harm than good. How to solve this issue? By using venv (virtual environment).</p>
+<p>If you directly use <code>pip install</code>, all Python projects share these modules, leading to potential compatibility issues. Venv copies the original Python environment. The virtual environment runs only on the copied Python, and the installed modules exist only in that virtual environment. Multiple virtual environments are isolated from each other.</p>
+<h1 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h1><p>1️⃣Create venv:</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv C:\Users\Elnino\Desktop\test\venv</span><br></pre></td></tr></table></figure>
 
-<p><code>C:\Users\Elnino\Desktop\test\venv</code> 目录就是该虚拟环境</p>
+<p>The directory <code>C:\Users\Elnino\Desktop\test\venv</code> is the virtual environment.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/en/2023/12/20/Python-venv-use/#more" rel="contents">
