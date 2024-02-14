@@ -22,12 +22,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"el-nino2020.github.io","root":"/en/","images":"/en/images","scheme":"Gemini","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#008000","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/en/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/en/js/config.js"></script>
 
-    <meta name="description" content="序言 Jellyfin 是一个开源的媒体服务器。我的用法是：在电脑上使用 qBittorrent 下载每日新番，启动 Jellyfin，然后在 iPad 上通过客户端看番。  之前在 Windows 主机上安装了便捷版的 Jellyfin，因为 Linux 虚拟机没法使用显卡，无法硬件转码。后来发现，Android 和 IOS 的客户端支持大部分编码，服务器无需提供转码服务。正好我已经熟悉了 Je">
+    <meta name="description" content="PrefaceJellyfin is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client. Previously, I h">
 <meta property="og:type" content="article">
-<meta property="og:title" content="在 Docker 中安装 Jellyfin">
+<meta property="og:title" content="Install Jellyfin in Docker">
 <meta property="og:url" content="https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/index.html">
 <meta property="og:site_name" content="Blog of El nino">
-<meta property="og:description" content="序言 Jellyfin 是一个开源的媒体服务器。我的用法是：在电脑上使用 qBittorrent 下载每日新番，启动 Jellyfin，然后在 iPad 上通过客户端看番。  之前在 Windows 主机上安装了便捷版的 Jellyfin，因为 Linux 虚拟机没法使用显卡，无法硬件转码。后来发现，Android 和 IOS 的客户端支持大部分编码，服务器无需提供转码服务。正好我已经熟悉了 Je">
+<meta property="og:description" content="PrefaceJellyfin is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client. Previously, I h">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://el-nino2020.github.io/en/MarkDownImages/image-20240213140202762.png">
 <meta property="og:image" content="https://el-nino2020.github.io/en/MarkDownImages/image-20240213140616778.png">
@@ -48,10 +48,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/","path":"2024/02/11/Jellyfin-Docker/","title":"在 Docker 中安装 Jellyfin"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/","path":"2024/02/11/Jellyfin-Docker/","title":"Install Jellyfin in Docker"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>在 Docker 中安装 Jellyfin | Blog of El nino</title>
+<title>Install Jellyfin in Docker | Blog of El nino</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBFGGZ14VS"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-SBFGGZ14VS","only_pageview":false}</script>
@@ -155,7 +155,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%8F%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Jellyfin-%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">Jellyfin 安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Jellyfin-%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.</span> <span class="nav-text">Jellyfin 设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8-%E7%94%A8%E6%88%B7"><span class="nav-number">3.1.</span> <span class="nav-text">服务器 | 用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7-%E8%81%94%E7%BD%91"><span class="nav-number">3.2.</span> <span class="nav-text">高级 | 联网</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SSL-%E8%AF%81%E4%B9%A6"><span class="nav-number">4.</span> <span class="nav-text">SSL 证书</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B1%80%E5%9F%9F%E7%BD%91%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">局域网设置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B-Bug"><span class="nav-number">6.</span> <span class="nav-text">一些 Bug</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E4%BD%93%E9%97%AE%E9%A2%98"><span class="nav-number">6.1.</span> <span class="nav-text">字体问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E9%93%BE%E6%8E%A5"><span class="nav-number">6.2.</span> <span class="nav-text">符号链接</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-%E7%9F%A5%E8%AF%86"><span class="nav-number">7.</span> <span class="nav-text">Docker 知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXPOSE"><span class="nav-number">7.1.</span> <span class="nav-text">EXPOSE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cache-Memory"><span class="nav-number">7.2.</span> <span class="nav-text">Cache Memory</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">8.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Preface"><span class="nav-number">1.</span> <span class="nav-text">Preface</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Install-Jellyfin"><span class="nav-number">2.</span> <span class="nav-text">Install Jellyfin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Jellyfin-Configuration"><span class="nav-number">3.</span> <span class="nav-text">Jellyfin Configuration</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Server-Users"><span class="nav-number">3.1.</span> <span class="nav-text">Server | Users</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Advanced-Networking"><span class="nav-number">3.2.</span> <span class="nav-text">Advanced | Networking</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SSL-Certificate"><span class="nav-number">4.</span> <span class="nav-text">SSL Certificate</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Local-Network-Settings"><span class="nav-number">5.</span> <span class="nav-text">Local Network Settings</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Some-Bugs"><span class="nav-number">6.</span> <span class="nav-text">Some Bugs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Font-Issue"><span class="nav-number">6.1.</span> <span class="nav-text">Font Issue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Symbolic-Links"><span class="nav-number">6.2.</span> <span class="nav-text">Symbolic Links</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-Knowledge"><span class="nav-number">7.</span> <span class="nav-text">Docker Knowledge</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXPOSE"><span class="nav-number">7.1.</span> <span class="nav-text">EXPOSE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cache-Memory"><span class="nav-number">7.2.</span> <span class="nav-text">Cache Memory</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-number">8.</span> <span class="nav-text">References</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -225,6 +225,13 @@
       LANraragi Manga Server
       </a>
     </li>
+    <li class="popular-posts-item">
+      <a class="popular-posts-link" href="/en/2024/01/01/VS-Code-Remote-SSH-Login-By-Key/" rel="bookmark">
+        <time class="popular-posts-time">2024-01-01</time>
+        <br>
+      VS Code Remote SSH Login By Key
+      </a>
+    </li>
   </ul>
 
           </div>
@@ -259,12 +266,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="在 Docker 中安装 Jellyfin | Blog of El nino">
+      <meta itemprop="name" content="Install Jellyfin in Docker | Blog of El nino">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          在 Docker 中安装 Jellyfin
+          Install Jellyfin in Docker
         </h1>
 
         <div class="post-meta-container">
@@ -302,14 +309,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>1.9k</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>7 mins.</span>
+      <span>5 mins.</span>
     </span>
 </div>
 
@@ -319,126 +326,124 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><blockquote>
-<p><a target="_blank" rel="noopener" href="https://jellyfin.org/">Jellyfin</a> 是一个开源的媒体服务器。我的用法是：在电脑上使用 qBittorrent 下载每日新番，启动 Jellyfin，然后在 iPad 上通过客户端看番。</p>
-</blockquote>
-<p>之前在 Windows 主机上安装了便捷版的 Jellyfin，因为 Linux 虚拟机没法使用显卡，无法硬件转码。后来发现，Android 和 IOS 的客户端支持大部分编码，服务器无需提供转码服务。正好我已经熟悉了 Jellyfin 的使用和配置，可以将 Jellyfin 迁移到 Docker 上去了。</p>
-<p>虽然 Jellyfin 软件是跨平台的，但是它的配置还是 OS-dependent 的，更何况我是要从 Windows 迁移到 Docker 中去。尽管有一个<a target="_blank" rel="noopener" href="https://github.com/MMMZZZZ/Jellyfin-Migrator">第三方脚本</a>可以使用，但保险起见，我还是重新配置了一遍，反正也不多。</p>
-<p>这篇文章主要讲解了如何用 Docker 安装 Jellyfin、期间碰到的问题及其解决方案。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p><a target="_blank" rel="noopener" href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
+<p>Previously, I have installed the portable version of Jellyfin on Windows because a Linux virtual machine can not utilize the graphics card for hardware transcoding. However, I discovered that the Android and iOS clients support most codecs, eliminating the need for server-side transcoding. Since I am already familiar with Jellyfin’s usage and configuration, I decided to migrate it to Docker.</p>
+<p>Although Jellyfin itself is cross-platform, its configuration is still OS-dependent, especially when moving from Windows to Docker. Despite the availability of a <a target="_blank" rel="noopener" href="https://github.com/MMMZZZZ/Jellyfin-Migrator">third-party script</a>, I chose to reconfigure it for safety, which does not require much effort.</p>
+<p>This article mainly talks about how to install Jellyfin using Docker, along with any issues encountered and their solutions.</p>
 <span id="more"></span>
 
-<h1 id="Jellyfin-安装"><a href="#Jellyfin-安装" class="headerlink" title="Jellyfin 安装"></a>Jellyfin 安装</h1><p>先创建两个容器卷：</p>
+<h1 id="Install-Jellyfin"><a href="#Install-Jellyfin" class="headerlink" title="Install Jellyfin"></a>Install Jellyfin</h1><p>Firstly, create two volumes:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker volume create jellyfin-config</span><br><span class="line">docker volume create jellyfin-cache</span><br></pre></td></tr></table></figure>
 
 <p>Docker Compose:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">jellyfin:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">jellyfin/jellyfin:10.8.13-1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">jellyfin</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58096</span><span class="string">:8096</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58920</span><span class="string">:8920</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-config:/config</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-cache:/cache</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/jellyfin-media:/media:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/jellyfin_ssl/jellyfin.pfx:/ssl/jellyfin.pfx:ro</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">jellyfin-config:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">jellyfin-cache:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><p>镜像要指定版本，<code>10.8.13</code> 是目前最新稳定版，而之后的版本都有 <code>unstable</code> 一词，最好别用 <code>latest</code>；</p>
+<li><p>Specify the image version; <code>10.8.13</code> is the latest stable version, and subsequent versions have the term <code>unstable</code>, so it’s best not to use <code>latest</code>.</p>
 </li>
-<li><p><code>8096</code> 是默认的 HTTP 端口，<code>8920</code> 是默认的 HTTPS 端口；</p>
+<li><p><code>8096</code> is the default HTTP port, and <code>8920</code> is the default HTTPS port.</p>
 </li>
-<li><p>Jellyfin 使用如下路径存储数据：</p>
+<li><p>Jellyfin uses the following paths to store data:</p>
 <table>
 <thead>
 <tr>
-<th>目录</th>
-<th>说明</th>
-<th>路径</th>
+<th>Directory</th>
+<th>Description</th>
+<th>Path</th>
 </tr>
 </thead>
 <tbody><tr>
 <td>Data Directory</td>
-<td>存放 Jellyfin 所有数据的目录，通常用来被其他目录引用</td>
-<td>环境变量 <code>JELLYFIN_DATA_DIR</code> 指定</td>
+<td>Stores all Jellyfin data, usually referenced by other directories</td>
+<td>Specified by ENV <code>JELLYFIN_DATA_DIR</code></td>
 </tr>
 <tr>
 <td>Configuration Directory</td>
-<td>存放配置文件</td>
-<td>环境变量 <code>JELLYFIN_CONFIG_DIR</code> 指定；如果没有，则使用 <code>&lt;Data Directory&gt;/config</code></td>
+<td>Stores configuration files</td>
+<td>Specified by ENV <code>JELLYFIN_CONFIG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/config</code></td>
 </tr>
 <tr>
 <td>Cache Directory</td>
-<td>存放服务器缓存</td>
-<td>环境变量 <code>JELLYFIN_CACHE_DIR</code> 指定；如果没有，则使用 <code>&lt;Data Directory&gt;/cache</code></td>
+<td>Stores server cache</td>
+<td>Specified by ENV <code>JELLYFIN_CACHE_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/cache</code></td>
 </tr>
 <tr>
 <td>Log Directory</td>
-<td>存放日志文件</td>
-<td>环境变量 <code>JELLYFIN_LOG_DIR</code> 指定；如果没有，则使用 <code>&lt;Data Directory&gt;/log</code></td>
+<td>Stores log files</td>
+<td>Specified by ENV <code>JELLYFIN_LOG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/log</code></td>
 </tr>
 </tbody></table>
-<p>  <a target="_blank" rel="noopener" href="https://hub.docker.com/layers/jellyfin/jellyfin/10.8.13-1/images/sha256-095e6d410d1d27b17cc4a961a9bab9fab5ffce6e49389d8ec685f65ab5538525?context=explore">Dockerfile</a> 中指定了这些环境变量：</p>
+<p>  These environment variables are specified in the <a target="_blank" rel="noopener" href="https://hub.docker.com/layers/jellyfin/jellyfin/10.8.13-1/images/sha256-095e6d410d1d27b17cc4a961a9bab9fab5ffce6e49389d8ec685f65ab5538525?context=explore">Dockerfile</a>：</p>
   <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ENV</span> DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=<span class="number">1</span> LC_ALL=en_US.UTF-<span class="number">8</span> LANG=en_US.UTF-<span class="number">8</span> LANGUAGE=en_US:en JELLYFIN_DATA_DIR=/config JELLYFIN_CACHE_DIR=/cache JELLYFIN_CONFIG_DIR=/config/config JELLYFIN_LOG_DIR=/config/log JELLYFIN_WEB_DIR=/jellyfin/jellyfin-web JELLYFIN_FFMPEG=/usr/lib/jellyfin-ffmpeg/ffmpeg</span><br></pre></td></tr></table></figure>
 
-<p>  因此， <strong><code>/config</code> 和 <code>/cache</code> 包含了 Jellyfin 服务器的所有数据</strong> ，而这两个目录又分别挂载到 <code>jellyfin-config</code> 和 <code>jellyfin-cache</code>；</p>
+<p>  Therefore, <strong><code>/config</code> and <code>/cache</code> contain all data of the Jellyfin server</strong>, and these directories are mounted to <code>jellyfin-config</code> and <code>jellyfin-cache</code>, respectively.</p>
 </li>
-<li><p><code>/mnt/hgfs/jellyfin-media:/media:ro</code>：将本机的媒体文件挂载到 docker 中，路径随意；</p>
+<li><p><code>/mnt/hgfs/jellyfin-media:/media:ro</code>: Mount media files from the local machine into Docker, the path can be arbitrary.</p>
 </li>
-<li><p><code>/opt/docker/jellyfin_ssl/jellyfin.pfx</code>：用来配置服务器的 SSL 证书，之后会讲；</p>
+<li><p><code>/opt/docker/jellyfin_ssl/jellyfin.pfx</code>: Used to configure the SSL certificate for the server, which will be discussed later.</p>
 </li>
-<li><p><code>TZ=Asia/Shanghai</code>：设置时区，使得日志的时间和本机的一致；</p>
+<li><p><code>TZ=Asia/Shanghai</code>: Set the time zone to make the log time consistent with the local machine.</p>
 </li>
 </ul>
-<h1 id="Jellyfin-设置"><a href="#Jellyfin-设置" class="headerlink" title="Jellyfin 设置"></a>Jellyfin 设置</h1><p>因为是重新安装，所以配置都要从头走一遍，这里只讲一些重点。</p>
-<h2 id="服务器-用户"><a href="#服务器-用户" class="headerlink" title="服务器 | 用户"></a>服务器 | 用户</h2><p>不允许转码：就算客户端不支持编码，也不能用服务端的软解，不然压力太大了。</p>
-<p>把<strong>每个用户</strong>的下面两个选项去掉；</p>
+<h1 id="Jellyfin-Configuration"><a href="#Jellyfin-Configuration" class="headerlink" title="Jellyfin Configuration"></a>Jellyfin Configuration</h1><p>Since it’s a fresh installation, all configurations need to be set up again. Here are some key points.</p>
+<h2 id="Server-Users"><a href="#Server-Users" class="headerlink" title="Server | Users"></a>Server | Users</h2><p>Disable transcoding: Even if the client doesn’t support the codec, server-side software decoding is not allowed, as it can lead to high pressure on the system.</p>
+<p>Remove the following two options for <strong>each user</strong>:</p>
 <p><img src="/en/MarkDownImages/image-20240213140202762.png" alt="image-20240213140202762"></p>
-<p>对于『允许播放需转换但无需重新编码的视频』这个选项，许多文章把这个选项也去掉了，但好像没什么影响，就留着吧。</p>
-<h2 id="高级-联网"><a href="#高级-联网" class="headerlink" title="高级 | 联网"></a>高级 | 联网</h2><p>选择之前挂载的 <code>jellyfin.pfx</code> 文件作为 SSL 证书（如何生成该文件见下文）：</p>
+<p>For the option ‘Allow video playback that requires conversion without re-encoding’, many articles recommend disabling it, but it seems to have no impact, so it can be left enabled.</p>
+<h2 id="Advanced-Networking"><a href="#Advanced-Networking" class="headerlink" title="Advanced | Networking"></a>Advanced | Networking</h2><p>Select the mounted <code>jellyfin.pfx</code> file as the SSL certificate (how to generate this file is explained later):</p>
 <p><img src="/en/MarkDownImages/image-20240213140616778.png" alt="image-20240213140616778"></p>
-<p>勾选『启用 HTTPS』，然后重启容器。</p>
+<p>Check ‘Enable HTTPS’ and restart the container.</p>
 <p><img src="/en/MarkDownImages/image-20240213140600270.png" alt="image-20240213140600270"></p>
-<p>没必要开启『强制 HTTPS 』，因为防火墙最终只会允许局域网其他设备访问 HTTPS 端口；本机还是可以通过 HTTP 访问 Jellyfin。</p>
-<h1 id="SSL-证书"><a href="#SSL-证书" class="headerlink" title="SSL 证书"></a>SSL 证书</h1><p>首先要有密钥 <code>jellyfin-priv-key.key</code> 和证书 <code>jellyfin.crt</code>（参考<a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#SSL-Certificate">上一篇文章</a>）</p>
-<p>然后使用以下命令生成 <code>.pfx</code> 文件即可：</p>
+<p>There’s no need to enable ‘Force HTTPS’ because the firewall will only allow devices on the local network to access the HTTPS port; the local machine can still access Jellyfin via HTTP.</p>
+<h1 id="SSL-Certificate"><a href="#SSL-Certificate" class="headerlink" title="SSL Certificate"></a>SSL Certificate</h1><p>Firstly, you need the private key <code>jellyfin-priv-key.key</code> and the certificate <code>jellyfin.crt</code> (refer to the <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#SSL-Certificate">previous article</a>).</p>
+<p>Then, use the following command to generate the <code>.pfx</code> file:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out jellyfin.pfx -inkey jellyfin-priv-key.key -<span class="keyword">in</span> jellyfin.crt  -passout pass:</span><br></pre></td></tr></table></figure>
 
-<h1 id="局域网设置"><a href="#局域网设置" class="headerlink" title="局域网设置"></a>局域网设置</h1><blockquote>
-<p>再次说一下我的网络环境：</p>
-<p>Windows 主机，通过 VMware 安装了 Linux，Docker 运行在该虚拟机上。</p>
-<p>主机和其他设备共享家庭内网。</p>
+<h1 id="Local-Network-Settings"><a href="#Local-Network-Settings" class="headerlink" title="Local Network Settings"></a>Local Network Settings</h1><blockquote>
+<p>Here is my network topology:</p>
+<p>Windows host with a Linux virtual machine installed by VMware, and Docker runs on this virtual machine.</p>
+<p>The host and other devices share the home network.</p>
 </blockquote>
-<p>之前在 Windows 上运行 Jellyfin，我直接允许 Jellyfin 访问专用网络（家庭内网）。即防火墙规则是授权给 Jellyfin 这个可执行文件，而不是某个端口。</p>
-<p>现在是在 Docker 中运行，要做如下更改：</p>
+<p>Previously, when running Jellyfin on Windows, I allowed Jellyfin’s direct access to the home network. That is, the firewall rules were authorized for the Jellyfin executable rather than a specific port.</p>
+<p>Now, with Docker, the following changes are made:</p>
 <ol>
-<li><p>添加虚拟机 NAT 映射，将 Linux 的 58920 映射到主机的 58920 端口；</p>
+<li><p>Add a NAT mapping for the virtual machine, mapping Linux’s 58920 to the host’s 58920 port.</p>
 <p> <img src="/en/MarkDownImages/image-20240213141926681.png" alt="image-20240213141926681"></p>
 </li>
-<li><p>新增防火墙入站规则：<code>58920/tcp</code>，专用网络；</p>
+<li><p>Add a firewall inbound rule: <code>58920/tcp</code> for the private network.</p>
 </li>
-<li><p>各个客户端重新连接新的服务器；</p>
+<li><p>Reconnect all client devices to the new server.</p>
 </li>
 </ol>
 <hr>
-<p>Windows 的 Jellyfin 开放 58920 端口，更换为 Docker 版后也是这个端口，即都可以在浏览器上通过 <code>https://主机IP:58920</code> 访问 web 客户端。这样可以“骗过” Google Password Manager，直接使用以前的账户和密码。</p>
-<h1 id="一些-Bug"><a href="#一些-Bug" class="headerlink" title="一些 Bug"></a>一些 Bug</h1><h2 id="字体问题"><a href="#字体问题" class="headerlink" title="字体问题"></a>字体问题</h2><p>创建好容器后，进入容器，执行以下命令：</p>
+<p>Jellyfin on Windows had port 58920 open, and after switching to the Docker version, it still uses the same port. We can access the web client through <code>https://hostIP:58920</code> in a browser. This ‘tricks’ Google Password Manager in some sense, allowing me to directly use the previous account and password.</p>
+<h1 id="Some-Bugs"><a href="#Some-Bugs" class="headerlink" title="Some Bugs"></a>Some Bugs</h1><h2 id="Font-Issue"><a href="#Font-Issue" class="headerlink" title="Font Issue"></a>Font Issue</h2><p>After creating the container, enter the container and execute the following command:</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt update &amp;&amp; apt install fonts-noto-cjk-extra</span><br></pre></td></tr></table></figure>
 
-<p>然后重启容器。</p>
-<p>不然的话，媒体库封面图的中文会变成方块。</p>
-<h2 id="符号链接"><a href="#符号链接" class="headerlink" title="符号链接"></a>符号链接</h2><p>通过 <code>mklink</code> 命令可以在 Windows 上创建链接。在 Windows 上运行 Jellyfin 时，为了不让 Jellyfin 修改媒体目录， 我使用 <a target="_blank" rel="noopener" href="https://github.com/el-nino2020/script-house/blob/main/script_house/FileSystemOperation.py#L125"><code>walk_while_link</code> 函数</a> 给每个视频文件创建符号链接。但是虚拟机的共享文件夹可以设置只读，volume 也可以设置只读，因此使用 Docker 后没必要这么做。</p>
-<p>更要命的是，这么做会导致视频无法播放，Jellyfin 读媒体数据时会报错。—— 我怀疑这是符号链接的锅，因为很多讲 NAS 的文章都使用硬链接，而不是符号链接。但我不喜欢用硬链接，更何况是在 Windows 上。</p>
-<p>但是给文件夹创建符号链接是可以的。比如说共享文件夹为 <code>jellyfin-docker-media</code>，我们可以通过给其他路径的 <code>films</code>、<code>animes</code> 文件夹制作符号链接，将它们都汇总到 <code>jellyfin-docker-media</code> 下。这相当于加了一层封装，减少了虚拟机共享文件夹的数目。</p>
-<p>实际上我就是这么做的，Docker-compose 中的 <code>/mnt/hgfs/jellyfin-media</code>，就是主机的 <code>jellyfin-docker-media</code> 共享文件夹。</p>
-<h1 id="Docker-知识"><a href="#Docker-知识" class="headerlink" title="Docker 知识"></a>Docker 知识</h1><p>通过安装 Jellyfin，我在实操中加深了对 Docker 的理解。</p>
-<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p>Dockerfile 中的 <code>EXPOSE</code> 关键字，我一直以为只有用了这个关键字，启动容器时才可以映射对应端口，实则不然。</p>
+<p>Then restart the container.</p>
+<p>Otherwise, Chinese characters on the media library cover images appear as squares.</p>
+<h2 id="Symbolic-Links"><a href="#Symbolic-Links" class="headerlink" title="Symbolic Links"></a>Symbolic Links</h2><p>On Windows, we can create links using the <code>mklink</code> command. When running Jellyfin on Windows, to prevent Jellyfin from modifying the media directory, I used the <a target="_blank" rel="noopener" href="https://github.com/el-nino2020/script-house/blob/main/script_house/FileSystemOperation.py#L125"><code>walk_while_link</code> function</a> to create symbolic links for each video file. However, shared folders in virtual machines can be set to read-only, and volumes can also be set to read-only, so there’s no need to do this in Docker.</p>
+<p>Moreover, creating symbolic links this way causes videos to be unplayable, and Jellyfin reports errors when reading media data. I suspect this is due to symbolic links because many articles about NAS use hard links rather than symbolic links. However, I don’t prefer using hard links, especially on Windows.</p>
+<p>Creating symbolic links for folders is still possible. For example, if the shared folder is <code>jellyfin-docker-media</code>, you can create symbolic links for the <code>films</code> and <code>animes</code> folders in other paths, putting them all under <code>jellyfin-docker-media</code>. This essentially adds an extra layer of abstraction and reduces the number of shared folders for the virtual machine.</p>
+<p>In fact, this is what I did. The <code>/mnt/hgfs/jellyfin-media</code> in Docker-compose is the host’s <code>jellyfin-docker-media</code> shared folder.</p>
+<h1 id="Docker-Knowledge"><a href="#Docker-Knowledge" class="headerlink" title="Docker Knowledge"></a>Docker Knowledge</h1><p>By installing Jellyfin, I deepened my understanding of Docker through practical experiences.</p>
+<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p>I always thought that using the <code>EXPOSE</code> keyword in the Dockerfile was necessary for mapping ports when starting a container. However, that’s not the case.</p>
 <blockquote>
 <p>The <code>EXPOSE</code> instruction <strong>informs</strong> Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don’t specify a protocol.</p>
 <p>The <code>EXPOSE</code> instruction <strong>doesn’t actually publish the port</strong>. It functions as a type of <strong>documentation</strong> between the person who builds the image and the person who runs the container, about which ports are intended to be published. To publish the port when running the container, use the <code>-p</code> flag on <code>docker run</code> to publish and map one or more ports, or the <code>-P</code> flag to publish all exposed ports and map them to high-order ports.</p>
 </blockquote>
-<p>上面两段话摘录自官网的文档。<code>EXPOSE</code> 只是一个文档性质的声明，而 <code>-p</code> 才是真正的端口映射，并且可以随意地映射容器的端口，没有限制。</p>
-<p>因此，我在<a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#Nginx-Container">『在 Docker 中部署 Nginx，并在局域网配置 SSL 证书』</a> 的做法是无意义的，没必要为了 <code>EXPOSE</code> 新创建一个镜像。</p>
+<p>These two paragraphs are excerpted from the official documentation. <code>EXPOSE</code> is merely a declarative instruction, and it’s the <code>-p</code> option that truly maps the container’s ports. This mapping can be done freely, without any restrictions.</p>
+<p>Therefore, the approach I took in <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#Nginx-Container">‘Deploying Nginx in Docker and Configuring SSL Certificate for Local Network’</a> is meaningless. There’s no need to create a new image just for <code>EXPOSE</code>.</p>
 <blockquote>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
 </blockquote>
-<h2 id="Cache-Memory"><a href="#Cache-Memory" class="headerlink" title="Cache Memory"></a>Cache Memory</h2><p>在 Portainer 的统计中，可以看到内存使用分为『Memory』和『Cache』。这两个分别是什么意思？哪个才是目前占用的内存？</p>
+<h2 id="Cache-Memory"><a href="#Cache-Memory" class="headerlink" title="Cache Memory"></a>Cache Memory</h2><p>In Portainer statistics, you can see that memory usage is divided into ‘Memory’ and ‘Cache’. What do these two terms mean? Which one represents the current memory usage?</p>
 <p><img src="/en/MarkDownImages/image-20240213085846776.png" alt="image-20240213085846776"></p>
-<p>简单来说，『Memory』是目前占用的内存，而『Cache』是<strong>曾经使用过</strong>的内存。Memory Cache 是 Docker 的一个属性，其值等于 <code>/proc/meminfo</code> 中 <code>Inactive(file)</code> 的值。</p>
+<p>In simple words, ‘Memory’ represents the current memory usage, while ‘Cache’ represents memory that <strong>was previously used</strong>. Memory Cache is a term in Docker, and its value is equal to the value of <code>Inactive(file)</code> in <code>/proc/meminfo</code>.</p>
 <blockquote>
 <p><code>Inactive(file)</code> — The amount of file cache memory, in kibibytes, that is newly loaded from the disk, or is a candidate for reclaiming.</p>
 </blockquote>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/624670198">在Docker下安装Jellyfin并正确开启硬件解码</a></li>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/640489824">Docker部署开源流媒体软件Jellyfin</a></li>
 <li><a target="_blank" rel="noopener" href="https://jellyfin.org/docs/general/installation/container#using-docker-compose">Jellyfin doc installation</a></li>
@@ -463,7 +468,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/" title="在 Docker 中安装 Jellyfin">https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/</a>
+      <a href="https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/" title="Install Jellyfin in Docker">https://el-nino2020.github.io/en/2024/02/11/Jellyfin-Docker/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -535,7 +540,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:20</span>
+    <span title="Reading time total">1:19</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
