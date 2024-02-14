@@ -137,6 +137,75 @@
       </tags>
   </entry>
   <entry>
+    <title>Algorithm Problem 004: Maximum Employees to Be Invited to a Meeting</title>
+    <url>/en/2023/11/01/Algorithm-Problem-004-maximum-employees-to-be-invited-to-a-meeting/</url>
+    <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
+<p>Source: <a href="https://leetcode.cn/problems/maximum-employees-to-be-invited-to-a-meeting/">2127. Maximum Employees to Be Invited to a Meeting</a> (Daily Problem)</p>
+</blockquote>
+<p>A company is organizing a meeting and has a list of <code>n</code> employees, waiting to be invited. They have arranged for a large <strong>circular</strong> table, capable of seating <strong>any number</strong> of employees.</p>
+<p>The employees are numbered from <code>0</code> to <code>n - 1</code>. Each employee has a <strong>favorite</strong> person and they will attend the meeting <strong>only if</strong> they can sit next to their favorite person at the table. The favorite person of an employee is <strong>not</strong> themselves.</p>
+<p>Given a <strong>0-indexed</strong> integer array <code>favorite</code>, where <code>favorite[i]</code> denotes the favorite person of the <code>ith</code> employee, return <em>the <strong>maximum number of employees</strong> that can be invited to the meeting</em>.</p>
+<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1"></a>Example 1</h2><blockquote>
+<p>Input: favorite &#x3D; [2,2,1,2]<br>Output: 3</p>
+</blockquote>
+<p><img src="/MarkDownImages/image-20231101114926490.png" alt="image-20231101114926490" style="zoom:65%;" /><img src="/MarkDownImages/image-20231101125447756-16988146128191.png" alt="image-20231101125447756" style="zoom:35%;" /></p>
+<span id="more"></span>
+
+<h2 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2"></a>Example 2</h2><blockquote>
+<p>Input: favorite &#x3D; [1,2,0]<br>Output: 3</p>
+</blockquote>
+<p><img src="/en/MarkDownImages/image-20231101115048286.png" alt="image-20231101115048286"></p>
+<h2 id="Example-3"><a href="#Example-3" class="headerlink" title="Example 3"></a>Example 3</h2><blockquote>
+<p>Input: favorite &#x3D; [3,0,1,4,1]<br>Output: 4</p>
+</blockquote>
+<p><img src="/MarkDownImages/image-20231101115200232.png" alt="image-20231101115200232" style="zoom:65%;" /><img src="/MarkDownImages/image-20231101125539019.png" alt="image-20231101125539019" style="zoom:33%;" /></p>
+<h1 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h1><p>By the definition of <code>favorite</code>, if we consider each employee as a node pointing to their favorite employee, we form a <strong>directed cyclic graph</strong> with <code>n</code> edges, <code>n</code> nodes, and each node having an out-degree of 1.</p>
+<p>Observing Examples 2 and 3, the employees attending the circular table meeting must form a cycle. This is because each node has an out-degree of 1, and an employee must sit next to his favorite employee. Therefore, the maximum number of employees attending the meeting is equal to the <strong>length of the longest cycle</strong> (Conclusion 1️⃣).</p>
+<p>Conclusion 1️⃣ can also be argued in reverse:</p>
+<p>In Example 3, node 2 cannot attend the meeting because inserting this employee at any position on the circular table breaks the existing cycle. For instance, if we insert 2 between 0 and 1, then the neighbors of 1 become 2 and 4, neither of which is the favorite employee, violating the conditions.</p>
+<p>Hence, the graph formed by employees able to attend the meeting must be a cycle, and there cannot be any other node chains (linked lists) pointing to a node within the cycle.</p>
+<p>As shown in the diagram below, the answer is $\set{0,1,2,3}$ and it cannot include $\set{7,8}$ and $\set{4,5,6}$.</p>
+<img src="/MarkDownImages/image-20231101132810263.png" alt="image-20231101132810263" style="zoom: 50%;" />
+
+<p><strong>However</strong>, for <strong>cycles of length 2</strong> (two nodes pointing to each other), as long as the two employees sit together, the cycle cannot be broken. Therefore, cycles of length 2 need to be <strong>specially handled</strong>. In Example 1, nodes 1 and 2 form a cycle, and in this case, an additional employee can be added to the circular table.</p>
+<p>Observing the following example:</p>
+<img src="/MarkDownImages/image-20231101133700388.png" alt="image-20231101133700388" style="zoom:50%;" />
+
+<p>Nodes 0 and 1 form a cycle of length 2, and the node chain $(3,2)$ points to 0, while the node chain $(5,4),(6)$ points to 1. The employees on the circular table in order should be $3,2,0,1,4,5$. That is, <strong>for every node in the cycle (2 nodes in total), add its longest node chain to the result set</strong> (Conclusion 2️⃣). Therefore, we choose $(5,4)$ instead of $(6)$.</p>
+<p>Note that the graph may have multiple connected components. We need to adjust the two conclusions above:</p>
+<ul>
+<li>For cycles of length greater than 2, the entire circular table must belong to the nodes within the cycle, and no other nodes are allowed. Therefore, when there are multiple cycles, choose the one with the maximum length as the result.</li>
+<li>For cycles of length 2, the condition that each employee ‘will attend the meeting only if they can sit next to their favorite person at the table’ is satisfied by the cycle itself, not by occupying the entire circular table. Therefore, <strong>the final result is the union of all result sets satisfying ‘Conclusion 2️⃣’</strong>. If employees in one result set sit together, then <strong>all result sets can coexist</strong>.</li>
+</ul>
+<p>Observing the example below, the answer is three cycles of length 2 and their extended node chains, totaling 8 nodes. The remaining connected component is a cycle of length 4.</p>
+<img src="/MarkDownImages/image-20231101134045195.png" alt="image-20231101134045195" style="zoom: 50%;" />
+
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>Based on the conclusions we drew earlier, the following information needs to be calculated in the code:</p>
+<ul>
+<li>The lengths of various cycles</li>
+<li>The maximum length of the node chain for every node in cycles of length 2</li>
+</ul>
+<h2 id="How-to-Find-Cycles-in-the-Graph"><a href="#How-to-Find-Cycles-in-the-Graph" class="headerlink" title="How to Find Cycles in the Graph?"></a>How to Find Cycles in the Graph?</h2><p>Use topological sorting. Since this is a directed graph with <strong>$n$ edges, $n$ nodes, and each node’s out-degree is 1</strong>, nodes that cannot be visited during topological sorting must be part of a cycle.</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> favorite.length;</span><br><span class="line"><span class="type">int</span>[] inDegree = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">ArrayDeque&lt;Integer&gt; que = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line"><span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    inDegree[favorite[i]]++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (inDegree[i] == <span class="number">0</span>) &#123;</span><br><span class="line">        que.add(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!que.isEmpty()) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> que.pollFirst();</span><br><span class="line">    visited[cur] = <span class="literal">true</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> favorite[cur];</span><br><span class="line"></span><br><span class="line">    inDegree[next]--;</span><br><span class="line">    <span class="keyword">if</span> (inDegree[next] == <span class="number">0</span>) &#123;</span><br><span class="line">        que.addLast(next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// At this point, all non-cycle nodes have been traversed and marked as visited</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="variable">maxCircleSize</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (visited[i]) <span class="keyword">continue</span>;</span><br><span class="line">    <span class="comment">// circle collects all nodes in the current cycle</span></span><br><span class="line">    ArrayList&lt;Integer&gt; circle = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> i;</span><br><span class="line">    <span class="keyword">while</span> (!visited[cur]) &#123;</span><br><span class="line">        circle.add(cur);</span><br><span class="line">        visited[cur] = <span class="literal">true</span>;</span><br><span class="line">        cur = favorite[cur];</span><br><span class="line">    &#125;</span><br><span class="line">    maxCircleSize = Math.max(maxCircleSize, circle.size());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="How-to-Count-Node-Chains"><a href="#How-to-Count-Node-Chains" class="headerlink" title="How to Count Node Chains?"></a>How to Count Node Chains?</h2><p>Node chains are single-linked lists that do not belong to a cycle. The list starts from a node with an in-degree of 0 and points to a node within a cycle. We can define a <code>pathLen</code> array,<br>where <code>pathLen[i]</code> represents <strong>the length of the longest node chain pointing to node <code>i</code></strong>.</p>
+<p>Since topological sorting continuously traverses nodes with a current in-degree of 0, if node a points to b, then a will be visited first. If the node chain for a is already calculated, we can easily calculate the node chain for b:</p>
+<p>$pathLen[b] &#x3D; \max\limits_{(a,b)\in E}\set{1 + pathLen[a]}$</p>
+<p>Therefore, we can calculate <code>pathLen</code> during topological sorting:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Initialized to 0</span></span><br><span class="line"><span class="type">int</span>[] pathLen = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"></span><br><span class="line"><span class="comment">// ......</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!que.isEmpty()) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> que.pollFirst();</span><br><span class="line">    visited[cur] = <span class="literal">true</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> favorite[cur];</span><br><span class="line">    <span class="comment">// Update pathLen here</span></span><br><span class="line">    pathLen[next] = Math.max(pathLen[next], pathLen[cur] + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    inDegree[next]--;</span><br><span class="line">    <span class="keyword">if</span> (inDegree[next] == <span class="number">0</span>) &#123;</span><br><span class="line">        que.addLast(next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Final-Code"><a href="#Final-Code" class="headerlink" title="Final Code"></a>Final Code</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayDeque;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumInvitations</span><span class="params">(<span class="type">int</span>[] favorite)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> favorite.length;</span><br><span class="line">        <span class="type">int</span>[] inDegree = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="type">int</span>[] pathLen = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        ArrayDeque&lt;Integer&gt; que = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Topological sorting</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            inDegree[favorite[i]]++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDegree[i] == <span class="number">0</span>) &#123;</span><br><span class="line">                que.add(i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!que.isEmpty()) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> que.pollFirst();</span><br><span class="line">            visited[cur] = <span class="literal">true</span>;</span><br><span class="line">            <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> favorite[cur];</span><br><span class="line">            pathLen[next] = Math.max(pathLen[next], pathLen[cur] + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">            inDegree[next]--;</span><br><span class="line">            <span class="keyword">if</span> (inDegree[next] == <span class="number">0</span>) &#123;</span><br><span class="line">                que.addLast(next);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Topological sorting is complete, </span></span><br><span class="line">        <span class="comment">// all non-cycle nodes have been traversed and marked as visited</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Maximum cycle length</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">maxCircleLength</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// The size of the union of all result sets satisfying &#x27;Conclusion 2️⃣&#x27;</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">twoCirclePath</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Start finding cycles</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[i]) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// circle collects all nodes in the current cycle</span></span><br><span class="line">            ArrayList&lt;Integer&gt; circle = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> i;</span><br><span class="line">            <span class="keyword">while</span> (!visited[cur]) &#123;</span><br><span class="line">                circle.add(cur);</span><br><span class="line">                visited[cur] = <span class="literal">true</span>;</span><br><span class="line">                cur = favorite[cur];</span><br><span class="line">            &#125;</span><br><span class="line">            maxCircleLength = Math.max(maxCircleLength, circle.size());</span><br><span class="line">            <span class="keyword">if</span> (circle.size() == <span class="number">2</span>) &#123;</span><br><span class="line">                twoCirclePath += pathLen[circle.get(<span class="number">0</span>)] + pathLen[circle.get(<span class="number">1</span>)] + <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.max(maxCircleLength, twoCirclePath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Algorithm Problems</category>
+      </categories>
+      <tags>
+        <tag>Graph</tag>
+        <tag>Topological Sorting</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>算法题003：对角线遍历 II</title>
     <url>/en/2023/10/29/Algorithm-Problem-003-diagonal-traverse-ii/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -210,72 +279,93 @@
       </tags>
   </entry>
   <entry>
-    <title>Algorithm Problem 004: Maximum Employees to Be Invited to a Meeting</title>
-    <url>/en/2023/11/01/Algorithm-Problem-004-maximum-employees-to-be-invited-to-a-meeting/</url>
-    <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
-<p>Source: <a href="https://leetcode.cn/problems/maximum-employees-to-be-invited-to-a-meeting/">2127. Maximum Employees to Be Invited to a Meeting</a> (Daily Problem)</p>
-</blockquote>
-<p>A company is organizing a meeting and has a list of <code>n</code> employees, waiting to be invited. They have arranged for a large <strong>circular</strong> table, capable of seating <strong>any number</strong> of employees.</p>
-<p>The employees are numbered from <code>0</code> to <code>n - 1</code>. Each employee has a <strong>favorite</strong> person and they will attend the meeting <strong>only if</strong> they can sit next to their favorite person at the table. The favorite person of an employee is <strong>not</strong> themselves.</p>
-<p>Given a <strong>0-indexed</strong> integer array <code>favorite</code>, where <code>favorite[i]</code> denotes the favorite person of the <code>ith</code> employee, return <em>the <strong>maximum number of employees</strong> that can be invited to the meeting</em>.</p>
-<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1"></a>Example 1</h2><blockquote>
-<p>Input: favorite &#x3D; [2,2,1,2]<br>Output: 3</p>
-</blockquote>
-<p><img src="/MarkDownImages/image-20231101114926490.png" alt="image-20231101114926490" style="zoom:65%;" /><img src="/MarkDownImages/image-20231101125447756-16988146128191.png" alt="image-20231101125447756" style="zoom:35%;" /></p>
-<span id="more"></span>
+    <title>Hexo自定义404页面</title>
+    <url>/en/2023/07/04/Hexo-custom-404/</url>
+    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2"></a>Example 2</h2><blockquote>
-<p>Input: favorite &#x3D; [1,2,0]<br>Output: 3</p>
-</blockquote>
-<p><img src="/en/MarkDownImages/image-20231101115048286.png" alt="image-20231101115048286"></p>
-<h2 id="Example-3"><a href="#Example-3" class="headerlink" title="Example 3"></a>Example 3</h2><blockquote>
-<p>Input: favorite &#x3D; [3,0,1,4,1]<br>Output: 4</p>
-</blockquote>
-<p><img src="/MarkDownImages/image-20231101115200232.png" alt="image-20231101115200232" style="zoom:65%;" /><img src="/MarkDownImages/image-20231101125539019.png" alt="image-20231101125539019" style="zoom:33%;" /></p>
-<h1 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h1><p>By the definition of <code>favorite</code>, if we consider each employee as a node pointing to their favorite employee, we form a <strong>directed cyclic graph</strong> with <code>n</code> edges, <code>n</code> nodes, and each node having an out-degree of 1.</p>
-<p>Observing Examples 2 and 3, the employees attending the circular table meeting must form a cycle. This is because each node has an out-degree of 1, and an employee must sit next to his favorite employee. Therefore, the maximum number of employees attending the meeting is equal to the <strong>length of the longest cycle</strong> (Conclusion 1️⃣).</p>
-<p>Conclusion 1️⃣ can also be argued in reverse:</p>
-<p>In Example 3, node 2 cannot attend the meeting because inserting this employee at any position on the circular table breaks the existing cycle. For instance, if we insert 2 between 0 and 1, then the neighbors of 1 become 2 and 4, neither of which is the favorite employee, violating the conditions.</p>
-<p>Hence, the graph formed by employees able to attend the meeting must be a cycle, and there cannot be any other node chains (linked lists) pointing to a node within the cycle.</p>
-<p>As shown in the diagram below, the answer is $\set{0,1,2,3}$ and it cannot include $\set{7,8}$ and $\set{4,5,6}$.</p>
-<img src="/MarkDownImages/image-20231101132810263.png" alt="image-20231101132810263" style="zoom: 50%;" />
+<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
+<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
+<p>下面是对应的代码，直接放在 md 文件中即可：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>However</strong>, for <strong>cycles of length 2</strong> (two nodes pointing to each other), as long as the two employees sit together, the cycle cannot be broken. Therefore, cycles of length 2 need to be <strong>specially handled</strong>. In Example 1, nodes 1 and 2 form a cycle, and in this case, an additional employee can be added to the circular table.</p>
-<p>Observing the following example:</p>
-<img src="/MarkDownImages/image-20231101133700388.png" alt="image-20231101133700388" style="zoom:50%;" />
+<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
+<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
+<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
 
-<p>Nodes 0 and 1 form a cycle of length 2, and the node chain $(3,2)$ points to 0, while the node chain $(5,4),(6)$ points to 1. The employees on the circular table in order should be $3,2,0,1,4,5$. That is, <strong>for every node in the cycle (2 nodes in total), add its longest node chain to the result set</strong> (Conclusion 2️⃣). Therefore, we choose $(5,4)$ instead of $(6)$.</p>
-<p>Note that the graph may have multiple connected components. We need to adjust the two conclusions above:</p>
-<ul>
-<li>For cycles of length greater than 2, the entire circular table must belong to the nodes within the cycle, and no other nodes are allowed. Therefore, when there are multiple cycles, choose the one with the maximum length as the result.</li>
-<li>For cycles of length 2, the condition that each employee ‘will attend the meeting only if they can sit next to their favorite person at the table’ is satisfied by the cycle itself, not by occupying the entire circular table. Therefore, <strong>the final result is the union of all result sets satisfying ‘Conclusion 2️⃣’</strong>. If employees in one result set sit together, then <strong>all result sets can coexist</strong>.</li>
-</ul>
-<p>Observing the example below, the answer is three cycles of length 2 and their extended node chains, totaling 8 nodes. The remaining connected component is a cycle of length 4.</p>
-<img src="/MarkDownImages/image-20231101134045195.png" alt="image-20231101134045195" style="zoom: 50%;" />
+<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
+<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
 
-<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>Based on the conclusions we drew earlier, the following information needs to be calculated in the code:</p>
-<ul>
-<li>The lengths of various cycles</li>
-<li>The maximum length of the node chain for every node in cycles of length 2</li>
-</ul>
-<h2 id="How-to-Find-Cycles-in-the-Graph"><a href="#How-to-Find-Cycles-in-the-Graph" class="headerlink" title="How to Find Cycles in the Graph?"></a>How to Find Cycles in the Graph?</h2><p>Use topological sorting. Since this is a directed graph with <strong>$n$ edges, $n$ nodes, and each node’s out-degree is 1</strong>, nodes that cannot be visited during topological sorting must be part of a cycle.</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> favorite.length;</span><br><span class="line"><span class="type">int</span>[] inDegree = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">ArrayDeque&lt;Integer&gt; que = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line"><span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    inDegree[favorite[i]]++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (inDegree[i] == <span class="number">0</span>) &#123;</span><br><span class="line">        que.add(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!que.isEmpty()) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> que.pollFirst();</span><br><span class="line">    visited[cur] = <span class="literal">true</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> favorite[cur];</span><br><span class="line"></span><br><span class="line">    inDegree[next]--;</span><br><span class="line">    <span class="keyword">if</span> (inDegree[next] == <span class="number">0</span>) &#123;</span><br><span class="line">        que.addLast(next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// At this point, all non-cycle nodes have been traversed and marked as visited</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="variable">maxCircleSize</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (visited[i]) <span class="keyword">continue</span>;</span><br><span class="line">    <span class="comment">// circle collects all nodes in the current cycle</span></span><br><span class="line">    ArrayList&lt;Integer&gt; circle = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> i;</span><br><span class="line">    <span class="keyword">while</span> (!visited[cur]) &#123;</span><br><span class="line">        circle.add(cur);</span><br><span class="line">        visited[cur] = <span class="literal">true</span>;</span><br><span class="line">        cur = favorite[cur];</span><br><span class="line">    &#125;</span><br><span class="line">    maxCircleSize = Math.max(maxCircleSize, circle.size());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="How-to-Count-Node-Chains"><a href="#How-to-Count-Node-Chains" class="headerlink" title="How to Count Node Chains?"></a>How to Count Node Chains?</h2><p>Node chains are single-linked lists that do not belong to a cycle. The list starts from a node with an in-degree of 0 and points to a node within a cycle. We can define a <code>pathLen</code> array,<br>where <code>pathLen[i]</code> represents <strong>the length of the longest node chain pointing to node <code>i</code></strong>.</p>
-<p>Since topological sorting continuously traverses nodes with a current in-degree of 0, if node a points to b, then a will be visited first. If the node chain for a is already calculated, we can easily calculate the node chain for b:</p>
-<p>$pathLen[b] &#x3D; \max\limits_{(a,b)\in E}\set{1 + pathLen[a]}$</p>
-<p>Therefore, we can calculate <code>pathLen</code> during topological sorting:</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Initialized to 0</span></span><br><span class="line"><span class="type">int</span>[] pathLen = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line"></span><br><span class="line"><span class="comment">// ......</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!que.isEmpty()) &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> que.pollFirst();</span><br><span class="line">    visited[cur] = <span class="literal">true</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> favorite[cur];</span><br><span class="line">    <span class="comment">// Update pathLen here</span></span><br><span class="line">    pathLen[next] = Math.max(pathLen[next], pathLen[cur] + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    inDegree[next]--;</span><br><span class="line">    <span class="keyword">if</span> (inDegree[next] == <span class="number">0</span>) &#123;</span><br><span class="line">        que.addLast(next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Final-Code"><a href="#Final-Code" class="headerlink" title="Final Code"></a>Final Code</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayDeque;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">maximumInvitations</span><span class="params">(<span class="type">int</span>[] favorite)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> favorite.length;</span><br><span class="line">        <span class="type">int</span>[] inDegree = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        <span class="type">int</span>[] pathLen = <span class="keyword">new</span> <span class="title class_">int</span>[n];</span><br><span class="line">        ArrayDeque&lt;Integer&gt; que = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">        <span class="type">boolean</span>[] visited = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Topological sorting</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            inDegree[favorite[i]]++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (inDegree[i] == <span class="number">0</span>) &#123;</span><br><span class="line">                que.add(i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> (!que.isEmpty()) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> que.pollFirst();</span><br><span class="line">            visited[cur] = <span class="literal">true</span>;</span><br><span class="line">            <span class="type">int</span> <span class="variable">next</span> <span class="operator">=</span> favorite[cur];</span><br><span class="line">            pathLen[next] = Math.max(pathLen[next], pathLen[cur] + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">            inDegree[next]--;</span><br><span class="line">            <span class="keyword">if</span> (inDegree[next] == <span class="number">0</span>) &#123;</span><br><span class="line">                que.addLast(next);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Topological sorting is complete, </span></span><br><span class="line">        <span class="comment">// all non-cycle nodes have been traversed and marked as visited</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// Maximum cycle length</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">maxCircleLength</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// The size of the union of all result sets satisfying &#x27;Conclusion 2️⃣&#x27;</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">twoCirclePath</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Start finding cycles</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (visited[i]) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// circle collects all nodes in the current cycle</span></span><br><span class="line">            ArrayList&lt;Integer&gt; circle = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">            <span class="type">int</span> <span class="variable">cur</span> <span class="operator">=</span> i;</span><br><span class="line">            <span class="keyword">while</span> (!visited[cur]) &#123;</span><br><span class="line">                circle.add(cur);</span><br><span class="line">                visited[cur] = <span class="literal">true</span>;</span><br><span class="line">                cur = favorite[cur];</span><br><span class="line">            &#125;</span><br><span class="line">            maxCircleLength = Math.max(maxCircleLength, circle.size());</span><br><span class="line">            <span class="keyword">if</span> (circle.size() == <span class="number">2</span>) &#123;</span><br><span class="line">                twoCirclePath += pathLen[circle.get(<span class="number">0</span>)] + pathLen[circle.get(<span class="number">1</span>)] + <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Math.max(maxCircleLength, twoCirclePath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
+<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
 ]]></content>
       <categories>
-        <category>Algorithm Problems</category>
+        <category>softwares</category>
+        <category>Hexo</category>
       </categories>
       <tags>
-        <tag>Graph</tag>
-        <tag>Topological Sorting</tag>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Azure Pipelines 架构解析</title>
+    <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
+    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
+<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
+<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
+<span id="more"></span>
+
+<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
+<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
+<ul>
+<li>一条 Pipeline 可以包含多个 Stage</li>
+<li>一个 Stage 可以包含多个 Job</li>
+<li>一个 Job 可以包含多个 Step</li>
+<li>一个 Step 可以包含多个 task</li>
+</ul>
+<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
+<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
+<p>这种分配是如何完成的呢？</p>
+<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
+<ul>
+<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
+<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
+</ul>
+<p>因此，一条 Pipeline 是这样执行的：</p>
+<ol>
+<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
+<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
+<li>竞争成功，开始执行；</li>
+<li>竞争失败，继续监听；</li>
+</ul>
+</li>
+<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
+</ol>
+<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
+<blockquote>
+<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
+</blockquote>
+<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
+<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
+<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
+<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Azure</category>
+      </categories>
+      <tags>
+        <tag>Azure</tag>
+        <tag>Azure Pipelines</tag>
+        <tag>架构</tag>
       </tags>
   </entry>
   <entry>
@@ -536,99 +626,11 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo自定义404页面</title>
-    <url>/en/2023/07/04/Hexo-custom-404/</url>
-    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
-
-<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
-<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
-<p>下面是对应的代码，直接放在 md 文件中即可：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
-<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
-<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
-
-<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
-<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
-
-<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
-<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Azure Pipelines 架构解析</title>
-    <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
-    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
-<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
-<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
-<span id="more"></span>
-
-<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
-<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
-<ul>
-<li>一条 Pipeline 可以包含多个 Stage</li>
-<li>一个 Stage 可以包含多个 Job</li>
-<li>一个 Job 可以包含多个 Step</li>
-<li>一个 Step 可以包含多个 task</li>
-</ul>
-<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
-<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
-<p>这种分配是如何完成的呢？</p>
-<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
-<ul>
-<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
-<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
-</ul>
-<p>因此，一条 Pipeline 是这样执行的：</p>
-<ol>
-<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
-<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
-<li>竞争成功，开始执行；</li>
-<li>竞争失败，继续监听；</li>
-</ul>
-</li>
-<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
-</ol>
-<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
-<blockquote>
-<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
-</blockquote>
-<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
-<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
-<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
-<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
-<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Azure</category>
-      </categories>
-      <tags>
-        <tag>Azure</tag>
-        <tag>Azure Pipelines</tag>
-        <tag>架构</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Install Jellyfin in Docker</title>
     <url>/en/2024/02/11/Jellyfin-Docker/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p><a href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><blockquote>
+<p><a href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
+</blockquote>
 <p>Previously, I have installed the portable version of Jellyfin on Windows because a Linux virtual machine can not utilize the graphics card for hardware transcoding. However, I discovered that the Android and iOS clients support most codecs, eliminating the need for server-side transcoding. Since I am already familiar with Jellyfin’s usage and configuration, I decided to migrate it to Docker.</p>
 <p>Although Jellyfin itself is cross-platform, its configuration is still OS-dependent, especially when moving from Windows to Docker. Despite the availability of a <a href="https://github.com/MMMZZZZ/Jellyfin-Migrator">third-party script</a>, I chose to reconfigure it for safety, which does not require much effort.</p>
 <p>This article mainly talks about how to install Jellyfin using Docker, along with any issues encountered and their solutions.</p>
@@ -766,6 +768,76 @@
       </tags>
   </entry>
   <entry>
+    <title>LocalSend：局域网文件传输利器</title>
+    <url>/en/2023/09/04/LocalSend-A-powerful-tool-for-local-file-transfer/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
+<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
+<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
+<span id="more"></span>
+
+<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
+<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
+<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
+<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
+<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
+<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
+</li>
+<li><p>进入『配置防火墙和安全设置』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
+</li>
+<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
+</li>
+<li><p>重启 LocalSend，等待找到目标主机</p>
+</li>
+</ol>
+<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
+<ol>
+<li><p>打开『Windows Defender 防火墙』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
+</li>
+<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
+</li>
+<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
+</li>
+</ol>
+<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
+<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
+<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
+<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
+<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
+<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
+<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>LocalSend</category>
+      </categories>
+      <tags>
+        <tag>LocalSend</tag>
+        <tag>settings</tag>
+        <tag>Firewall</tag>
+        <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>LANraragi Manga Server</title>
     <url>/en/2024/01/25/LANraragi-manga-server/</url>
     <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>Recently, I’ve been looking into home media libraries, and most tutorials focus on NAS, but most of the applications actually run on Docker.</p>
@@ -883,76 +955,6 @@
       </tags>
   </entry>
   <entry>
-    <title>LocalSend：局域网文件传输利器</title>
-    <url>/en/2023/09/04/LocalSend-A-powerful-tool-for-local-file-transfer/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
-<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
-<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
-<span id="more"></span>
-
-<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
-<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
-<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
-<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
-<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
-<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
-</li>
-<li><p>进入『配置防火墙和安全设置』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
-</li>
-<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
-</li>
-<li><p>重启 LocalSend，等待找到目标主机</p>
-</li>
-</ol>
-<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
-<ol>
-<li><p>打开『Windows Defender 防火墙』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
-</li>
-<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
-</li>
-<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
-</li>
-</ol>
-<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
-<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
-<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
-<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
-<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
-<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
-<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>LocalSend</category>
-      </categories>
-      <tags>
-        <tag>LocalSend</tag>
-        <tag>settings</tag>
-        <tag>Firewall</tag>
-        <tag>Windows</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
     <url>/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
@@ -1002,6 +1004,47 @@
         <tag>MyBatis-Plus</tag>
         <tag>JDBC</tag>
         <tag>Repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
+
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
       </tags>
   </entry>
   <entry>
@@ -1057,8 +1100,8 @@
 <p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
 ]]></content>
       <categories>
-        <category>tech</category>
         <category>softwares</category>
+        <category>tech</category>
         <category>VS Code</category>
         <category>Typora</category>
         <category>Markdown</category>
@@ -1071,44 +1114,63 @@
       </tags>
   </entry>
   <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
-<span id="more"></span>
+    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
+    <url>/en/2023/07/05/Spring-MVC-Automatic-Validation-of-Request-Parameters-Using-Validation-Annotations/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
+<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
+<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
+<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
 
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+<p>validation-api 是本次介绍的重点</p>
+<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
 
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
+<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
 
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
+<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
+<p><code>@NotNull</code>：字面含义，字段非空</p>
+<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
+<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
+<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
+
+<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务器返回了 400 错误</p>
+<p><img src="/en/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
+<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
+<p><img src="/en/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
+<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
 ]]></content>
       <categories>
-        <category>softwares</category>
-        <category>PotPlayer</category>
+        <category>tech</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>Spring MVC</tag>
+        <tag>Controller</tag>
       </tags>
   </entry>
   <entry>
@@ -1204,64 +1266,107 @@
       </tags>
   </entry>
   <entry>
-    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
-    <url>/en/2023/07/05/Spring-MVC-Automatic-Validation-of-Request-Parameters-Using-Validation-Annotations/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
-<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
-<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
-<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
-<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
+    <title>Common Commands for pip &amp; conda</title>
+    <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
+    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
+<li><p>Install <code>script-house</code>, version <code>0.0.2</code>.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p> If you want to install the latest version by default, you can omit <code>==0.0.2</code>.</p>
+<p> To install multiple dependencies in one line:</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
+</ol>
+<span id="more"></span>
 
-<p>validation-api 是本次介绍的重点</p>
-<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
+<ol start="2">
+<li><p>List all dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>List current dependencies in <code>requirements.txt</code> format.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
 
-<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
-<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
+<p> The result of <code>pip freeze</code> is a subset of <code>pip list</code>. <code>pip list</code> usually includes fundamental dependencies like <code>pip</code>, <code>setuptools</code>, and <code>wheel</code>.</p>
+<p> The purpose of <code>pip freeze</code> is to export project dependencies for others to use, while <code>pip list</code> is just for display.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install all dependencies from <code>requirements.txt</code>.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Uninstall a specific dependency.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Uninstall multiple dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
 
-<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> <code>-y</code> automatically confirms the deletion.</p>
+<p> How to uninstall all dependencies in the current environment?</p>
+ <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
+<li><p>After conda is installed on Linux, you should run <code>conda init</code> first before using conda commands; On Windows, there is no such need.</p>
+</li>
+<li><p>List all environments.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create a new environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;environment-name&gt; python=3.8</span><br></pre></td></tr></table></figure>
 
-<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
-<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
-<p><code>@NotNull</code>：字面含义，字段非空</p>
-<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
-<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> The basic command is <code>conda create -n &lt;environment-name&gt;</code>, but specifying the Python version is a common practice. Compared to venv, conda environments also install some basic OS-dependent dependencies.</p>
+</li>
+<li><p>Activate an environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;environment-name&gt;</span><br></pre></td></tr></table></figure>
 
-<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> On Windows, you probably need to omit <code>conda</code>.</p>
+</li>
+<li><p>Deactivate the environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Remove an environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;environment-name&gt; --all</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>View basic information.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
 
-<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
-<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> Similar to pip, it follows the format <code>dependency==version</code>; the <code>-c</code> parameter specifies the download source (channel) as default channels often fail.</p>
+</li>
+<li><p>Create an environment from a configuration file (usually named <code>environment.yml</code>).</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
 
-<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
-<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p> Content of <code>environment.yml</code>:</p>
+ <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;environment-name&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c parameter, specifying download source</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies installed by conda</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># dependencies installed by pip</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
 
-<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
-
-<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>服务器返回了 400 错误</p>
-<p><img src="/en/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
-<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
-<p><img src="/en/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
-<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
+<p> It’s not recommended to create a new environment by this method, because channels often fail.</p>
+</li>
+<li><p>Disable auto-activation of the base environment. If enabled, every new shell will automatically activate the base environment.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
+</ol>
 ]]></content>
       <categories>
         <category>tech</category>
-        <category>Java</category>
+        <category>Python</category>
+        <category>cheat sheet</category>
       </categories>
       <tags>
-        <tag>Java</tag>
-        <tag>Spring Boot</tag>
-        <tag>Spring MVC</tag>
-        <tag>Controller</tag>
+        <tag>Python</tag>
+        <tag>pip</tag>
+        <tag>conda</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Messages for reader</title>
+    <url>/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
+    <content><![CDATA[<ul>
+<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
+<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
+</ul>
+<script>
+    function jump() {
+        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
+    }
+</script>]]></content>
   </entry>
   <entry>
     <title>LeetCode Weekly Contest 369 Summary</title>
@@ -1440,96 +1545,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Common Commands for pip &amp; conda</title>
-    <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
-    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
-<li><p>Install <code>script-house</code>, version <code>0.0.2</code>.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
-
-<p> If you want to install the latest version by default, you can omit <code>==0.0.2</code>.</p>
-<p> To install multiple dependencies in one line:</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
-</ol>
-<span id="more"></span>
-
-<ol start="2">
-<li><p>List all dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>List current dependencies in <code>requirements.txt</code> format.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
-
-<p> The result of <code>pip freeze</code> is a subset of <code>pip list</code>. <code>pip list</code> usually includes fundamental dependencies like <code>pip</code>, <code>setuptools</code>, and <code>wheel</code>.</p>
-<p> The purpose of <code>pip freeze</code> is to export project dependencies for others to use, while <code>pip list</code> is just for display.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Install all dependencies from <code>requirements.txt</code>.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Uninstall a specific dependency.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Uninstall multiple dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
-
-<p> <code>-y</code> automatically confirms the deletion.</p>
-<p> How to uninstall all dependencies in the current environment?</p>
- <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
-<li><p>After conda is installed on Linux, you should run <code>conda init</code> first before using conda commands; On Windows, there is no such need.</p>
-</li>
-<li><p>List all environments.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Create a new environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;environment-name&gt; python=3.8</span><br></pre></td></tr></table></figure>
-
-<p> The basic command is <code>conda create -n &lt;environment-name&gt;</code>, but specifying the Python version is a common practice. Compared to venv, conda environments also install some basic OS-dependent dependencies.</p>
-</li>
-<li><p>Activate an environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;environment-name&gt;</span><br></pre></td></tr></table></figure>
-
-<p> On Windows, you probably need to omit <code>conda</code>.</p>
-</li>
-<li><p>Deactivate the environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Remove an environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;environment-name&gt; --all</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>View basic information.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Install dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
-
-<p> Similar to pip, it follows the format <code>dependency==version</code>; the <code>-c</code> parameter specifies the download source (channel) as default channels often fail.</p>
-</li>
-<li><p>Create an environment from a configuration file (usually named <code>environment.yml</code>).</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
-
-<p> Content of <code>environment.yml</code>:</p>
- <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;environment-name&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c parameter, specifying download source</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies installed by conda</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># dependencies installed by pip</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
-
-<p> It’s not recommended to create a new environment by this method, because channels often fail.</p>
-</li>
-<li><p>Disable auto-activation of the base environment. If enabled, every new shell will automatically activate the base environment.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Python</category>
-        <category>cheat sheet</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>pip</tag>
-        <tag>conda</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>LeetCode Weekly Contest 370 Summary</title>
     <url>/en/2023/11/05/leetcode-370-weekly-contest-summary/</url>
     <content><![CDATA[<h1 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h1><blockquote>
@@ -1704,18 +1719,5 @@
         <tag>Simulation</tag>
         <tag>Tree</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Messages for reader</title>
-    <url>/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
-    <content><![CDATA[<ul>
-<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
-<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
-</ul>
-<script>
-    function jump() {
-        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
-    }
-</script>]]></content>
   </entry>
 </search>
