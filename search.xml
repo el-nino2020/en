@@ -1,6 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>算法题002：螺旋矩阵 II</title>
+    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
+</blockquote>
+<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
+<span id="more"></span>
+
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
+<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
+<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
+<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
+<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
+<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
+<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
+<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
+<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
+<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
+<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
+
+<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
+<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>改一改思路 2 的代码即可。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>算法题003：对角线遍历 II</title>
     <url>/en/2023/10/29/Algorithm-Problem-003-diagonal-traverse-ii/</url>
     <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
@@ -64,69 +127,6 @@
 
 
 
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>数组</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>算法题002：螺旋矩阵 II</title>
-    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
-</blockquote>
-<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
-<span id="more"></span>
-
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
-<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
-<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
-<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
-<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
-<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
-<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
-<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
-<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
-<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
-<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
-<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
-
-<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
-<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>改一改思路 2 的代码即可。</p>
 ]]></content>
       <categories>
         <category>算法题</category>
@@ -279,65 +279,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Azure Pipelines 架构解析</title>
-    <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
-    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
-<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
-<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
-<span id="more"></span>
-
-<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
-<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
-<ul>
-<li>一条 Pipeline 可以包含多个 Stage</li>
-<li>一个 Stage 可以包含多个 Job</li>
-<li>一个 Job 可以包含多个 Step</li>
-<li>一个 Step 可以包含多个 task</li>
-</ul>
-<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
-<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
-<p>这种分配是如何完成的呢？</p>
-<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
-<ul>
-<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
-<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
-</ul>
-<p>因此，一条 Pipeline 是这样执行的：</p>
-<ol>
-<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
-<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
-<li>竞争成功，开始执行；</li>
-<li>竞争失败，继续监听；</li>
-</ul>
-</li>
-<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
-</ol>
-<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
-<blockquote>
-<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
-</blockquote>
-<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
-<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
-<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
-<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
-<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Azure</category>
-      </categories>
-      <tags>
-        <tag>Azure</tag>
-        <tag>Azure Pipelines</tag>
-        <tag>架构</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Algorithm Problem 005: Maximum Balanced Subsequence Sum</title>
     <url>/en/2023/11/06/Algorithm-Problem-005-maximum-balanced-subsequence-sum/</url>
     <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
@@ -447,95 +388,193 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo自定义404页面</title>
-    <url>/en/2023/07/04/Hexo-custom-404/</url>
-    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
+    <title>Azure Pipelines 架构解析</title>
+    <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
+    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
+<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
+<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
+<span id="more"></span>
 
-<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
-<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
-<p>下面是对应的代码，直接放在 md 文件中即可：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
-<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
-<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
-
-<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
-<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
-
-<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
-<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
+<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
+<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
+<ul>
+<li>一条 Pipeline 可以包含多个 Stage</li>
+<li>一个 Stage 可以包含多个 Job</li>
+<li>一个 Job 可以包含多个 Step</li>
+<li>一个 Step 可以包含多个 task</li>
+</ul>
+<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
+<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
+<p>这种分配是如何完成的呢？</p>
+<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
+<ul>
+<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
+<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
+</ul>
+<p>因此，一条 Pipeline 是这样执行的：</p>
+<ol>
+<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
+<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
+<li>竞争成功，开始执行；</li>
+<li>竞争失败，继续监听；</li>
+</ul>
+</li>
+<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
+</ol>
+<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
+<blockquote>
+<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
+</blockquote>
+<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
+<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
+<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
+<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
+</ul>
 ]]></content>
       <categories>
-        <category>softwares</category>
-        <category>Hexo</category>
+        <category>tech</category>
+        <category>Azure</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
+        <tag>Azure</tag>
+        <tag>Azure Pipelines</tag>
+        <tag>架构</tag>
       </tags>
   </entry>
   <entry>
-    <title>LANraragi 使用心得</title>
-    <url>/en/2024/02/20/LANraragi-Using-Experience/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>我使用 LANraragi 已经有一段时间了，期间发现了一些问题，都解决了，正好写一篇文章记录一下。读者可以参考我<a href="/en/2024/01/25/LANraragi-manga-server/">之前安装 LANraragi 的文章</a>。</p>
-<h1 id="问题1：挂载缩略图目录导致缩略图无法生成"><a href="#问题1：挂载缩略图目录导致缩略图无法生成" class="headerlink" title="问题1：挂载缩略图目录导致缩略图无法生成"></a>问题1：挂载缩略图目录导致缩略图无法生成</h1><span id="more"></span>
-
-<p>安装 LANraragi 时，为了保证 <code>content</code> 目录只读，我将缩略图目录设置成了容器内部路径。这意味着，每次删除再重启该容器，都需要重新生成缩略图 —— 这样做浪费计算资源，也不符合 Docker 最佳实践。那就使用一个新的 volume 存放缩略图。</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">lanraragi:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">difegue/lanraragi:v.0.9.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">lanraragi</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/doujinshiArchives:/home/koyomi/lanraragi/content:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-database:/home/koyomi/lanraragi/database</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-thumbnail:/home/koyomi/lanraragi/thumb</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">lanraragi-database:</span></span><br><span class="line">  <span class="attr">lanraragi-thumbnail:</span></span><br></pre></td></tr></table></figure>
-
-<p><code>lanraragi-thumbnail</code> 就是存放缩略图的 volume。</p>
-<p>启动容器，发现缩略图无法生成。进入『Minion Console』，发现如下错误：</p>
-<p><img src="/en/MarkDownImages/image-20240220111456968.png" alt="image-20240220111456968"></p>
-<p>为什么 <code>mkdir</code> 会没有权限呢？进入容器：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">/home/koyomi/lanraragi <span class="comment"># ls -lah</span></span><br><span class="line">total 192K   </span><br><span class="line">drwxr-sr-x    1 koyomi   koyomi      4.0K Feb 20 02:14 .</span><br><span class="line">drwxr-sr-x    1 koyomi   koyomi      4.0K Feb 20 02:14 ..</span><br><span class="line">-rw-r--r--    1 root     koyomi        52 Oct 29 21:19 config.log</span><br><span class="line">drwxrwxrwx    1 root     root       16.0K Feb 17 11:44 content</span><br><span class="line">drwxr-xr-x    3 koyomi   root        4.0K Feb 20 03:10 database</span><br><span class="line">drwxr-sr-x    3 koyomi   koyomi      4.0K Oct 31 00:58 lib</span><br><span class="line">drwxr-sr-x    2 koyomi   koyomi      4.0K Feb 20 02:14 <span class="built_in">log</span></span><br><span class="line">-rw-r--r--    1 koyomi   koyomi       186 Oct 31 00:58 lrr.conf</span><br><span class="line">-rw-r--r--    1 koyomi   koyomi         8 Feb 20 02:14 oshino</span><br><span class="line">-rw-r--r--    1 koyomi   koyomi     97.6K Oct 29 21:02 package-lock.json</span><br><span class="line">-rw-r--r--    1 koyomi   koyomi      2.1K Oct 27 23:07 package.json</span><br><span class="line">drwxr-sr-x    1 root     koyomi      4.0K Feb 20 02:14 public</span><br><span class="line">drwxr-sr-x    2 koyomi   koyomi      4.0K Oct 31 00:58 script</span><br><span class="line">drwxr-sr-x    3 koyomi   koyomi      4.0K Oct 31 00:58 templates</span><br><span class="line">drwxr-sr-x    4 koyomi   koyomi      4.0K Oct 31 00:58 tests</span><br><span class="line">drwxr-xr-x  257 root     root        4.0K Feb 20 02:19 thumb</span><br><span class="line">drwxr-sr-x    1 koyomi   koyomi      4.0K Oct 31 00:59 tools</span><br></pre></td></tr></table></figure>
-
-<p>注意 <code>thumb</code> 目录，它是由 <code>root</code> 用户创建，但运行 LANraragi 的 <code>koyomi</code> 用户没有对该目录的写权限。授权即可：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">chmod</span> 777 thumb</span><br></pre></td></tr></table></figure>
-
-<p>然后在『Tags and Thumbnails』里点击『Generate Missing Thumbnails』。</p>
-<blockquote>
-<p>也可以看到， <code>content</code> 目录作为默认的漫画目录，被作者人为的提高了权限，因此默认使用 <code>content/thumb</code> 作为缩略图目录并不会产生这个问题。</p>
+    <title>Install Jellyfin in Docker</title>
+    <url>/en/2024/02/11/Jellyfin-Docker/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><blockquote>
+<p><a href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
 </blockquote>
-<h1 id="问题2：无法实时监控文件变动"><a href="#问题2：无法实时监控文件变动" class="headerlink" title="问题2：无法实时监控文件变动"></a>问题2：无法实时监控文件变动</h1><p>见设置中的『Background Workers』：</p>
-<blockquote>
-<p>This File Watcher is responsible for monitoring your content directory and automatically handling new archives as they come.<br>If Shinobu is dead or unresponsive, you can reboot her by clicking this button.</p>
-</blockquote>
-<p>本该实时监控文件变动，但我却用不了这个功能。原因在于该功能的底层使用了 <code>inotify</code> API：</p>
-<blockquote>
-<p>The inotify API provides a mechanism for monitoring filesystem events.  Inotify can be used to monitor individual files, or to monitor directories.  When a directory is monitored, inotify will return events for the directory itself, and for files inside the directory.</p>
-</blockquote>
-<p>如果文件系统不支持这个 API，那么 LANraragi 自然无法监控文件变动。</p>
-<p>我使用 VMware 的共享文件夹将漫画资源映射到 Linux 中，而共享文件夹底层的文件系统不支持 <code>inotify</code>。</p>
-<p>解决方法：点击『Restart File Watcher』，重启后会扫描整个 <code>content</code> 目录；或者写一个定时任务脚本，POST <code>/api/shinobu/restart</code>。</p>
-<hr>
-<p>其实很多软件都是用 <code>inotify</code> 来监控文件变动，因此这是一个普遍的问题。</p>
-<p>我的 Jellyfin 的媒体文件夹同样使用了 VMware 的共享文件夹，因此也有该问题。不过 Jellyfin 知名得多，我从相关帖子中很快发现了这个问题。更重要地是，Jellyfin 明确地写了只有支持 <code>inotify</code> 的文件系统才有这一功能，这一点值得其他软件作者写文档时借鉴。</p>
-<blockquote>
-<h2 id="Real-Time-Monitoring"><a href="#Real-Time-Monitoring" class="headerlink" title="Real Time Monitoring"></a>Real Time Monitoring</h2><p>This will let Jellyfin automatically update libraries when files are added or modified. Unfortunately, this feature is <strong>only supported on certain filesystems</strong>.</p>
-<p>For Linux systems, this is performed by inotify. NFS and rclone do not support inotify, but support can be provided by using a union file system such as mergerfs with your networked file systems.</p>
-</blockquote>
-<p>顺便提一下 Jellyfin 的解决方案：</p>
+<p>Previously, I have installed the portable version of Jellyfin on Windows because a Linux virtual machine can not utilize the graphics card for hardware transcoding. However, I discovered that the Android and iOS clients support most codecs, eliminating the need for server-side transcoding. Since I am already familiar with Jellyfin’s usage and configuration, I decided to migrate it to Docker.</p>
+<p>Although Jellyfin itself is cross-platform, its configuration is still OS-dependent, especially when moving from Windows to Docker. Despite the availability of a <a href="https://github.com/MMMZZZZ/Jellyfin-Migrator">third-party script</a>, I chose to reconfigure it for safety, which does not require much effort.</p>
+<p>This article mainly talks about how to install Jellyfin using Docker, along with any issues encountered and their solutions.</p>
+<span id="more"></span>
+
+<h1 id="Install-Jellyfin"><a href="#Install-Jellyfin" class="headerlink" title="Install Jellyfin"></a>Install Jellyfin</h1><p>Firstly, create two volumes:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker volume create jellyfin-config</span><br><span class="line">docker volume create jellyfin-cache</span><br></pre></td></tr></table></figure>
+
+<p>Docker Compose:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">jellyfin:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">jellyfin/jellyfin:10.8.13-1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">jellyfin</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58096</span><span class="string">:8096</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58920</span><span class="string">:8920</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-config:/config</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-cache:/cache</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/jellyfin-media:/media:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/jellyfin_ssl/jellyfin.pfx:/ssl/jellyfin.pfx:ro</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">jellyfin-config:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">jellyfin-cache:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
 <ul>
-<li>提高计划任务『扫描媒体库』的频率 —— 这个任务并不吃资源，频繁运行也没事；</li>
-<li>通过 API 执行刷新；</li>
-</ul>
-<h1 id="收获"><a href="#收获" class="headerlink" title="收获"></a>收获</h1><p>这个脚本挺好用的：</p>
-<p><img src="/en/MarkDownImages/image-20240220131323937.png" alt="image-20240220131323937"></p>
-<p>我的漫画目录结构是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">├── 作者1</span><br><span class="line">│   ├── 漫画压缩包1</span><br><span class="line">│   └── 漫画压缩包2</span><br><span class="line">└── 作者2</span><br><span class="line">    ├── 漫画压缩包1</span><br><span class="line">    └── 漫画压缩包2</span><br></pre></td></tr></table></figure>
+<li><p>Specify the image version; <code>10.8.13</code> is the latest stable version, and subsequent versions have the term <code>unstable</code>, so it’s best not to use <code>latest</code>.</p>
+</li>
+<li><p><code>8096</code> is the default HTTP port, and <code>8920</code> is the default HTTPS port.</p>
+</li>
+<li><p>Jellyfin uses the following paths to store data:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Description</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Data Directory</td>
+<td>Stores all Jellyfin data, usually referenced by other directories</td>
+<td>Specified by ENV <code>JELLYFIN_DATA_DIR</code></td>
+</tr>
+<tr>
+<td>Configuration Directory</td>
+<td>Stores configuration files</td>
+<td>Specified by ENV <code>JELLYFIN_CONFIG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/config</code></td>
+</tr>
+<tr>
+<td>Cache Directory</td>
+<td>Stores server cache</td>
+<td>Specified by ENV <code>JELLYFIN_CACHE_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/cache</code></td>
+</tr>
+<tr>
+<td>Log Directory</td>
+<td>Stores log files</td>
+<td>Specified by ENV <code>JELLYFIN_LOG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/log</code></td>
+</tr>
+</tbody></table>
+<p>  These environment variables are specified in the <a href="https://hub.docker.com/layers/jellyfin/jellyfin/10.8.13-1/images/sha256-095e6d410d1d27b17cc4a961a9bab9fab5ffce6e49389d8ec685f65ab5538525?context=explore">Dockerfile</a>：</p>
+  <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ENV</span> DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=<span class="number">1</span> LC_ALL=en_US.UTF-<span class="number">8</span> LANG=en_US.UTF-<span class="number">8</span> LANGUAGE=en_US:en JELLYFIN_DATA_DIR=/config JELLYFIN_CACHE_DIR=/cache JELLYFIN_CONFIG_DIR=/config/config JELLYFIN_LOG_DIR=/config/log JELLYFIN_WEB_DIR=/jellyfin/jellyfin-web JELLYFIN_FFMPEG=/usr/lib/jellyfin-ffmpeg/ffmpeg</span><br></pre></td></tr></table></figure>
 
-<p>这个脚本可以将对应的漫画划分到某一个作者的 Category 中。尽管我没有给漫画打 tag，以作者作为 Category 却起到了相同效果，让我可以根据作者选择漫画。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://man7.org/linux/man-pages/man7/inotify.7.html">inotify(7) — Linux manual page</a></li>
-<li><a href="https://sugoi.gitbook.io/lanraragi/api-documentation/shinobu-api">LANraragi doc: Shinobu API</a></li>
-<li><a href="https://jellyfin.org/docs/general/administration/troubleshooting#real-time-monitoring">Jellyfin doc: Real Time Monitoring</a></li>
-<li><a href="https://www.reddit.com/r/jellyfin/comments/ke3cmo/jellyfin_not_picking_up_new_files_on_docker_mount/">Jellyfin not picking up new files on docker mount</a></li>
-<li><a href="https://post.smzdm.com/p/a5o645pl/">我的Jellyfin影视库 搭建、信息刮削小记</a></li>
-<li><a href="https://vagrant-up.narkive.com/5sdcgSfL/shared-folders-and-inotify-does-it-work-with-vmware-any-way-to-run-vagrant-vmware-in-trial-period">Shared folders and inotify: Does it work with VMWare + Any way to run Vagrant + VMWare in trial period?</a></li>
-<li><a href="https://www.reddit.com/r/jellyfin/comments/106qtix/how_does_the_scheduled_task_for_scan_media/">How does the Scheduled Task for Scan Media Library work?</a></li>
+<p>  Therefore, <strong><code>/config</code> and <code>/cache</code> contain all data of the Jellyfin server</strong>, and these directories are mounted to <code>jellyfin-config</code> and <code>jellyfin-cache</code>, respectively.</p>
+</li>
+<li><p><code>/mnt/hgfs/jellyfin-media:/media:ro</code>: Mount media files from the local machine into Docker, the path can be arbitrary.</p>
+</li>
+<li><p><code>/opt/docker/jellyfin_ssl/jellyfin.pfx</code>: Used to configure the SSL certificate for the server, which will be discussed later.</p>
+</li>
+<li><p><code>TZ=Asia/Shanghai</code>: Set the time zone to make the log time consistent with the local machine.</p>
+</li>
+</ul>
+<h1 id="Jellyfin-Configuration"><a href="#Jellyfin-Configuration" class="headerlink" title="Jellyfin Configuration"></a>Jellyfin Configuration</h1><p>Since it’s a fresh installation, all configurations need to be set up again. Here are some key points.</p>
+<h2 id="Server-Users"><a href="#Server-Users" class="headerlink" title="Server | Users"></a>Server | Users</h2><p>Disable transcoding: Even if the client doesn’t support the codec, server-side software decoding is not allowed, as it can lead to high pressure on the system.</p>
+<p>Remove the following two options for <strong>each user</strong>:</p>
+<p><img src="/en/MarkDownImages/image-20240213140202762.png" alt="image-20240213140202762"></p>
+<p>For the option ‘Allow video playback that requires conversion without re-encoding’, many articles recommend disabling it, but it seems to have no impact, so it can be left enabled.</p>
+<h2 id="Advanced-Networking"><a href="#Advanced-Networking" class="headerlink" title="Advanced | Networking"></a>Advanced | Networking</h2><p>Select the mounted <code>jellyfin.pfx</code> file as the SSL certificate (how to generate this file is explained later):</p>
+<p><img src="/en/MarkDownImages/image-20240213140616778.png" alt="image-20240213140616778"></p>
+<p>Check ‘Enable HTTPS’ and restart the container.</p>
+<p><img src="/en/MarkDownImages/image-20240213140600270.png" alt="image-20240213140600270"></p>
+<p>There’s no need to enable ‘Force HTTPS’ because the firewall will only allow devices on the local network to access the HTTPS port; the local machine can still access Jellyfin via HTTP.</p>
+<h1 id="SSL-Certificate"><a href="#SSL-Certificate" class="headerlink" title="SSL Certificate"></a>SSL Certificate</h1><p>Firstly, you need the private key <code>jellyfin-priv-key.key</code> and the certificate <code>jellyfin.crt</code> (refer to the <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#SSL-Certificate">previous article</a>).</p>
+<p>Then, use the following command to generate the <code>.pfx</code> file:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out jellyfin.pfx -inkey jellyfin-priv-key.key -<span class="keyword">in</span> jellyfin.crt  -passout pass:</span><br></pre></td></tr></table></figure>
+
+<h1 id="Local-Network-Settings"><a href="#Local-Network-Settings" class="headerlink" title="Local Network Settings"></a>Local Network Settings</h1><blockquote>
+<p>Here is my network topology:</p>
+<p>Windows host with a Linux virtual machine installed by VMware, and Docker runs on this virtual machine.</p>
+<p>The host and other devices share the home network.</p>
+</blockquote>
+<p>Previously, when running Jellyfin on Windows, I allowed Jellyfin’s direct access to the home network. That is, the firewall rules were authorized for the Jellyfin executable rather than a specific port.</p>
+<p>Now, with Docker, the following changes are made:</p>
+<ol>
+<li><p>Add a NAT mapping for the virtual machine, mapping Linux’s 58920 to the host’s 58920 port.</p>
+<p> <img src="/en/MarkDownImages/image-20240213141926681.png" alt="image-20240213141926681"></p>
+</li>
+<li><p>Add a firewall inbound rule: <code>58920/tcp</code> for the private network.</p>
+</li>
+<li><p>Reconnect all client devices to the new server.</p>
+</li>
+</ol>
+<hr>
+<p>Jellyfin on Windows had port 58920 open, and after switching to the Docker version, it still uses the same port. We can access the web client through <code>https://hostIP:58920</code> in a browser. This ‘tricks’ Google Password Manager in some sense, allowing me to directly use the previous account and password.</p>
+<h1 id="Some-Bugs"><a href="#Some-Bugs" class="headerlink" title="Some Bugs"></a>Some Bugs</h1><h2 id="Font-Issue"><a href="#Font-Issue" class="headerlink" title="Font Issue"></a>Font Issue</h2><p>After creating the container, enter the container and execute the following command:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">apt update &amp;&amp; apt install fonts-noto-cjk-extra</span><br></pre></td></tr></table></figure>
+
+<p>Then restart the container.</p>
+<p>Otherwise, Chinese characters on the media library cover images appear as squares.</p>
+<h2 id="Symbolic-Links"><a href="#Symbolic-Links" class="headerlink" title="Symbolic Links"></a>Symbolic Links</h2><p>On Windows, we can create links using the <code>mklink</code> command. When running Jellyfin on Windows, to prevent Jellyfin from modifying the media directory, I used the <a href="https://github.com/el-nino2020/script-house/blob/main/script_house/FileSystemOperation.py#L125"><code>walk_while_link</code> function</a> to create symbolic links for each video file. However, shared folders in virtual machines can be set to read-only, and volumes can also be set to read-only, so there’s no need to do this in Docker.</p>
+<p>Moreover, creating symbolic links this way causes videos to be unplayable, and Jellyfin reports errors when reading media data. I suspect this is due to symbolic links because many articles about NAS use hard links rather than symbolic links. However, I don’t prefer using hard links, especially on Windows.</p>
+<p>Creating symbolic links for folders is still possible. For example, if the shared folder is <code>jellyfin-docker-media</code>, you can create symbolic links for the <code>films</code> and <code>animes</code> folders in other paths, putting them all under <code>jellyfin-docker-media</code>. This essentially adds an extra layer of abstraction and reduces the number of shared folders for the virtual machine.</p>
+<p>In fact, this is what I did. The <code>/mnt/hgfs/jellyfin-media</code> in Docker-compose is the host’s <code>jellyfin-docker-media</code> shared folder.</p>
+<h1 id="Docker-Knowledge"><a href="#Docker-Knowledge" class="headerlink" title="Docker Knowledge"></a>Docker Knowledge</h1><p>By installing Jellyfin, I deepened my understanding of Docker through practical experiences.</p>
+<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p>I always thought that using the <code>EXPOSE</code> keyword in the Dockerfile was necessary for mapping ports when starting a container. However, that’s not the case.</p>
+<blockquote>
+<p>The <code>EXPOSE</code> instruction <strong>informs</strong> Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don’t specify a protocol.</p>
+<p>The <code>EXPOSE</code> instruction <strong>doesn’t actually publish the port</strong>. It functions as a type of <strong>documentation</strong> between the person who builds the image and the person who runs the container, about which ports are intended to be published. To publish the port when running the container, use the <code>-p</code> flag on <code>docker run</code> to publish and map one or more ports, or the <code>-P</code> flag to publish all exposed ports and map them to high-order ports.</p>
+</blockquote>
+<p>These two paragraphs are excerpted from the official documentation. <code>EXPOSE</code> is merely a declarative instruction, and it’s the <code>-p</code> option that truly maps the container’s ports. This mapping can be done freely, without any restrictions.</p>
+<p>Therefore, the approach I took in <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#Nginx-Container">‘Deploying Nginx in Docker and Configuring SSL Certificate for Local Network’</a> is meaningless. There’s no need to create a new image just for <code>EXPOSE</code>.</p>
+<blockquote>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="Cache-Memory"><a href="#Cache-Memory" class="headerlink" title="Cache Memory"></a>Cache Memory</h2><p>In Portainer statistics, you can see that memory usage is divided into ‘Memory’ and ‘Cache’. What do these two terms mean? Which one represents the current memory usage?</p>
+<p><img src="/en/MarkDownImages/image-20240213085846776.png" alt="image-20240213085846776"></p>
+<p>In simple words, ‘Memory’ represents the current memory usage, while ‘Cache’ represents memory that <strong>was previously used</strong>. Memory Cache is a term in Docker, and its value is equal to the value of <code>Inactive(file)</code> in <code>/proc/meminfo</code>.</p>
+<blockquote>
+<p><code>Inactive(file)</code> — The amount of file cache memory, in kibibytes, that is newly loaded from the disk, or is a candidate for reclaiming.</p>
+</blockquote>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/624670198">在Docker下安装Jellyfin并正确开启硬件解码</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/640489824">Docker部署开源流媒体软件Jellyfin</a></li>
+<li><a href="https://jellyfin.org/docs/general/installation/container#using-docker-compose">Jellyfin doc installation</a></li>
+<li><a href="https://jellyfin.org/docs/general/networking/#self-signed-certificate">Jellyfin doc self-signed certificate</a></li>
+<li><a href="https://docs.docker.com/engine/reference/builder/#expose">Docker doc EXPOSE</a></li>
+<li><a href="https://www.reddit.com/r/portainer/comments/w6pvit/what_is_memory_cache_in_the_container_stats/">What is memory “cache” in the container stat’s?</a></li>
 </ul>
 ]]></content>
       <categories>
@@ -546,7 +585,6 @@
       <tags>
         <tag>NAS</tag>
         <tag>Docker</tag>
-        <tag>LANraragi</tag>
         <tag>Jellyfin</tag>
       </tags>
   </entry>
@@ -699,134 +737,96 @@
       </tags>
   </entry>
   <entry>
-    <title>Install Jellyfin in Docker</title>
-    <url>/en/2024/02/11/Jellyfin-Docker/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><blockquote>
-<p><a href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
+    <title>Hexo自定义404页面</title>
+    <url>/en/2023/07/04/Hexo-custom-404/</url>
+    <content><![CDATA[<h1 id="自定义-404-页面"><a href="#自定义-404-页面" class="headerlink" title="自定义 404 页面"></a>自定义 404 页面</h1><p>首先，创建一个名为 <code>404</code> 的 post</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new <span class="number">404</span></span><br></pre></td></tr></table></figure>
+
+<p>在对应的 md 文件中，我们可以自定义 404 页面。由于 Hexo 框架的特性，我们可以编写 JS 脚本，让页面动起来。</p>
+<p>这里给出<a href="/404" target="_blank">我的 404 页面</a>。可以看到，上面有一个倒计时。当倒计时为 0 时，会自动跳转到首页。当然，用户也可以手动点击，从而返回首页。</p>
+<p>下面是对应的代码，直接放在 md 文件中即可：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;./../js/jquery-3.3.1.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>您正在访问一个不存在的地址🤔<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span>系统会在 <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;seconds&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 秒后自动跳转到首页,<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span> 您也可以点此 <span class="tag">&lt;<span class="name">a</span> <span class="attr">target</span>=<span class="string">&quot;_self&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span> &gt;</span>链接<span class="tag">&lt;/<span class="name">a</span>&gt;</span>, 手动跳转!<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    $(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="built_in">setInterval</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> seconds = $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#seconds&quot;</span>).<span class="title function_">text</span>(--seconds);</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">if</span> (seconds == <span class="number">0</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                location.<span class="property">href</span> = <span class="string">&quot;/&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        &#125;, <span class="number">1000</span>);</span></span><br><span class="line"><span class="language-javascript">    &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我选择将 jQuery 代码放在本地，这样页面响应更快。</p>
+<p>jQuery 在这里只是用于获取 DOM 对象，因此也完全可以用原生 JS 函数来写。</p>
+<h1 id="如何让网站跳转到自定义页面？"><a href="#如何让网站跳转到自定义页面？" class="headerlink" title="如何让网站跳转到自定义页面？"></a>如何让网站跳转到自定义页面？</h1><span id="more"></span>
+
+<p>注意：以下方法仅限于 Github Pages，其他平台的方式可能不同。</p>
+<p>在<code>front-matter</code>中添加如下内容，Github Pages 就能设置该页面为 404 页面</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">/404.html</span></span><br></pre></td></tr></table></figure>
+
+<p>不妨随机访问一个不存在的网页？看看效果如何：▶ <a href="/hsfh/40u235u/jasdlafn" target="_blank">点我</a></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-custom-404-page-for-your-github-pages-site">Creating a custom 404 page for your GitHub Pages site</a></p>
+<p><a href="https://theme-next.js.org/docs/theme-settings/custom-pages.html#Custom-404-Page">theme-next: custom-pages</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LANraragi Using Experience</title>
+    <url>/en/2024/02/20/LANraragi-Using-Experience/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>I have been using LANraragi for a while and encountered some issues. I managed to resolve them, and I thought it would be a good idea to document my experience in a post. You can refer to my <a href="/en/2024/01/25/LANraragi-manga-server/">previous article on installing LANraragi</a> first.</p>
+<h1 id="Issue-1-Mounting-Thumbnail-Directory-Causes-Thumbnail-Generation-Failure"><a href="#Issue-1-Mounting-Thumbnail-Directory-Causes-Thumbnail-Generation-Failure" class="headerlink" title="Issue 1: Mounting Thumbnail Directory Causes Thumbnail Generation Failure"></a>Issue 1: Mounting Thumbnail Directory Causes Thumbnail Generation Failure</h1><span id="more"></span>
+
+<p>When installing LANraragi, to ensure the <code>content</code> directory is read-only, I set the thumbnail directory as an internal path of the container. This means that every time I deleted and restarted the container, thumbnails will be regenerated. This practice not only wasted computational resources but also deviated from Docker’s best practices. To address this, I used a new volume to store the thumbnails.</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&quot;3&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">lanraragi:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">difegue/lanraragi:v.0.9.0</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">lanraragi</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/doujinshiArchives:/home/koyomi/lanraragi/content:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-database:/home/koyomi/lanraragi/database</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">lanraragi-thumbnail:/home/koyomi/lanraragi/thumb</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">lanraragi-database:</span></span><br><span class="line">  <span class="attr">lanraragi-thumbnail:</span></span><br></pre></td></tr></table></figure>
+
+<p><code>lanraragi-thumbnail</code> is the volume for storing thumbnails.</p>
+<p>After starting the container, I noticed that thumbnails could not be generated. Upon entering the ‘Minion Console’, I found the following error:</p>
+<p><img src="/en/MarkDownImages/image-20240220111456968.png" alt="image-20240220111456968"></p>
+<p>Why did <code>mkdir</code> not have permission? I entered the container:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">/home/koyomi/lanraragi <span class="comment"># ls -lah</span></span><br><span class="line">total 192K   </span><br><span class="line">drwxr-sr-x    1 koyomi   koyomi      4.0K Feb 20 02:14 .</span><br><span class="line">drwxr-sr-x    1 koyomi   koyomi      4.0K Feb 20 02:14 ..</span><br><span class="line">-rw-r--r--    1 root     koyomi        52 Oct 29 21:19 config.log</span><br><span class="line">drwxrwxrwx    1 root     root       16.0K Feb 17 11:44 content</span><br><span class="line">drwxr-xr-x    3 koyomi   root        4.0K Feb 20 03:10 database</span><br><span class="line">drwxr-sr-x    3 koyomi   koyomi      4.0K Oct 31 00:58 lib</span><br><span class="line">drwxr-sr-x    2 koyomi   koyomi      4.0K Feb 20 02:14 <span class="built_in">log</span></span><br><span class="line">-rw-r--r--    1 koyomi   koyomi       186 Oct 31 00:58 lrr.conf</span><br><span class="line">-rw-r--r--    1 koyomi   koyomi         8 Feb 20 02:14 oshino</span><br><span class="line">-rw-r--r--    1 koyomi   koyomi     97.6K Oct 29 21:02 package-lock.json</span><br><span class="line">-rw-r--r--    1 koyomi   koyomi      2.1K Oct 27 23:07 package.json</span><br><span class="line">drwxr-sr-x    1 root     koyomi      4.0K Feb 20 02:14 public</span><br><span class="line">drwxr-sr-x    2 koyomi   koyomi      4.0K Oct 31 00:58 script</span><br><span class="line">drwxr-sr-x    3 koyomi   koyomi      4.0K Oct 31 00:58 templates</span><br><span class="line">drwxr-sr-x    4 koyomi   koyomi      4.0K Oct 31 00:58 tests</span><br><span class="line">drwxr-xr-x  257 root     root        4.0K Feb 20 02:19 thumb</span><br><span class="line">drwxr-sr-x    1 koyomi   koyomi      4.0K Oct 31 00:59 tools</span><br></pre></td></tr></table></figure>
+
+<p>Note the <code>thumb</code> directory created by the <code>root</code> user, but the user running LANraragi, <code>koyomi</code>, does not have write permission to that directory. Just granting permission:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">chmod</span> 777 thumb</span><br></pre></td></tr></table></figure>
+
+<p>Then, in ‘Tags and Thumbnails’, click on ‘Generate Missing Thumbnails’.</p>
+<blockquote>
+<p>It’s also worth noting that the default manga directory, <code>content</code>, has elevated permissions intentionally set by the author. Therefore, using <code>content/thumb</code> as the default thumbnail directory will not cause this issue.</p>
 </blockquote>
-<p>Previously, I have installed the portable version of Jellyfin on Windows because a Linux virtual machine can not utilize the graphics card for hardware transcoding. However, I discovered that the Android and iOS clients support most codecs, eliminating the need for server-side transcoding. Since I am already familiar with Jellyfin’s usage and configuration, I decided to migrate it to Docker.</p>
-<p>Although Jellyfin itself is cross-platform, its configuration is still OS-dependent, especially when moving from Windows to Docker. Despite the availability of a <a href="https://github.com/MMMZZZZ/Jellyfin-Migrator">third-party script</a>, I chose to reconfigure it for safety, which does not require much effort.</p>
-<p>This article mainly talks about how to install Jellyfin using Docker, along with any issues encountered and their solutions.</p>
-<span id="more"></span>
-
-<h1 id="Install-Jellyfin"><a href="#Install-Jellyfin" class="headerlink" title="Install Jellyfin"></a>Install Jellyfin</h1><p>Firstly, create two volumes:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker volume create jellyfin-config</span><br><span class="line">docker volume create jellyfin-cache</span><br></pre></td></tr></table></figure>
-
-<p>Docker Compose:</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">jellyfin:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">jellyfin/jellyfin:10.8.13-1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">jellyfin</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58096</span><span class="string">:8096</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58920</span><span class="string">:8920</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-config:/config</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-cache:/cache</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/jellyfin-media:/media:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/jellyfin_ssl/jellyfin.pfx:/ssl/jellyfin.pfx:ro</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">jellyfin-config:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">jellyfin-cache:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>Specify the image version; <code>10.8.13</code> is the latest stable version, and subsequent versions have the term <code>unstable</code>, so it’s best not to use <code>latest</code>.</p>
-</li>
-<li><p><code>8096</code> is the default HTTP port, and <code>8920</code> is the default HTTPS port.</p>
-</li>
-<li><p>Jellyfin uses the following paths to store data:</p>
-<table>
-<thead>
-<tr>
-<th>Directory</th>
-<th>Description</th>
-<th>Path</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Data Directory</td>
-<td>Stores all Jellyfin data, usually referenced by other directories</td>
-<td>Specified by ENV <code>JELLYFIN_DATA_DIR</code></td>
-</tr>
-<tr>
-<td>Configuration Directory</td>
-<td>Stores configuration files</td>
-<td>Specified by ENV <code>JELLYFIN_CONFIG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/config</code></td>
-</tr>
-<tr>
-<td>Cache Directory</td>
-<td>Stores server cache</td>
-<td>Specified by ENV <code>JELLYFIN_CACHE_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/cache</code></td>
-</tr>
-<tr>
-<td>Log Directory</td>
-<td>Stores log files</td>
-<td>Specified by ENV <code>JELLYFIN_LOG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/log</code></td>
-</tr>
-</tbody></table>
-<p>  These environment variables are specified in the <a href="https://hub.docker.com/layers/jellyfin/jellyfin/10.8.13-1/images/sha256-095e6d410d1d27b17cc4a961a9bab9fab5ffce6e49389d8ec685f65ab5538525?context=explore">Dockerfile</a>：</p>
-  <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ENV</span> DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=<span class="number">1</span> LC_ALL=en_US.UTF-<span class="number">8</span> LANG=en_US.UTF-<span class="number">8</span> LANGUAGE=en_US:en JELLYFIN_DATA_DIR=/config JELLYFIN_CACHE_DIR=/cache JELLYFIN_CONFIG_DIR=/config/config JELLYFIN_LOG_DIR=/config/log JELLYFIN_WEB_DIR=/jellyfin/jellyfin-web JELLYFIN_FFMPEG=/usr/lib/jellyfin-ffmpeg/ffmpeg</span><br></pre></td></tr></table></figure>
-
-<p>  Therefore, <strong><code>/config</code> and <code>/cache</code> contain all data of the Jellyfin server</strong>, and these directories are mounted to <code>jellyfin-config</code> and <code>jellyfin-cache</code>, respectively.</p>
-</li>
-<li><p><code>/mnt/hgfs/jellyfin-media:/media:ro</code>: Mount media files from the local machine into Docker, the path can be arbitrary.</p>
-</li>
-<li><p><code>/opt/docker/jellyfin_ssl/jellyfin.pfx</code>: Used to configure the SSL certificate for the server, which will be discussed later.</p>
-</li>
-<li><p><code>TZ=Asia/Shanghai</code>: Set the time zone to make the log time consistent with the local machine.</p>
-</li>
-</ul>
-<h1 id="Jellyfin-Configuration"><a href="#Jellyfin-Configuration" class="headerlink" title="Jellyfin Configuration"></a>Jellyfin Configuration</h1><p>Since it’s a fresh installation, all configurations need to be set up again. Here are some key points.</p>
-<h2 id="Server-Users"><a href="#Server-Users" class="headerlink" title="Server | Users"></a>Server | Users</h2><p>Disable transcoding: Even if the client doesn’t support the codec, server-side software decoding is not allowed, as it can lead to high pressure on the system.</p>
-<p>Remove the following two options for <strong>each user</strong>:</p>
-<p><img src="/en/MarkDownImages/image-20240213140202762.png" alt="image-20240213140202762"></p>
-<p>For the option ‘Allow video playback that requires conversion without re-encoding’, many articles recommend disabling it, but it seems to have no impact, so it can be left enabled.</p>
-<h2 id="Advanced-Networking"><a href="#Advanced-Networking" class="headerlink" title="Advanced | Networking"></a>Advanced | Networking</h2><p>Select the mounted <code>jellyfin.pfx</code> file as the SSL certificate (how to generate this file is explained later):</p>
-<p><img src="/en/MarkDownImages/image-20240213140616778.png" alt="image-20240213140616778"></p>
-<p>Check ‘Enable HTTPS’ and restart the container.</p>
-<p><img src="/en/MarkDownImages/image-20240213140600270.png" alt="image-20240213140600270"></p>
-<p>There’s no need to enable ‘Force HTTPS’ because the firewall will only allow devices on the local network to access the HTTPS port; the local machine can still access Jellyfin via HTTP.</p>
-<h1 id="SSL-Certificate"><a href="#SSL-Certificate" class="headerlink" title="SSL Certificate"></a>SSL Certificate</h1><p>Firstly, you need the private key <code>jellyfin-priv-key.key</code> and the certificate <code>jellyfin.crt</code> (refer to the <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#SSL-Certificate">previous article</a>).</p>
-<p>Then, use the following command to generate the <code>.pfx</code> file:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out jellyfin.pfx -inkey jellyfin-priv-key.key -<span class="keyword">in</span> jellyfin.crt  -passout pass:</span><br></pre></td></tr></table></figure>
-
-<h1 id="Local-Network-Settings"><a href="#Local-Network-Settings" class="headerlink" title="Local Network Settings"></a>Local Network Settings</h1><blockquote>
-<p>Here is my network topology:</p>
-<p>Windows host with a Linux virtual machine installed by VMware, and Docker runs on this virtual machine.</p>
-<p>The host and other devices share the home network.</p>
+<p>Issue 2: Real-Time File Monitoring Failure</p>
+<p>Refer to the ‘Background Workers’ in the settings:</p>
+<blockquote>
+<p>This File Watcher is responsible for monitoring your content directory and automatically handling new archives as they come.<br>If Shinobu is dead or unresponsive, you can reboot her by clicking this button.</p>
 </blockquote>
-<p>Previously, when running Jellyfin on Windows, I allowed Jellyfin’s direct access to the home network. That is, the firewall rules were authorized for the Jellyfin executable rather than a specific port.</p>
-<p>Now, with Docker, the following changes are made:</p>
-<ol>
-<li><p>Add a NAT mapping for the virtual machine, mapping Linux’s 58920 to the host’s 58920 port.</p>
-<p> <img src="/en/MarkDownImages/image-20240213141926681.png" alt="image-20240213141926681"></p>
-</li>
-<li><p>Add a firewall inbound rule: <code>58920/tcp</code> for the private network.</p>
-</li>
-<li><p>Reconnect all client devices to the new server.</p>
-</li>
-</ol>
+<p>While it should monitor file changes in real-time, I couldn’t use this feature. The reason is that this feature utilizes the <code>inotify</code> API:</p>
+<blockquote>
+<p>The inotify API provides a mechanism for monitoring filesystem events.  Inotify can be used to monitor individual files, or to monitor directories.  When a directory is monitored, inotify will return events for the directory itself, and for files inside the directory.</p>
+</blockquote>
+<p>If the file system does not support this API, obviously, LANraragi cannot monitor file changes.</p>
+<p>I use VMware’s shared folder to map manga resources to Linux, and the underlying file system of the shared folder does not support <code>inotify</code>.</p>
+<p>Solution: Click ‘Restart File Watcher,’ which will scan the entire <code>content</code> directory after restarting. Alternatively, write a scheduled task script to POST <code>/api/shinobu/restart</code>.</p>
 <hr>
-<p>Jellyfin on Windows had port 58920 open, and after switching to the Docker version, it still uses the same port. We can access the web client through <code>https://hostIP:58920</code> in a browser. This ‘tricks’ Google Password Manager in some sense, allowing me to directly use the previous account and password.</p>
-<h1 id="Some-Bugs"><a href="#Some-Bugs" class="headerlink" title="Some Bugs"></a>Some Bugs</h1><h2 id="Font-Issue"><a href="#Font-Issue" class="headerlink" title="Font Issue"></a>Font Issue</h2><p>After creating the container, enter the container and execute the following command:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">apt update &amp;&amp; apt install fonts-noto-cjk-extra</span><br></pre></td></tr></table></figure>
+<p>In fact, many software applications use <code>inotify</code> to monitor file changes, making this a common issue.</p>
+<p>My Jellyfin media folder also uses VMware’s shared folder, so it faces the same problem. However, Jellyfin is more popular, which allowed me to find the cause to this issue quickly from related posts. More importantly, Jellyfin explicitly states that only file systems supporting <code>inotify</code> have this functionality, which is a good practice for other software authors to follow when documenting.</p>
+<blockquote>
+<h2 id="Real-Time-Monitoring"><a href="#Real-Time-Monitoring" class="headerlink" title="Real Time Monitoring"></a>Real Time Monitoring</h2><p>This will let Jellyfin automatically update libraries when files are added or modified. Unfortunately, this feature is <strong>only supported on certain filesystems</strong>.</p>
+<p>For Linux systems, this is performed by inotify. NFS and rclone do not support inotify, but support can be provided by using a union file system such as mergerfs with your networked file systems.</p>
+</blockquote>
+<p>By the way, here’s the solution for Jellyfin:</p>
+<ul>
+<li>Increase the frequency of the scheduled task ‘Scan Media Library’ – this task doesn’t consume many resources, so running it frequently is not an issue.</li>
+<li>Execute a refresh through the API.</li>
+</ul>
+<h1 id="Gains"><a href="#Gains" class="headerlink" title="Gains"></a>Gains</h1><p>This script is quite useful:</p>
+<p><img src="/en/MarkDownImages/image-20240220131323937.png" alt="image-20240220131323937"></p>
+<p>My manga directory structure is:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">├── Author1</span><br><span class="line">│   ├── Manga Archive 1</span><br><span class="line">│   └── Manga Archive 2</span><br><span class="line">└── Author2</span><br><span class="line">    ├── Manga Archive 1</span><br><span class="line">    └── Manga Archive 2</span><br></pre></td></tr></table></figure>
 
-<p>Then restart the container.</p>
-<p>Otherwise, Chinese characters on the media library cover images appear as squares.</p>
-<h2 id="Symbolic-Links"><a href="#Symbolic-Links" class="headerlink" title="Symbolic Links"></a>Symbolic Links</h2><p>On Windows, we can create links using the <code>mklink</code> command. When running Jellyfin on Windows, to prevent Jellyfin from modifying the media directory, I used the <a href="https://github.com/el-nino2020/script-house/blob/main/script_house/FileSystemOperation.py#L125"><code>walk_while_link</code> function</a> to create symbolic links for each video file. However, shared folders in virtual machines can be set to read-only, and volumes can also be set to read-only, so there’s no need to do this in Docker.</p>
-<p>Moreover, creating symbolic links this way causes videos to be unplayable, and Jellyfin reports errors when reading media data. I suspect this is due to symbolic links because many articles about NAS use hard links rather than symbolic links. However, I don’t prefer using hard links, especially on Windows.</p>
-<p>Creating symbolic links for folders is still possible. For example, if the shared folder is <code>jellyfin-docker-media</code>, you can create symbolic links for the <code>films</code> and <code>animes</code> folders in other paths, putting them all under <code>jellyfin-docker-media</code>. This essentially adds an extra layer of abstraction and reduces the number of shared folders for the virtual machine.</p>
-<p>In fact, this is what I did. The <code>/mnt/hgfs/jellyfin-media</code> in Docker-compose is the host’s <code>jellyfin-docker-media</code> shared folder.</p>
-<h1 id="Docker-Knowledge"><a href="#Docker-Knowledge" class="headerlink" title="Docker Knowledge"></a>Docker Knowledge</h1><p>By installing Jellyfin, I deepened my understanding of Docker through practical experiences.</p>
-<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p>I always thought that using the <code>EXPOSE</code> keyword in the Dockerfile was necessary for mapping ports when starting a container. However, that’s not the case.</p>
-<blockquote>
-<p>The <code>EXPOSE</code> instruction <strong>informs</strong> Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don’t specify a protocol.</p>
-<p>The <code>EXPOSE</code> instruction <strong>doesn’t actually publish the port</strong>. It functions as a type of <strong>documentation</strong> between the person who builds the image and the person who runs the container, about which ports are intended to be published. To publish the port when running the container, use the <code>-p</code> flag on <code>docker run</code> to publish and map one or more ports, or the <code>-P</code> flag to publish all exposed ports and map them to high-order ports.</p>
-</blockquote>
-<p>These two paragraphs are excerpted from the official documentation. <code>EXPOSE</code> is merely a declarative instruction, and it’s the <code>-p</code> option that truly maps the container’s ports. This mapping can be done freely, without any restrictions.</p>
-<p>Therefore, the approach I took in <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#Nginx-Container">‘Deploying Nginx in Docker and Configuring SSL Certificate for Local Network’</a> is meaningless. There’s no need to create a new image just for <code>EXPOSE</code>.</p>
-<blockquote>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
-</blockquote>
-<h2 id="Cache-Memory"><a href="#Cache-Memory" class="headerlink" title="Cache Memory"></a>Cache Memory</h2><p>In Portainer statistics, you can see that memory usage is divided into ‘Memory’ and ‘Cache’. What do these two terms mean? Which one represents the current memory usage?</p>
-<p><img src="/en/MarkDownImages/image-20240213085846776.png" alt="image-20240213085846776"></p>
-<p>In simple words, ‘Memory’ represents the current memory usage, while ‘Cache’ represents memory that <strong>was previously used</strong>. Memory Cache is a term in Docker, and its value is equal to the value of <code>Inactive(file)</code> in <code>/proc/meminfo</code>.</p>
-<blockquote>
-<p><code>Inactive(file)</code> — The amount of file cache memory, in kibibytes, that is newly loaded from the disk, or is a candidate for reclaiming.</p>
-</blockquote>
+<p>This script categorizes the corresponding manga into a specific author’s category. Although I did not (and will not) tag manga, using author as a category achieves the same effect, allowing me to select manga based on the author.</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/624670198">在Docker下安装Jellyfin并正确开启硬件解码</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/640489824">Docker部署开源流媒体软件Jellyfin</a></li>
-<li><a href="https://jellyfin.org/docs/general/installation/container#using-docker-compose">Jellyfin doc installation</a></li>
-<li><a href="https://jellyfin.org/docs/general/networking/#self-signed-certificate">Jellyfin doc self-signed certificate</a></li>
-<li><a href="https://docs.docker.com/engine/reference/builder/#expose">Docker doc EXPOSE</a></li>
-<li><a href="https://www.reddit.com/r/portainer/comments/w6pvit/what_is_memory_cache_in_the_container_stats/">What is memory “cache” in the container stat’s?</a></li>
+<li><a href="https://man7.org/linux/man-pages/man7/inotify.7.html">inotify(7) — Linux manual page</a></li>
+<li><a href="https://sugoi.gitbook.io/lanraragi/api-documentation/shinobu-api">LANraragi doc: Shinobu API</a></li>
+<li><a href="https://jellyfin.org/docs/general/administration/troubleshooting#real-time-monitoring">Jellyfin doc: Real Time Monitoring</a></li>
+<li><a href="https://www.reddit.com/r/jellyfin/comments/ke3cmo/jellyfin_not_picking_up_new_files_on_docker_mount/">Jellyfin not picking up new files on docker mount</a></li>
+<li><a href="https://post.smzdm.com/p/a5o645pl/">我的Jellyfin影视库 搭建、信息刮削小记</a></li>
+<li><a href="https://vagrant-up.narkive.com/5sdcgSfL/shared-folders-and-inotify-does-it-work-with-vmware-any-way-to-run-vagrant-vmware-in-trial-period">Shared folders and inotify: Does it work with VMWare + Any way to run Vagrant + VMWare in trial period?</a></li>
+<li><a href="https://www.reddit.com/r/jellyfin/comments/106qtix/how_does_the_scheduled_task_for_scan_media/">How does the Scheduled Task for Scan Media Library work?</a></li>
 </ul>
 ]]></content>
       <categories>
@@ -838,6 +838,7 @@
         <tag>NAS</tag>
         <tag>Docker</tag>
         <tag>Jellyfin</tag>
+        <tag>LANraragi</tag>
       </tags>
   </entry>
   <entry>
@@ -1028,130 +1029,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
-    <url>/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
-<ul>
-<li>自动检查 JSON 语法是否正确</li>
-<li>底层支持快速存取 JSON 中的元素。不需要将整个 字符串 全部读取出来，再解析成 JSON 对象</li>
-</ul>
-<p>在逻辑上，JSON 与 POJO 无异。Spring MVC 已经实现了 Controller 层两者的自动转化，这体现在请求参数和返回值上。那么，Repository 层如何实现两者的自动转换呢？</p>
-<p>本文展示了通过使用 MyBatis-Plus，<strong>无侵入式</strong>地实现持久层 JSON 与 POJO 的自动映射（ORM， Object Relational Mapping）</p>
-<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><span id="more"></span>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `person` (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(255) NOT NULL,</span><br><span class="line">  `log` json NOT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB;</span><br></pre></td></tr></table></figure>
-
-<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;person&quot;, autoResultMap = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(typeHandler = JacksonTypeHandler.class)</span></span><br><span class="line">    <span class="keyword">private</span> PersonLog log;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">PersonLog</span> &#123;</span><br><span class="line">        List&lt;String&gt; hobbies;</span><br><span class="line">        Integer age;</span><br><span class="line">        String address;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里的<code>PersonLog</code>是重点讨论的对象，我们要实现它与 JSON 的映射。</p>
-<p><code>Person</code>类上需要标记两个注解，两者通常一起使用：</p>
-<p> <code>TableName#autoResultMap</code>：负责在<strong>查询</strong>时候把 JSON 转换为 POJO</p>
-<p><code>TableField#typeHandler</code>：负责在<strong>插入</strong>时将 POJO 转换为 JSON。由于 spring-web-starter 已经导入了 jackson 依赖，直接使用 <code>JacksonTypeHandler</code> 即可。</p>
-<h2 id="mapper-xml"><a href="#mapper-xml" class="headerlink" title="mapper.xml"></a>mapper.xml</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.example.demo.mapper.PersonMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">&quot;BaseResultMap&quot;</span> <span class="attr">type</span>=<span class="string">&quot;com.example.demo.entity.Person&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">&quot;id&quot;</span> <span class="attr">property</span>=<span class="string">&quot;id&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;BIGINT&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;name&quot;</span> <span class="attr">property</span>=<span class="string">&quot;name&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;VARCHAR&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;log&quot;</span> <span class="attr">property</span>=<span class="string">&quot;log&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;LONGVARCHAR&quot;</span> <span class="attr">typeHandler</span>=<span class="string">&quot;com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span>&gt;</span></span><br><span class="line">        id, name, log</span><br><span class="line">    <span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>mapper 文件中需要指出 <code>log</code> 字段的 typeHandler 的全类名</p>
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PersonMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;Person&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>省略了 Service 层</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PersonController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PersonMapper personMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/json&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">testJSON2BeanMap</span><span class="params">(<span class="meta">@RequestBody</span> Person person)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.insert(person);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/json/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Person <span class="title function_">getPersonById</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> Long id)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.selectById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试两个方法，没报错就说明成功，插入时可以再查看一下数据库。</p>
-<p>在<a href="#%E5%BA%8F%E8%A8%80">序言</a>中提到的<strong>无侵入式ORM</strong>，是指我们不需要在代码中手动地执行 JSON 与 PersonLog 的转换。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文展示了通过使用 MyBatis-Plus<strong>无侵入式</strong>实现持久层 JSON 与 POJO 的自动映射。</p>
-<p>我对这一问题的研究源自实习时业务的要求。当我查询网上的资料时，发现帖子的表述都不太完整、直观，于是我记录下了解决方案，写成了这篇文章。</p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://dev.mysql.com/doc/refman/8.0/en/json.html">The JSON Data Type</a></p>
-<p><a href="https://blog.csdn.net/qq_33360626/article/details/119836835">mybatis-plus处理mysql中json格式方法</a></p>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Spring Boot</tag>
-        <tag>MySQL</tag>
-        <tag>MyBatis-Plus</tag>
-        <tag>JDBC</tag>
-        <tag>Repository</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
-<span id="more"></span>
-
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
-
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
-
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>PotPlayer</category>
-      </categories>
-      <tags>
-        <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Using Python venv</title>
-    <url>/en/2023/12/20/Python-venv-use/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>Python is renowned for its rich set of modules. However, unlike in Java development where Maven uses group Id, artifact Id, and version to uniquely identify a dependency, in practice, most Python projects differentiate modules <strong>solely</strong> by their names. Run <code>pip install &lt;module&gt;</code>, and you’ve got the module. But what about the module version? Most project requirements do not specify versions, leading to constant errors for those who run the project later.</p>
-<p>Hence, the concept of a weakened version number undoubtedly does more harm than good. How to solve this issue? By using venv (virtual environment).</p>
-<p>If you directly use <code>pip install</code>, all Python projects share these modules, leading to potential compatibility issues. Venv copies the original Python environment. The virtual environment runs only on the copied Python, and the installed modules exist only in that virtual environment. Multiple virtual environments are isolated from each other.</p>
-<h1 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h1><p>1️⃣Create venv:</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv C:\Users\Elnino\Desktop\test\venv</span><br></pre></td></tr></table></figure>
-
-<p>The directory <code>C:\Users\Elnino\Desktop\test\venv</code> is the virtual environment.</p>
-<span id="more"></span>
-
-<p>2️⃣Activate:</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">venv\Scripts\activate</span><br></pre></td></tr></table></figure>
-
-<p>If <code>(venv)</code> appears in front of the prompt, it means activation is successful, and you can now freely work inside.</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;pip list</span><br></pre></td></tr></table></figure>
-
-<p>3️⃣Deactivate: </p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;deactivate</span><br><span class="line">C:\Users\Elnino\Desktop\test&gt;</span><br></pre></td></tr></table></figure>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://docs.python.org/3/library/venv.html">venv — Creation of virtual environments</a></p>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>venv</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Markdown 插入图片时自动拷贝——以 Typora 和  VS Code 为例</title>
     <url>/en/2023/07/22/Markdown-Automatically-Copy-When-Inserting-Images-Using-Typora-and-VS-Code-as-Examples/</url>
     <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>随着 Markdown 的普及，使用传统文本编辑器写作的效率显得低下，尤其表现在一些复杂语法，比如插入表格，或者插入图片。</p>
@@ -1218,53 +1095,84 @@
       </tags>
   </entry>
   <entry>
-    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
-    <url>/en/2023/07/05/Spring-MVC-Automatic-Validation-of-Request-Parameters-Using-Validation-Annotations/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
-<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
-<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
-<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
-<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
 
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
 
-<p>validation-api 是本次介绍的重点</p>
-<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
 
-<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
-<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
 
-<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyBatis-Plus 实现 MySQL JSON 类型字段的映射</title>
+    <url>/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
+<ul>
+<li>自动检查 JSON 语法是否正确</li>
+<li>底层支持快速存取 JSON 中的元素。不需要将整个 字符串 全部读取出来，再解析成 JSON 对象</li>
+</ul>
+<p>在逻辑上，JSON 与 POJO 无异。Spring MVC 已经实现了 Controller 层两者的自动转化，这体现在请求参数和返回值上。那么，Repository 层如何实现两者的自动转换呢？</p>
+<p>本文展示了通过使用 MyBatis-Plus，<strong>无侵入式</strong>地实现持久层 JSON 与 POJO 的自动映射（ORM， Object Relational Mapping）</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><span id="more"></span>
 
-<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
-<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
-<p><code>@NotNull</code>：字面含义，字段非空</p>
-<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
-<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `person` (</span><br><span class="line">  `id` bigint NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(255) NOT NULL,</span><br><span class="line">  `log` json NOT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB;</span><br></pre></td></tr></table></figure>
 
-<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.3.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
-<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
-<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@TableName(value = &quot;person&quot;, autoResultMap = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@TableField(typeHandler = JacksonTypeHandler.class)</span></span><br><span class="line">    <span class="keyword">private</span> PersonLog log;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Data</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">PersonLog</span> &#123;</span><br><span class="line">        List&lt;String&gt; hobbies;</span><br><span class="line">        Integer age;</span><br><span class="line">        String address;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>这里的<code>PersonLog</code>是重点讨论的对象，我们要实现它与 JSON 的映射。</p>
+<p><code>Person</code>类上需要标记两个注解，两者通常一起使用：</p>
+<p> <code>TableName#autoResultMap</code>：负责在<strong>查询</strong>时候把 JSON 转换为 POJO</p>
+<p><code>TableField#typeHandler</code>：负责在<strong>插入</strong>时将 POJO 转换为 JSON。由于 spring-web-starter 已经导入了 jackson 依赖，直接使用 <code>JacksonTypeHandler</code> 即可。</p>
+<h2 id="mapper-xml"><a href="#mapper-xml" class="headerlink" title="mapper.xml"></a>mapper.xml</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span> <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.example.demo.mapper.PersonMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">&quot;BaseResultMap&quot;</span> <span class="attr">type</span>=<span class="string">&quot;com.example.demo.entity.Person&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">&quot;id&quot;</span> <span class="attr">property</span>=<span class="string">&quot;id&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;BIGINT&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;name&quot;</span> <span class="attr">property</span>=<span class="string">&quot;name&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;VARCHAR&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">&quot;log&quot;</span> <span class="attr">property</span>=<span class="string">&quot;log&quot;</span> <span class="attr">jdbcType</span>=<span class="string">&quot;LONGVARCHAR&quot;</span> <span class="attr">typeHandler</span>=<span class="string">&quot;com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">sql</span> <span class="attr">id</span>=<span class="string">&quot;Base_Column_List&quot;</span>&gt;</span></span><br><span class="line">        id, name, log</span><br><span class="line">    <span class="tag">&lt;/<span class="name">sql</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>服务器返回了 400 错误</p>
-<p><img src="/en/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
-<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
-<p><img src="/en/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
-<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>mapper 文件中需要指出 <code>log</code> 字段的 typeHandler 的全类名</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PersonMapper</span> <span class="keyword">extends</span> <span class="title class_">BaseMapper</span>&lt;Person&gt; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
+<p>省略了 Service 层</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PersonController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PersonMapper personMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/json&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">testJSON2BeanMap</span><span class="params">(<span class="meta">@RequestBody</span> Person person)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.insert(person);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/json/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Person <span class="title function_">getPersonById</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> Long id)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> personMapper.selectById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试两个方法，没报错就说明成功，插入时可以再查看一下数据库。</p>
+<p>在<a href="#%E5%BA%8F%E8%A8%80">序言</a>中提到的<strong>无侵入式ORM</strong>，是指我们不需要在代码中手动地执行 JSON 与 PersonLog 的转换。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文展示了通过使用 MyBatis-Plus<strong>无侵入式</strong>实现持久层 JSON 与 POJO 的自动映射。</p>
+<p>我对这一问题的研究源自实习时业务的要求。当我查询网上的资料时，发现帖子的表述都不太完整、直观，于是我记录下了解决方案，写成了这篇文章。</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://dev.mysql.com/doc/refman/8.0/en/json.html">The JSON Data Type</a></p>
+<p><a href="https://blog.csdn.net/qq_33360626/article/details/119836835">mybatis-plus处理mysql中json格式方法</a></p>
 ]]></content>
       <categories>
         <category>tech</category>
@@ -1273,8 +1181,41 @@
       <tags>
         <tag>Java</tag>
         <tag>Spring Boot</tag>
-        <tag>Spring MVC</tag>
-        <tag>Controller</tag>
+        <tag>MySQL</tag>
+        <tag>MyBatis-Plus</tag>
+        <tag>JDBC</tag>
+        <tag>Repository</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Using Python venv</title>
+    <url>/en/2023/12/20/Python-venv-use/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>Python is renowned for its rich set of modules. However, unlike in Java development where Maven uses group Id, artifact Id, and version to uniquely identify a dependency, in practice, most Python projects differentiate modules <strong>solely</strong> by their names. Run <code>pip install &lt;module&gt;</code>, and you’ve got the module. But what about the module version? Most project requirements do not specify versions, leading to constant errors for those who run the project later.</p>
+<p>Hence, the concept of a weakened version number undoubtedly does more harm than good. How to solve this issue? By using venv (virtual environment).</p>
+<p>If you directly use <code>pip install</code>, all Python projects share these modules, leading to potential compatibility issues. Venv copies the original Python environment. The virtual environment runs only on the copied Python, and the installed modules exist only in that virtual environment. Multiple virtual environments are isolated from each other.</p>
+<h1 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h1><p>1️⃣Create venv:</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">python <span class="literal">-m</span> venv C:\Users\Elnino\Desktop\test\venv</span><br></pre></td></tr></table></figure>
+
+<p>The directory <code>C:\Users\Elnino\Desktop\test\venv</code> is the virtual environment.</p>
+<span id="more"></span>
+
+<p>2️⃣Activate:</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">venv\Scripts\activate</span><br></pre></td></tr></table></figure>
+
+<p>If <code>(venv)</code> appears in front of the prompt, it means activation is successful, and you can now freely work inside.</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;pip list</span><br></pre></td></tr></table></figure>
+
+<p>3️⃣Deactivate: </p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">(venv) C:\Users\Elnino\Desktop\test&gt;deactivate</span><br><span class="line">C:\Users\Elnino\Desktop\test&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p><a href="https://docs.python.org/3/library/venv.html">venv — Creation of virtual environments</a></p>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>venv</tag>
       </tags>
   </entry>
   <entry>
@@ -1558,93 +1499,63 @@
       </tags>
   </entry>
   <entry>
-    <title>Common Commands for pip &amp; conda</title>
-    <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
-    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
-<li><p>Install <code>script-house</code>, version <code>0.0.2</code>.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
+    <title>Spring MVC 使用 Validation 注解实现请求参数自动校验</title>
+    <url>/en/2023/07/05/Spring-MVC-Automatic-Validation-of-Request-Parameters-Using-Validation-Annotations/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>控制器方法（ handler ）中负责请求参数校验。</p>
+<p>传统的写法是在每个方法的开头对所有请求参数进行校验，如果存在参数不满足条件，则抛出异常，或者提前返回错误。</p>
+<p>Validation API 提供了一系列的注解，通过将这些注解标记在 entity 类的属性上，Spring MVC 会根据这些注解的语义，自动完成请求参数校验。如果参数不满足条件，则抛出异常。这节省了开发者手动校验请求参数的麻烦。</p>
+<p>负责自动参数校验的类实际上是由 Spring Boot 自动装配导入的，因此我们要使用对应的 starter 依赖。</p>
+<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><span id="more"></span>
 
-<p> If you want to install the latest version by default, you can omit <code>==0.0.2</code>.</p>
-<p> To install multiple dependencies in one line:</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
-</ol>
-<span id="more"></span>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li><p>List all dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>List current dependencies in <code>requirements.txt</code> format.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
+<p>validation-api 是本次介绍的重点</p>
+<img src="/MarkDownImages/image-20230705200537754.png" alt="image-20230705200537754" style="zoom:80%;" />
 
-<p> The result of <code>pip freeze</code> is a subset of <code>pip list</code>. <code>pip list</code> usually includes fundamental dependencies like <code>pip</code>, <code>setuptools</code>, and <code>wheel</code>.</p>
-<p> The purpose of <code>pip freeze</code> is to export project dependencies for others to use, while <code>pip list</code> is just for display.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Install all dependencies from <code>requirements.txt</code>.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Uninstall a specific dependency.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Uninstall multiple dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>一个标准的 Spring Initializer 生成的 Spring Boot 项目</p>
+<img src="/MarkDownImages/image-20230705200916180.png" alt="image-20230705200916180" style="zoom: 80%;" />
 
-<p> <code>-y</code> automatically confirms the deletion.</p>
-<p> How to uninstall all dependencies in the current environment?</p>
- <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
-<li><p>After conda is installed on Linux, you should run <code>conda init</code> first before using conda commands; On Windows, there is no such need.</p>
-</li>
-<li><p>List all environments.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Create a new environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;environment-name&gt; python=3.8</span><br></pre></td></tr></table></figure>
+<h2 id="entity"><a href="#entity" class="headerlink" title="entity"></a>entity</h2><h3 id="User"><a href="#User" class="headerlink" title="User"></a>User</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="meta">@Size(max = 5, message = &quot;名字不能超过5个字符&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Min(value = 0, message = &quot;年龄不能小于0&quot;)</span></span><br><span class="line">    <span class="meta">@Max(value = 200, message = &quot;年龄不能大于200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p> The basic command is <code>conda create -n &lt;environment-name&gt;</code>, but specifying the Python version is a common practice. Compared to venv, conda environments also install some basic OS-dependent dependencies.</p>
-</li>
-<li><p>Activate an environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;environment-name&gt;</span><br></pre></td></tr></table></figure>
+<p><code>@NotBlank</code>：用在 <code>CharSequence</code> 类型的属性上，表示该字段非空，且长度至少为 1。简单来说，该字符串必须有内容</p>
+<p><code>@Size</code>：用在<code>CharSequence</code>和集合类的属性上，表示该字段的字符数&#x2F;元素数目。<code>max = 5</code>是数量的上界，不能超过该上界。当属性值不满足条件时，Spring MVC 会抛出异常，如果设置了<code>message</code>属性，则异常内容中会包含 <code>message</code> 的值</p>
+<p><code>@NotNull</code>：字面含义，字段非空</p>
+<p><code>@Min</code>、<code>@Max</code>：用在数值类型上，对数值的大小进行约束。</p>
+<h3 id="Pet"><a href="#Pet" class="headerlink" title="Pet"></a>Pet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotBlank;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Pet</span> &#123;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String type;</span><br><span class="line">    <span class="meta">@NotBlank</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p> On Windows, you probably need to omit <code>conda</code>.</p>
-</li>
-<li><p>Deactivate the environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Remove an environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;environment-name&gt; --all</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>View basic information.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Install dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
+<h3 id="UserAndPet"><a href="#UserAndPet" class="headerlink" title="UserAndPet"></a>UserAndPet</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.validation.Valid;</span><br><span class="line"><span class="keyword">import</span> javax.validation.constraints.NotNull;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserAndPet</span> &#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span> <span class="comment">// 这个注解保证了User类内部的字段也能被校验</span></span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Valid</span></span><br><span class="line">    <span class="keyword">private</span> Pet pet;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p> Similar to pip, it follows the format <code>dependency==version</code>; the <code>-c</code> parameter specifies the download source (channel) as default channels often fail.</p>
-</li>
-<li><p>Create an environment from a configuration file (usually named <code>environment.yml</code>).</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
+<p><code>@Valid</code>注解告诉 Spring MVC，它标记的类上也有字段需要校验。</p>
+<h2 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> org.elnino.springmvcvalidatordemo.Controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.elnino.springmvcvalidatordemo.entity.UserAndPet;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span><br><span class="line"><span class="keyword">import</span> org.springframework.validation.annotation.Validated;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DemoController</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">        System.out.println(userAndPet);</span><br><span class="line">        <span class="keyword">return</span> userAndPet;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p> Content of <code>environment.yml</code>:</p>
- <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;environment-name&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c parameter, specifying download source</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies installed by conda</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># dependencies installed by pip</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
+<p><code>@Validated</code>指示 Spring MVC：当前请求参数需要被校验</p>
+<h2 id="使用-Postman-发送请求"><a href="#使用-Postman-发送请求" class="headerlink" title="使用 Postman 发送请求"></a>使用 Postman 发送请求</h2><h3 id="合法请求"><a href="#合法请求" class="headerlink" title="合法请求"></a>合法请求</h3><p>请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-<p> It’s not recommended to create a new environment by this method, because channels often fail.</p>
-</li>
-<li><p>Disable auto-activation of the base environment. If enabled, every new shell will automatically activate the base environment.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
-</ol>
+<img src="/MarkDownImages/image-20230705202651511.png" alt="image-20230705202651511" style="zoom:67%;" />
+
+<h3 id="非法请求"><a href="#非法请求" class="headerlink" title="非法请求"></a>非法请求</h3><p>故意使<code>user.name</code>超过长度限制。请求体如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;user&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;adam williams&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;age&quot;</span><span class="punctuation">:</span> <span class="number">15</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;pet&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;cat&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;east wind&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>服务器返回了 400 错误</p>
+<p><img src="/en/MarkDownImages/image-20230705202748075.png" alt="image-20230705202748075"></p>
+<p>服务端抛出了<code>MethodArgumentNotValidException</code>的异常。内容是<code>user.name</code>为非法参数，同时展示了我们自己设置的 <code>message</code></p>
+<p><img src="/en/MarkDownImages/image-20230705202916086.png" alt="image-20230705202916086"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过使用 Validation 注解，我们可以便捷地实现请求参数校验，无需写很多代码。</p>
+<p>试想，我们使用传统方式校验请求参数，光是校验 <code>user.name</code>，就需要写很多代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/test&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> UserAndPet <span class="title function_">test</span><span class="params">(<span class="meta">@Validated</span> <span class="meta">@RequestBody</span> UserAndPet userAndPet)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (userAndPet.getUser() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> userAndPet.getUser().getName();</span><br><span class="line">    <span class="keyword">if</span> (!(name != <span class="literal">null</span> &amp;&amp; name.length() &gt;= <span class="number">1</span> &amp;&amp; name.length() &lt;= <span class="number">5</span>)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验其他请求参数</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，方便快捷的 Validation 注解校验建立在 Spring MVC 和 Spring Boot 的基础上。Spring Boot 具体自动装配了哪些类，Spring MVC 又是如何使用这些类完成请求参数校验，就不在本文的讨论范围内了。有兴趣的读者可以自行阅读源码，或者阅读其他文章。</p>
 ]]></content>
       <categories>
         <category>tech</category>
-        <category>Python</category>
-        <category>cheat sheet</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>Python</tag>
-        <tag>pip</tag>
-        <tag>conda</tag>
+        <tag>Java</tag>
+        <tag>Spring Boot</tag>
+        <tag>Spring MVC</tag>
+        <tag>Controller</tag>
       </tags>
   </entry>
   <entry>
@@ -1834,6 +1745,96 @@
         <tag>Simulation</tag>
         <tag>Tree</tag>
         <tag>Bit Manipulation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Common Commands for pip &amp; conda</title>
+    <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
+    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
+<li><p>Install <code>script-house</code>, version <code>0.0.2</code>.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
+
+<p> If you want to install the latest version by default, you can omit <code>==0.0.2</code>.</p>
+<p> To install multiple dependencies in one line:</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
+</ol>
+<span id="more"></span>
+
+<ol start="2">
+<li><p>List all dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>List current dependencies in <code>requirements.txt</code> format.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
+
+<p> The result of <code>pip freeze</code> is a subset of <code>pip list</code>. <code>pip list</code> usually includes fundamental dependencies like <code>pip</code>, <code>setuptools</code>, and <code>wheel</code>.</p>
+<p> The purpose of <code>pip freeze</code> is to export project dependencies for others to use, while <code>pip list</code> is just for display.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install all dependencies from <code>requirements.txt</code>.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Uninstall a specific dependency.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Uninstall multiple dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
+
+<p> <code>-y</code> automatically confirms the deletion.</p>
+<p> How to uninstall all dependencies in the current environment?</p>
+ <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
+<li><p>After conda is installed on Linux, you should run <code>conda init</code> first before using conda commands; On Windows, there is no such need.</p>
+</li>
+<li><p>List all environments.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create a new environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;environment-name&gt; python=3.8</span><br></pre></td></tr></table></figure>
+
+<p> The basic command is <code>conda create -n &lt;environment-name&gt;</code>, but specifying the Python version is a common practice. Compared to venv, conda environments also install some basic OS-dependent dependencies.</p>
+</li>
+<li><p>Activate an environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;environment-name&gt;</span><br></pre></td></tr></table></figure>
+
+<p> On Windows, you probably need to omit <code>conda</code>.</p>
+</li>
+<li><p>Deactivate the environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Remove an environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;environment-name&gt; --all</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>View basic information.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
+
+<p> Similar to pip, it follows the format <code>dependency==version</code>; the <code>-c</code> parameter specifies the download source (channel) as default channels often fail.</p>
+</li>
+<li><p>Create an environment from a configuration file (usually named <code>environment.yml</code>).</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
+
+<p> Content of <code>environment.yml</code>:</p>
+ <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;environment-name&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c parameter, specifying download source</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies installed by conda</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># dependencies installed by pip</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
+
+<p> It’s not recommended to create a new environment by this method, because channels often fail.</p>
+</li>
+<li><p>Disable auto-activation of the base environment. If enabled, every new shell will automatically activate the base environment.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Python</category>
+        <category>cheat sheet</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>pip</tag>
+        <tag>conda</tag>
       </tags>
   </entry>
 </search>
