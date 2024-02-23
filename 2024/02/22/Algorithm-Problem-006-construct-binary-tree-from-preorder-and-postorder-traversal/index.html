@@ -22,18 +22,18 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"el-nino2020.github.io","root":"/en/","images":"/en/images","scheme":"Gemini","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#008000","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/en/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/en/js/config.js"></script>
 
-    <meta name="description" content="题目 题目来源：889. 根据前序和后序遍历构造二叉树（每日一题）   题目描述： 给定两个整数数组，preorder 和 postorder ，其中 preorder 是一个具有 无重复 值的二叉树的前序遍历，postorder 是同一棵树的后序遍历，重构并返回二叉树。 如果存在多个答案，您可以返回其中 任何 一个。">
+    <meta name="description" content="Problem Problem Source：889. Construct Binary Tree from Preorder and Postorder Traversal(Daily Challenge)   Problem Description： Given two integer arrays, preorder and postorder where preorder is the p">
 <meta property="og:type" content="article">
-<meta property="og:title" content="算法题006：根据前序和后序遍历构造二叉树">
+<meta property="og:title" content="Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal">
 <meta property="og:url" content="https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/index.html">
 <meta property="og:site_name" content="Blog of El nino">
-<meta property="og:description" content="题目 题目来源：889. 根据前序和后序遍历构造二叉树（每日一题）   题目描述： 给定两个整数数组，preorder 和 postorder ，其中 preorder 是一个具有 无重复 值的二叉树的前序遍历，postorder 是同一棵树的后序遍历，重构并返回二叉树。 如果存在多个答案，您可以返回其中 任何 一个。">
+<meta property="og:description" content="Problem Problem Source：889. Construct Binary Tree from Preorder and Postorder Traversal(Daily Challenge)   Problem Description： Given two integer arrays, preorder and postorder where preorder is the p">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://assets.leetcode.com/uploads/2021/07/24/lc-prepost.jpg">
 <meta property="article:published_time" content="2024-02-22T09:26:56.000Z">
 <meta property="article:modified_time" content="2024-02-22T09:26:56.000Z">
 <meta property="article:author" content="El nino">
-<meta property="article:tag" content="树">
+<meta property="article:tag" content="Tree">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://assets.leetcode.com/uploads/2021/07/24/lc-prepost.jpg">
 
@@ -42,10 +42,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/","path":"2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/","title":"算法题006：根据前序和后序遍历构造二叉树"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/","path":"2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/","title":"Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>算法题006：根据前序和后序遍历构造二叉树 | Blog of El nino</title>
+<title>Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal | Blog of El nino</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBFGGZ14VS"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-SBFGGZ14VS","only_pageview":false}</script>
@@ -149,7 +149,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE"><span class="nav-number">1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">代码</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Approach"><span class="nav-number">2.</span> <span class="nav-text">Approach</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Code"><span class="nav-number">3.</span> <span class="nav-text">Code</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/en/tags/">
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">45</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -199,6 +199,37 @@
 
     
         <div class="pjax">
+        <div class="sidebar-inner sidebar-post-related">
+          <div class="animated">
+              <div class="links-of-blogroll-title"><i class="fa fa-signs-post fa-fw"></i>
+    Related Posts
+  </div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <a class="popular-posts-link" href="/en/2023/11/05/leetcode-370-weekly-contest-summary/" rel="bookmark">
+        <time class="popular-posts-time">2023-11-05</time>
+        <br>
+      LeetCode Weekly Contest 370 Summary
+      </a>
+    </li>
+    <li class="popular-posts-item">
+      <a class="popular-posts-link" href="/en/2023/10/29/leetcode-369-weekly-contest-summary/" rel="bookmark">
+        <time class="popular-posts-time">2023-10-29</time>
+        <br>
+      LeetCode Weekly Contest 369 Summary
+      </a>
+    </li>
+    <li class="popular-posts-item">
+      <a class="popular-posts-link" href="/en/2023/11/06/Algorithm-Problem-005-maximum-balanced-subsequence-sum/" rel="bookmark">
+        <time class="popular-posts-time">2023-11-06</time>
+        <br>
+      Algorithm Problem 005: Maximum Balanced Subsequence Sum
+      </a>
+    </li>
+  </ul>
+
+          </div>
+        </div>
         </div>
   </aside>
 
@@ -229,12 +260,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="算法题006：根据前序和后序遍历构造二叉树 | Blog of El nino">
+      <meta itemprop="name" content="Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal | Blog of El nino">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          算法题006：根据前序和后序遍历构造二叉树
+          Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal
         </h1>
 
         <div class="post-meta-container">
@@ -253,7 +284,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/en/categories/%E7%AE%97%E6%B3%95%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">算法题</span></a>
+          <a href="/en/categories/Algorithm-Problems/" itemprop="url" rel="index"><span itemprop="name">Algorithm Problems</span></a>
         </span>
     </span>
 
@@ -264,7 +295,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>923</span>
+      <span>705</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
@@ -281,57 +312,57 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-postorder-traversal">889. 根据前序和后序遍历构造二叉树</a>（每日一题）</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
+<p>Problem Source：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-postorder-traversal">889. Construct Binary Tree from Preorder and Postorder Traversal</a>(Daily Challenge)</p>
 </blockquote>
 <blockquote>
-<p><strong>题目描述</strong>：</p>
-<p>给定两个整数数组，<code>preorder</code> 和 <code>postorder</code> ，其中 <code>preorder</code> 是一个具有 <strong>无重复</strong> 值的二叉树的前序遍历，<code>postorder</code> 是同一棵树的后序遍历，重构并返回二叉树。</p>
-<p>如果存在多个答案，您可以返回其中 <strong>任何</strong> 一个。</p>
+<p><strong>Problem Description</strong>：</p>
+<p>Given two integer arrays, <code>preorder</code> and <code>postorder</code> where <code>preorder</code> is the preorder traversal of a binary tree of <strong>distinct</strong> values and <code>postorder</code> is the postorder traversal of the same tree, reconstruct and return <em>the binary tree</em>.</p>
+<p>If there exist multiple answers, you can <strong>return any</strong> of them.</p>
 </blockquote>
 <span id="more"></span>
 
 <blockquote>
-<p><strong>示例 1：</strong></p>
+<p><strong>Example 1:</strong></p>
 <p><img src="https://assets.leetcode.com/uploads/2021/07/24/lc-prepost.jpg" alt="img"></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：preorder = [1,2,4,5,3,6,7], postorder = [4,5,2,6,7,3,1]</span><br><span class="line">输出：[1,2,3,4,5,6,7]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Input: preorder = [1,2,4,5,3,6,7], postorder = [4,5,2,6,7,3,1]</span><br><span class="line">Output: [1,2,3,4,5,6,7]</span><br></pre></td></tr></table></figure>
 
-<p><strong>示例 2:</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: preorder = [1], postorder = [1]</span><br><span class="line">输出: [1]</span><br></pre></td></tr></table></figure>
+<p><strong>Example 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Input: preorder = [1], postorder = [1]</span><br><span class="line">Output: [1]</span><br></pre></td></tr></table></figure>
 
-<p><strong>提示：</strong></p>
+<p><strong>Constraints:</strong></p>
 <ul>
 <li><code>1 &lt;= preorder.length &lt;= 30</code></li>
 <li><code>1 &lt;= preorder[i] &lt;= preorder.length</code></li>
-<li><code>preorder</code> 中所有值都 <strong>不同</strong></li>
+<li>All the values of <code>preorder</code> are <strong>unique</strong>.</li>
 <li><code>postorder.length == preorder.length</code></li>
 <li><code>1 &lt;= postorder[i] &lt;= postorder.length</code></li>
-<li><code>postorder</code> 中所有值都 <strong>不同</strong></li>
-<li>保证 <code>preorder</code> 和 <code>postorder</code> 是同一棵二叉树的前序遍历和后序遍历</li>
+<li>All the values of <code>postorder</code> are <strong>unique</strong>.</li>
+<li>It is guaranteed that <code>preorder</code> and <code>postorder</code> are the preorder traversal and postorder traversal of the same binary tree.</li>
 </ul>
 </blockquote>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>首先，<strong>前序和后序构造的二叉树不唯一</strong>，因此不存在确定的规则，自由反而带来了坏处。与之相对的，『中序和前序』以及『中序和后序』只对应唯一的二叉树，规则明确，按照规则写代码即可。因此，我们要自定义规则。</p>
-<p>回忆用『中序和前序』构造二叉树，我们顺序遍历前序列表，每遍历一个值，创建对应节点，然后根据中序确定其子树。这可以理解为前序创建，中序校验。</p>
-<p>同理，在这道题中，我们也是“顺序遍历前序列表，每遍历一个值，创建对应节点”，但是根据后序确定 <strong>该节点的位置</strong> （而不是其子树）—— 前序创建，后序校验。</p>
-<p>前序是“中左右”，每遍历前序列表一个节点，我们都可以尝试把它放到左子节点。而后序是“左右中”，<strong>假设在后序列表中节点 A 在 B 之后，那么 A 绝对不可能在 B 的左子树中。</strong></p>
-<p>例如，观察示例 1 的节点 <code>5</code>。顺序遍历前序列表，我们尝试把 <code>5</code> 作为 <code>4</code> 的左子节点。但是在后序列表中，<code>5</code> 在 <code>4</code> 之后，那么这种尝试是不允许的。 <strong><code>5</code> 只可能在 <code>4</code> 的某一个祖先的右子树中</strong>，在这里是 <code>2</code> 的右节点。</p>
-<p>因此，我们需要追踪<strong>从根节点到上一个遍历到的节点的一条路径</strong>，将它们存入一个栈中。</p>
+<h1 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h1><p>Firstly, it is important to note that <strong>the binary tree constructed from preorder and postorder traversals is not unique</strong>, and therefore, there is no deterministic rule. In contrast, ‘inorder and preorder’ as well as ‘inorder and postorder’ correspond uniquely to a binary tree. These rules are clear, making coding straightforward. Hence, we need to define our own rules.</p>
+<p>Recall that when constructing a binary tree from ‘inorder and preorder’, we sequentially traverse the preorder list. For each value, we create a corresponding node and then determine its subtree based on the inorder traversal. This can be understood as creating the preorder and verifying with the inorder.</p>
+<p>Similarly, in this problem, we also ‘sequentially traverse the preorder list, creating a corresponding node’ but determine the <strong>position of the node</strong> (instead of its subtree) based on the postorder traversal. This is creating the preorder and verifying with the postorder.</p>
+<p>In preorder, the sequence is “root - left - right”, and for each node in preorder, we can try placing it as the left child. In postorder, the sequence is “left - right - root”. <strong>If a node A in postorder is after node B, then A cannot be in the left subtree of B.</strong></p>
+<p>For example, consider node <code>5</code> in Example 1. While sequentially traversing the preorder list, we can try placing <code>5</code> as the left child of <code>4</code>. However, in the postorder list, since <code>5</code> comes after <code>4</code>, this attempt is not allowed. <strong><code>5</code> can only be in the right subtree of one of the ancestors of <code>4</code></strong>, in this case, the right child of <code>2</code>.</p>
+<p>Therefore, we need to keep track of the <strong>path from the root to the last traversed node</strong> and store them in a stack.</p>
 <ul>
-<li>只要当前节点和栈顶节点不满足上述后序约束，就出栈，直到满足为止。此时，当前节点是栈顶节点的右子节点。</li>
-<li>如果已经满足约束，当前节点直接成为栈顶节点的左子节点。</li>
+<li>As long as the current node and the top node of the stack do not satisfy the postorder constraint mentioned above, we pop the stack until it is satisfied. At this point, the current node becomes the right child of the top node.</li>
+<li>If the constraint is already satisfied, the current node directly becomes the left child of the top node.</li>
 </ul>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>上述思路是一个大致描述，还是要注意一些细节。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">TreeNode* <span class="title">constructFromPrePost</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; preorder, vector&lt;<span class="type">int</span>&gt;&amp; postorder)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = preorder.<span class="built_in">size</span>();</span><br><span class="line">        <span class="comment">// 只操作 vector 尾部，相当于 stack</span></span><br><span class="line">        vector&lt;TreeNode*&gt; ve;</span><br><span class="line">        unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">        <span class="comment">// 和『中序和前序』一样，将校验列表的 &lt;元素, 索引&gt; 存入哈希表</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            mp[postorder[i]] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> v: preorder) &#123;</span><br><span class="line">            TreeNode* cur = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(v);</span><br><span class="line">            <span class="comment">// 只有第一个元素（根节点）才可能触发这个条件</span></span><br><span class="line">            <span class="keyword">if</span> (ve.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="type">bool</span> popped = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">while</span>((!ve.<span class="built_in">empty</span>()) &amp;&amp; (mp[v] &gt; mp[ve.<span class="built_in">back</span>()-&gt;val])) &#123;</span><br><span class="line">                ve.<span class="built_in">pop_back</span>();</span><br><span class="line">                popped = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!popped) &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;left = cur;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;right = cur;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 存入当前节点，用于下一个节点的判断</span></span><br><span class="line">            ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 第一个节点永远是根节点，且不会被弹出</span></span><br><span class="line">        <span class="keyword">return</span> ve.<span class="built_in">front</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>The above approach is a rough description, and we should pay attention to details.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">TreeNode* <span class="title">constructFromPrePost</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; preorder, vector&lt;<span class="type">int</span>&gt;&amp; postorder)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = preorder.<span class="built_in">size</span>();</span><br><span class="line">        <span class="comment">// Only operate on the vector&#x27;s tail, equivalent to a stack</span></span><br><span class="line">        vector&lt;TreeNode*&gt; ve;</span><br><span class="line">        unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">        <span class="comment">// Just like &#x27;inorder and preorder&#x27;, store &lt;element, index&gt; in the hash table for validation</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            mp[postorder[i]] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> v: preorder) &#123;</span><br><span class="line">            TreeNode* cur = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(v);</span><br><span class="line">            <span class="comment">// Only the first element (root) will trigger this condition</span></span><br><span class="line">            <span class="keyword">if</span> (ve.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="type">bool</span> popped = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">while</span>((!ve.<span class="built_in">empty</span>()) &amp;&amp; (mp[v] &gt; mp[ve.<span class="built_in">back</span>()-&gt;val])) &#123;</span><br><span class="line">                ve.<span class="built_in">pop_back</span>();</span><br><span class="line">                popped = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!popped) &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;left = cur;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;right = cur;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Store the current node for the validation of the next node</span></span><br><span class="line">            ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// The first node is always the root node and will never be popped</span></span><br><span class="line">        <span class="keyword">return</span> ve.<span class="built_in">front</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p>时间复杂度：$O(n)$</p>
+<p>Time Complexity: $O(n)$</p>
 <ul>
-<li>顺序遍历 <code>preorder</code> 和 <code>postorder</code>；</li>
-<li>所有节点只会进出 <code>ve</code> 一次；</li>
+<li>Sequentially traverse <code>preorder</code> and <code>postorder</code>.</li>
+<li>Each node enters and exits <code>ve</code> only once.</li>
 </ul>
-<p>空间复杂度：$O(n)$</p>
+<p>Space Complexity: $O(n)$</p>
 <ul>
-<li><code>mp</code> 存放了 $n$ 个节点的值及其索引；</li>
-<li>最坏的情况，所有节点都进入 <code>ve</code>；</li>
+<li><code>mp</code> stores the values and their indices of all $n$ nodes.</li>
+<li>In the worst case, all nodes are in <code>ve</code>.</li>
 </ul>
 
     </div>
@@ -350,7 +381,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/" title="算法题006：根据前序和后序遍历构造二叉树">https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/</a>
+      <a href="https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/" title="Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal">https://el-nino2020.github.io/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -359,7 +390,7 @@
 </div>
 
           <div class="post-tags">
-              <a href="/en/tags/%E6%A0%91/" rel="tag"><i class="fa fa-tag"></i> 树</a>
+              <a href="/en/tags/Tree/" rel="tag"><i class="fa fa-tag"></i> Tree</a>
           </div>
 
         
@@ -420,7 +451,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:28</span>
+    <span title="Reading time total">1:27</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
