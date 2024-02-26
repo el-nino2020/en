@@ -74,6 +74,69 @@
       </tags>
   </entry>
   <entry>
+    <title>算法题002：螺旋矩阵 II</title>
+    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
+    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
+<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
+</blockquote>
+<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
+<span id="more"></span>
+
+
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
+<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
+<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
+<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
+<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
+<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
+<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
+<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
+<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
+<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
+<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
+<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
+<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
+<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
+
+<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
+<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>改一改思路 2 的代码即可。</p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>模拟</tag>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Algorithm Problem 003: Diagonal Traverse II</title>
     <url>/en/2023/10/29/Algorithm-Problem-003-diagonal-traverse-ii/</url>
     <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
@@ -156,69 +219,6 @@
       </tags>
   </entry>
   <entry>
-    <title>算法题002：螺旋矩阵 II</title>
-    <url>/en/2023/10/03/Algorithm-Problem-002-spiral-matrix-ii/</url>
-    <content><![CDATA[<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><blockquote>
-<p>题目来源：<a href="https://leetcode.cn/problems/spiral-matrix-ii/">59. 螺旋矩阵 II</a></p>
-</blockquote>
-<p>给你一个正整数 <code>n</code> ，生成一个包含 <code>1</code> 到 <code>n^2</code> 所有元素，且元素按顺时针顺序螺旋排列的 <code>n x n</code> 正方形矩阵 <code>matrix</code> 。</p>
-<span id="more"></span>
-
-
-<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">,</span><span class="number">2</span><span class="punctuation">,</span><span class="number">3</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">8</span><span class="punctuation">,</span><span class="number">9</span><span class="punctuation">,</span><span class="number">4</span><span class="punctuation">]</span><span class="punctuation">,</span><span class="punctuation">[</span><span class="number">7</span><span class="punctuation">,</span><span class="number">6</span><span class="punctuation">,</span><span class="number">5</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h2><p>输入：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>这道题是一道典型的模拟题，我们需要按照遍历整个矩阵。</p>
-<h2 id="思路-1"><a href="#思路-1" class="headerlink" title="思路 1"></a>思路 1</h2><p>我自己的做法是将矩阵分层（<code>layer</code>），一层一层地遍历。比如，当 $n &#x3D; 3$ 时，矩阵为</p>
-<p> <img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>此时，我们定义第一层为 <code>layer = 0</code>，包含数字 1 - 8；第二层为 <code>layer = 1</code>，包含数字 9；</p>
-<p>遍历每一层时，依次编写向右（1、2）、向下（3、4）、向左（5、6）、向右（7、8）的循环代码</p>
-<p>这种方法的重点在于找数学规律，找到 <code>layer</code> 和当前遍历的某一行&#x2F;某一列的大小关系</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">layer</span> <span class="operator">=</span> <span class="number">0</span>; layer &lt;= n / <span class="number">2</span>; layer++) &#123;</span><br><span class="line">            <span class="comment">// 向右</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> layer; j &lt; n - layer - <span class="number">1</span>; ++j, ++counter) &#123;</span><br><span class="line">                ans[layer][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向下</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> layer; i &lt; n - layer - <span class="number">1</span>; ++i, ++counter) &#123;</span><br><span class="line">                ans[i][n - layer - <span class="number">1</span>] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向左</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; j &gt; layer; --j, ++counter) &#123;</span><br><span class="line">                ans[n - layer - <span class="number">1</span>][j] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 向上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> n - layer - <span class="number">1</span>; i &gt; layer; --i, ++counter) &#123;</span><br><span class="line">                ans[i][layer] = counter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 对于边长为奇数的方阵，中心元素需要手动处理</span></span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) &#123;</span><br><span class="line">            ans[n / <span class="number">2</span>][n / <span class="number">2</span>] = counter;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>显然，这种做法很容易错，毕竟找规律挺无聊的。</strong></p>
-<p>力扣上的几位大佬，提供了一种不需要找规律的解法，比如 <a href="https://leetcode.cn/problems/spiral-matrix-ii/solutions/12594/spiral-matrix-ii-mo-ni-fa-she-ding-bian-jie-qing-x/">Krahets 的题解</a>：手动地控制上下左右四个边界，当遍历到边界时，就到头了，向下一个方向开始遍历。</p>
-<h2 id="思路-2"><a href="#思路-2" class="headerlink" title="思路 2"></a>思路 2</h2><p>由于我们要生成一个矩阵（<strong>非常规则</strong>的图形），我们往往会从<strong>宏观</strong>的角度控制遍历，即思路 1。所谓宏观，即知道全局，它体现在我的解法的找数学规律，也体现在大佬的解法的控制四个边界。</p>
-<p>那我们不妨从<strong>微观</strong>角度出发：假如我们自己站在一个<strong>巨大的、看不到边界的</strong>棋盘上，要去填入这些数字，我们会怎么填？我们<strong>只能看到四周的格子</strong>上的数字。此时，宏观的方法不再奏效，我们应该怎么做？</p>
-<p><img src="/en/MarkDownImages/spiraln.jpg" alt="img"></p>
-<p>假设我们站在格子 1 上（面朝右），往前走，边走边写数字。当走到了格子 3，发现前面无路可走。因为要顺时针填入数字，我们不妨右拐（面朝下），此时面向的格子，就是要填入数字 4 的格子。</p>
-<p>同理，当我们走到了格子 8（面朝上），此时前面的格子已经填入了数字 1。我们再次右拐（面朝右），此时面向的格子，就是要填入数字 9 的格子。</p>
-<p>因此，在代码中，我们不妨<strong>只关心 agent 当前的坐标</strong>，让他<strong>认准一个方向一直走</strong>，直到遇到边界、或者已经填入了数字，<strong>此时右拐即可</strong>。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[][] generateMatrix(<span class="type">int</span> n) &#123;</span><br><span class="line">        <span class="type">int</span>[][] ans = <span class="keyword">new</span> <span class="title class_">int</span>[n][n];</span><br><span class="line">        <span class="comment">// (dx[k], dy[k]) 表示移动的方向，按照轮询的顺序，依次是向右、向下、向左、向上、向右 ...</span></span><br><span class="line">        <span class="type">int</span>[] dx = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>&#125;;</span><br><span class="line">        <span class="type">int</span>[] dy = &#123;<span class="number">1</span>, <span class="number">0</span>, -<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// (x, y) 是 agent 的坐标;</span></span><br><span class="line">        <span class="comment">// dir 表示当前移动的方向，是 dx, dy 数组的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>, y = <span class="number">0</span>, dir = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 循环变量，以及循环退出条件</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">counter</span> <span class="operator">=</span> <span class="number">1</span>, limit = n * n;</span><br><span class="line">        <span class="keyword">while</span> (counter &lt;= limit) &#123;</span><br><span class="line">            <span class="comment">// 当前坐标在边界内，同时当前格子没有填入数字</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="number">0</span> &lt;= x &amp;&amp; x &lt; n &amp;&amp; <span class="number">0</span> &lt;= y &amp;&amp; y &lt; n &amp;&amp; ans[x][y] == <span class="number">0</span>) &#123;</span><br><span class="line">                ans[x][y] = counter;</span><br><span class="line">                counter++;</span><br><span class="line">                <span class="comment">// 继续走</span></span><br><span class="line">                x += dx[dir];</span><br><span class="line">                y += dy[dir];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 回撤一步</span></span><br><span class="line">            x -= dx[dir];</span><br><span class="line">            y -= dy[dir];</span><br><span class="line">            <span class="comment">// 向右转</span></span><br><span class="line">            dir = (dir + <span class="number">1</span>) % dx.length;</span><br><span class="line">            <span class="comment">// 往前一步后，位置 (x, y) 即为下一轮 while 循环要处理的第一个格子</span></span><br><span class="line">            x += dx[dir];</span><br><span class="line">            y += dy[dir];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>我会想出思路 2，是因为我最近做了一道算法题，它要求我顺时针地给一个边长为 <code>n</code> 的等腰直角三角形（直角边平行于坐标轴）填入数字。</p>
-<p>比如，当 <code>n = 4</code> 时，要按如下的方式填入数字：</p>
-<img src="/MarkDownImages/image-20231003171918667.png" alt="image-20231003171918667" style="zoom:67%;" />
-
-<p>按照思路 1 的解法，从宏观层面找规律，我根本懒得找，想想就麻烦。如果按照大佬们的边界法，斜边遍历的代码（ $x + y \le k$ ），又何尝不是一种找规律？</p>
-<p>按照思路 2，所谓顺时针，其实就是轮询这几个方向：向上、向右下、向左。那么，在代码层面就是：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span>[] dx = &#123;-<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line"><span class="type">int</span>[] dy = &#123;<span class="number">0</span>, <span class="number">1</span>, -<span class="number">1</span>&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>改一改思路 2 的代码即可。</p>
-]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
-      <tags>
-        <tag>模拟</tag>
-        <tag>数组</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Algorithm Problem 004: Maximum Employees to Be Invited to a Meeting</title>
     <url>/en/2023/11/01/Algorithm-Problem-004-maximum-employees-to-be-invited-to-a-meeting/</url>
     <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
@@ -285,69 +285,6 @@
       <tags>
         <tag>Graph</tag>
         <tag>Topological Sorting</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal</title>
-    <url>/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/</url>
-    <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
-<p>Problem Source：<a href="https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-postorder-traversal">889. Construct Binary Tree from Preorder and Postorder Traversal</a>(Daily Challenge)</p>
-</blockquote>
-<blockquote>
-<p><strong>Problem Description</strong>：</p>
-<p>Given two integer arrays, <code>preorder</code> and <code>postorder</code> where <code>preorder</code> is the preorder traversal of a binary tree of <strong>distinct</strong> values and <code>postorder</code> is the postorder traversal of the same tree, reconstruct and return <em>the binary tree</em>.</p>
-<p>If there exist multiple answers, you can <strong>return any</strong> of them.</p>
-</blockquote>
-<span id="more"></span>
-
-<blockquote>
-<p><strong>Example 1:</strong></p>
-<p><img src="https://assets.leetcode.com/uploads/2021/07/24/lc-prepost.jpg" alt="img"></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Input: preorder = [1,2,4,5,3,6,7], postorder = [4,5,2,6,7,3,1]</span><br><span class="line">Output: [1,2,3,4,5,6,7]</span><br></pre></td></tr></table></figure>
-
-<p><strong>Example 2:</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Input: preorder = [1], postorder = [1]</span><br><span class="line">Output: [1]</span><br></pre></td></tr></table></figure>
-
-<p><strong>Constraints:</strong></p>
-<ul>
-<li><code>1 &lt;= preorder.length &lt;= 30</code></li>
-<li><code>1 &lt;= preorder[i] &lt;= preorder.length</code></li>
-<li>All the values of <code>preorder</code> are <strong>unique</strong>.</li>
-<li><code>postorder.length == preorder.length</code></li>
-<li><code>1 &lt;= postorder[i] &lt;= postorder.length</code></li>
-<li>All the values of <code>postorder</code> are <strong>unique</strong>.</li>
-<li>It is guaranteed that <code>preorder</code> and <code>postorder</code> are the preorder traversal and postorder traversal of the same binary tree.</li>
-</ul>
-</blockquote>
-<h1 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h1><p>Firstly, it is important to note that <strong>the binary tree constructed from preorder and postorder traversals is not unique</strong>, and therefore, there is no deterministic rule. In contrast, ‘inorder and preorder’ as well as ‘inorder and postorder’ correspond uniquely to a binary tree. These rules are clear, making coding straightforward. Hence, we need to define our own rules.</p>
-<p>Recall that when constructing a binary tree from ‘inorder and preorder’, we sequentially traverse the preorder list. For each value, we create a corresponding node and then determine its subtree based on the inorder traversal. This can be understood as creating the preorder and verifying with the inorder.</p>
-<p>Similarly, in this problem, we also ‘sequentially traverse the preorder list, creating a corresponding node’ but determine the <strong>position of the node</strong> (instead of its subtree) based on the postorder traversal. This is creating the preorder and verifying with the postorder.</p>
-<p>In preorder, the sequence is “root - left - right”, and for each node in preorder, we can try placing it as the left child. In postorder, the sequence is “left - right - root”. <strong>If a node A in postorder is after node B, then A cannot be in the left subtree of B.</strong></p>
-<p>For example, consider node <code>5</code> in Example 1. While sequentially traversing the preorder list, we can try placing <code>5</code> as the left child of <code>4</code>. However, in the postorder list, since <code>5</code> comes after <code>4</code>, this attempt is not allowed. <strong><code>5</code> can only be in the right subtree of one of the ancestors of <code>4</code></strong>, in this case, the right child of <code>2</code>.</p>
-<p>Therefore, we need to keep track of the <strong>path from the root to the last traversed node</strong> and store them in a stack.</p>
-<ul>
-<li>As long as the current node and the top node of the stack do not satisfy the postorder constraint mentioned above, we pop the stack until it is satisfied. At this point, the current node becomes the right child of the top node.</li>
-<li>If the constraint is already satisfied, the current node directly becomes the left child of the top node.</li>
-</ul>
-<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>The above approach is a rough description, and we should pay attention to details.</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">TreeNode* <span class="title">constructFromPrePost</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; preorder, vector&lt;<span class="type">int</span>&gt;&amp; postorder)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = preorder.<span class="built_in">size</span>();</span><br><span class="line">        <span class="comment">// Only operate on the vector&#x27;s tail, equivalent to a stack</span></span><br><span class="line">        vector&lt;TreeNode*&gt; ve;</span><br><span class="line">        unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">        <span class="comment">// Just like &#x27;inorder and preorder&#x27;, store &lt;element, index&gt; in the hash table for validation</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            mp[postorder[i]] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> v: preorder) &#123;</span><br><span class="line">            TreeNode* cur = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(v);</span><br><span class="line">            <span class="comment">// Only the first element (root) will trigger this condition</span></span><br><span class="line">            <span class="keyword">if</span> (ve.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="type">bool</span> popped = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">while</span>((!ve.<span class="built_in">empty</span>()) &amp;&amp; (mp[v] &gt; mp[ve.<span class="built_in">back</span>()-&gt;val])) &#123;</span><br><span class="line">                ve.<span class="built_in">pop_back</span>();</span><br><span class="line">                popped = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!popped) &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;left = cur;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;right = cur;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Store the current node for the validation of the next node</span></span><br><span class="line">            ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// The first node is always the root node and will never be popped</span></span><br><span class="line">        <span class="keyword">return</span> ve.<span class="built_in">front</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>Time Complexity: $O(n)$</p>
-<ul>
-<li>Sequentially traverse <code>preorder</code> and <code>postorder</code>.</li>
-<li>Each node enters and exits <code>ve</code> only once.</li>
-</ul>
-<p>Space Complexity: $O(n)$</p>
-<ul>
-<li><code>mp</code> stores the values and their indices of all $n$ nodes.</li>
-<li>In the worst case, all nodes are in <code>ve</code>.</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Algorithm Problems</category>
-      </categories>
-      <tags>
-        <tag>Tree</tag>
       </tags>
   </entry>
   <entry>
@@ -457,65 +394,6 @@
         <tag>DP</tag>
         <tag>BIT</tag>
         <tag>Discretization</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Azure Pipelines 架构解析</title>
-    <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
-    <content><![CDATA[<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a href="https://github.com/features/actions">GitHub Actions</a> 和 <a href="https://www.jenkins.io/">Jenkins</a>。</p>
-<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
-<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
-<span id="more"></span>
-
-<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
-<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
-<ul>
-<li>一条 Pipeline 可以包含多个 Stage</li>
-<li>一个 Stage 可以包含多个 Job</li>
-<li>一个 Job 可以包含多个 Step</li>
-<li>一个 Step 可以包含多个 task</li>
-</ul>
-<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
-<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
-<p>这种分配是如何完成的呢？</p>
-<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
-<ul>
-<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
-<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
-</ul>
-<p>因此，一条 Pipeline 是这样执行的：</p>
-<ol>
-<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
-<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
-<li>竞争成功，开始执行；</li>
-<li>竞争失败，继续监听；</li>
-</ul>
-</li>
-<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
-</ol>
-<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
-<blockquote>
-<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
-</blockquote>
-<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
-<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
-<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
-<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
-<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
-<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Azure</category>
-      </categories>
-      <tags>
-        <tag>Azure</tag>
-        <tag>Azure Pipelines</tag>
-        <tag>架构</tag>
       </tags>
   </entry>
   <entry>
@@ -695,6 +573,340 @@
         <tag>Docker</tag>
         <tag>Nginx</tag>
         <tag>SSL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>the Architecture of Azure Pipelines</title>
+    <url>/en/2023/10/06/Azure-Pipelines-Architecture/</url>
+    <content><![CDATA[<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Azure Pipelines is a component of Azure DevOps (a SaaS platform) and serves as an automated CI&#x2F;CD pipeline. Similar technologies include <a href="https://github.com/features/actions">GitHub Actions</a> and <a href="https://www.jenkins.io/">Jenkins</a>.</p>
+<p>As users, we only need to define various tasks in YAML, trigger the pipeline, and Azure Pipelines automatically executes these tasks for us.</p>
+<p>So, how are tasks executed? Is there a limit to parallel tasks? How can we design YAML more efficiently to make a pipeline run faster? This article will analyze the architecture of Azure Pipelines from the perspective of task scheduling, providing answers to these questions along the way.</p>
+<span id="more"></span>
+
+<h1 id="Azure-Pipelines-Terminology"><a href="#Azure-Pipelines-Terminology" class="headerlink" title="Azure Pipelines Terminology"></a>Azure Pipelines Terminology</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
+<p><strong>For users of Azure Pipelines</strong>, a YAML file uniquely defines the logic of a pipeline run:</p>
+<ul>
+<li>A pipeline can contain multiple stages.</li>
+<li>A stage can contain multiple jobs.</li>
+<li>A job can contain multiple steps.</li>
+<li>A step can contain multiple tasks.</li>
+</ul>
+<p><strong>For Azure Pipelines itself</strong>, when a pipeline is triggered, it needs to invoke computing resources to execute the pipeline’s logic. Specifically, a machine (agent) is responsible for executing a job.</p>
+<p>A job runs on only one agent, and it is not further divided. However, all jobs of a pipeline may be assigned to different agents for execution.</p>
+<p>How is this distribution of jobs accomplished?</p>
+<h1 id="Azure-Pipelines-Task-Scheduling"><a href="#Azure-Pipelines-Task-Scheduling" class="headerlink" title="Azure Pipelines Task Scheduling"></a>Azure Pipelines Task Scheduling</h1><p>Azure Pipelines task scheduling follows a typical distributed task scheduling model (similar technologies include <a href="http://www.quartz-scheduler.org/">QUARTZ</a> and <a href="https://github.com/xuxueli/xxl-job">xxl-job</a>):</p>
+<ul>
+<li>Azure Pipelines has a <strong>‘Task Queue’</strong> containing all pending <u>jobs</u> (referring to both the job&#x2F;task in the task scheduling model and the job term in the pipeline).</li>
+<li>The agent is a worker that periodically checks whether there are jobs to run in the <strong>‘Task Queue’</strong>. If there are, some agent will compete to gain the right to execute that job while obtaining access to the relevant resources. At this point, it can start executing the job.</li>
+</ul>
+<p>Therefore, a pipeline is executed as follows:</p>
+<ol>
+<li>Trigger the pipeline. Azure Pipelines parses YAML, splits it into multiple jobs, and stores them in the <strong>‘Task Queue’</strong>.</li>
+<li>If there is an idle agent at this time (indicating that the <strong>‘Task Queue’</strong> was empty), it listens for the event that a new job is pushed to the queue and begins competing to execute that job with other agents (if any).<ul>
+<li>If successful, it starts execution.</li>
+<li>If unsuccessful, it continues to listen.</li>
+</ul>
+</li>
+<li>If there is no idle agent at this time (indicating that the <strong>‘Task Queue’</strong> previously had jobs or no agent completed its previously assigned job), these newly generated jobs will wait for an agent to execute them in an orderly manner (jobs are queued based on the time the pipeline was triggered, ensuring fairness).</li>
+</ol>
+<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>The task scheduling framework implies <strong>parallelism</strong>. This means that when defining YAML, <strong>steps or tasks without dependencies should be elevated to jobs, allowing them to run in parallel and reduce execution time</strong>.</p>
+<blockquote>
+<p>However, during internships, few people do this, and most people use the default step level, even when many agents are often idle. 🤔</p>
+</blockquote>
+<p>Now, since the immediate execution of a new job depends on the presence of idle agents, does increasing the number of agents improve overall throughput (the number of jobs completed in a unit of time)? Unfortunately, not really.</p>
+<p>After all, Microsoft needs to profit from Azure, so they introduced the concept of ‘Parallel Jobs’, indicating a limit to the number of jobs that can run in parallel. This limit requires purchasing.</p>
+<p>In other words, to run jobs in parallel, we not only need to purchase Azure VM agents but also Parallel Jobs. Even if we have many machines locally, we still need to buy Parallel Jobs.</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
+<li><a href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
+<li><a href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines Product Overview</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Azure</category>
+      </categories>
+      <tags>
+        <tag>Azure</tag>
+        <tag>Azure Pipelines</tag>
+        <tag>Architecture</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Algorithm Problem 006: Construct Binary Tree from Preorder and Postorder Traversal</title>
+    <url>/en/2024/02/22/Algorithm-Problem-006-construct-binary-tree-from-preorder-and-postorder-traversal/</url>
+    <content><![CDATA[<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
+<p>Problem Source：<a href="https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-postorder-traversal">889. Construct Binary Tree from Preorder and Postorder Traversal</a>(Daily Challenge)</p>
+</blockquote>
+<blockquote>
+<p><strong>Problem Description</strong>：</p>
+<p>Given two integer arrays, <code>preorder</code> and <code>postorder</code> where <code>preorder</code> is the preorder traversal of a binary tree of <strong>distinct</strong> values and <code>postorder</code> is the postorder traversal of the same tree, reconstruct and return <em>the binary tree</em>.</p>
+<p>If there exist multiple answers, you can <strong>return any</strong> of them.</p>
+</blockquote>
+<span id="more"></span>
+
+<blockquote>
+<p><strong>Example 1:</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2021/07/24/lc-prepost.jpg" alt="img"></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Input: preorder = [1,2,4,5,3,6,7], postorder = [4,5,2,6,7,3,1]</span><br><span class="line">Output: [1,2,3,4,5,6,7]</span><br></pre></td></tr></table></figure>
+
+<p><strong>Example 2:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Input: preorder = [1], postorder = [1]</span><br><span class="line">Output: [1]</span><br></pre></td></tr></table></figure>
+
+<p><strong>Constraints:</strong></p>
+<ul>
+<li><code>1 &lt;= preorder.length &lt;= 30</code></li>
+<li><code>1 &lt;= preorder[i] &lt;= preorder.length</code></li>
+<li>All the values of <code>preorder</code> are <strong>unique</strong>.</li>
+<li><code>postorder.length == preorder.length</code></li>
+<li><code>1 &lt;= postorder[i] &lt;= postorder.length</code></li>
+<li>All the values of <code>postorder</code> are <strong>unique</strong>.</li>
+<li>It is guaranteed that <code>preorder</code> and <code>postorder</code> are the preorder traversal and postorder traversal of the same binary tree.</li>
+</ul>
+</blockquote>
+<h1 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h1><p>Firstly, it is important to note that <strong>the binary tree constructed from preorder and postorder traversals is not unique</strong>, and therefore, there is no deterministic rule. In contrast, ‘inorder and preorder’ as well as ‘inorder and postorder’ correspond uniquely to a binary tree. These rules are clear, making coding straightforward. Hence, we need to define our own rules.</p>
+<p>Recall that when constructing a binary tree from ‘inorder and preorder’, we sequentially traverse the preorder list. For each value, we create a corresponding node and then determine its subtree based on the inorder traversal. This can be understood as creating the preorder and verifying with the inorder.</p>
+<p>Similarly, in this problem, we also ‘sequentially traverse the preorder list, creating a corresponding node’ but determine the <strong>position of the node</strong> (instead of its subtree) based on the postorder traversal. This is creating the preorder and verifying with the postorder.</p>
+<p>In preorder, the sequence is “root - left - right”, and for each node in preorder, we can try placing it as the left child. In postorder, the sequence is “left - right - root”. <strong>If a node A in postorder is after node B, then A cannot be in the left subtree of B.</strong></p>
+<p>For example, consider node <code>5</code> in Example 1. While sequentially traversing the preorder list, we can try placing <code>5</code> as the left child of <code>4</code>. However, in the postorder list, since <code>5</code> comes after <code>4</code>, this attempt is not allowed. <strong><code>5</code> can only be in the right subtree of one of the ancestors of <code>4</code></strong>, in this case, the right child of <code>2</code>.</p>
+<p>Therefore, we need to keep track of the <strong>path from the root to the last traversed node</strong> and store them in a stack.</p>
+<ul>
+<li>As long as the current node and the top node of the stack do not satisfy the postorder constraint mentioned above, we pop the stack until it is satisfied. At this point, the current node becomes the right child of the top node.</li>
+<li>If the constraint is already satisfied, the current node directly becomes the left child of the top node.</li>
+</ul>
+<h1 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h1><p>The above approach is a rough description, and we should pay attention to details.</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"> * struct TreeNode &#123;</span></span><br><span class="line"><span class="comment"> *     int val;</span></span><br><span class="line"><span class="comment"> *     TreeNode *left;</span></span><br><span class="line"><span class="comment"> *     TreeNode *right;</span></span><br><span class="line"><span class="comment"> *     TreeNode() : val(0), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) &#123;&#125;</span></span><br><span class="line"><span class="comment"> *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) &#123;&#125;</span></span><br><span class="line"><span class="comment"> * &#125;;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">TreeNode* <span class="title">constructFromPrePost</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; preorder, vector&lt;<span class="type">int</span>&gt;&amp; postorder)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = preorder.<span class="built_in">size</span>();</span><br><span class="line">        <span class="comment">// Only operate on the vector&#x27;s tail, equivalent to a stack</span></span><br><span class="line">        vector&lt;TreeNode*&gt; ve;</span><br><span class="line">        unordered_map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; mp;</span><br><span class="line">        <span class="comment">// Just like &#x27;inorder and preorder&#x27;, store &lt;element, index&gt; in the hash table for validation</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            mp[postorder[i]] = i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> v: preorder) &#123;</span><br><span class="line">            TreeNode* cur = <span class="keyword">new</span> <span class="built_in">TreeNode</span>(v);</span><br><span class="line">            <span class="comment">// Only the first element (root) will trigger this condition</span></span><br><span class="line">            <span class="keyword">if</span> (ve.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="type">bool</span> popped = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">while</span>((!ve.<span class="built_in">empty</span>()) &amp;&amp; (mp[v] &gt; mp[ve.<span class="built_in">back</span>()-&gt;val])) &#123;</span><br><span class="line">                ve.<span class="built_in">pop_back</span>();</span><br><span class="line">                popped = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!popped) &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;left = cur;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                ve.<span class="built_in">back</span>()-&gt;right = cur;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Store the current node for the validation of the next node</span></span><br><span class="line">            ve.<span class="built_in">push_back</span>(cur);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// The first node is always the root node and will never be popped</span></span><br><span class="line">        <span class="keyword">return</span> ve.<span class="built_in">front</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Time Complexity: $O(n)$</p>
+<ul>
+<li>Sequentially traverse <code>preorder</code> and <code>postorder</code>.</li>
+<li>Each node enters and exits <code>ve</code> only once.</li>
+</ul>
+<p>Space Complexity: $O(n)$</p>
+<ul>
+<li><code>mp</code> stores the values and their indices of all $n$ nodes.</li>
+<li>In the worst case, all nodes are in <code>ve</code>.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Algorithm Problems</category>
+      </categories>
+      <tags>
+        <tag>Tree</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LocalSend：局域网文件传输利器</title>
+    <url>/en/2023/09/04/LocalSend-A-powerful-tool-for-local-file-transfer/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
+<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
+<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
+<span id="more"></span>
+
+<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
+<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
+<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
+<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
+<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
+<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
+</li>
+<li><p>进入『配置防火墙和安全设置』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
+</li>
+<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
+<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
+</li>
+<li><p>重启 LocalSend，等待找到目标主机</p>
+</li>
+</ol>
+<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
+<ol>
+<li><p>打开『Windows Defender 防火墙』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
+</li>
+<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
+<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
+</li>
+<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
+</li>
+</ol>
+<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
+<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
+<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
+<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
+<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
+<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
+<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>LocalSend</category>
+      </categories>
+      <tags>
+        <tag>LocalSend</tag>
+        <tag>settings</tag>
+        <tag>Firewall</tag>
+        <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Install Jellyfin in Docker</title>
+    <url>/en/2024/02/11/Jellyfin-Docker/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><blockquote>
+<p><a href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
+</blockquote>
+<p>Previously, I have installed the portable version of Jellyfin on Windows because a Linux virtual machine can not utilize the graphics card for hardware transcoding. However, I discovered that the Android and iOS clients support most codecs, eliminating the need for server-side transcoding. Since I am already familiar with Jellyfin’s usage and configuration, I decided to migrate it to Docker.</p>
+<p>Although Jellyfin itself is cross-platform, its configuration is still OS-dependent, especially when moving from Windows to Docker. Despite the availability of a <a href="https://github.com/MMMZZZZ/Jellyfin-Migrator">third-party script</a>, I chose to reconfigure it for safety, which does not require much effort.</p>
+<p>This article mainly talks about how to install Jellyfin using Docker, along with any issues encountered and their solutions.</p>
+<span id="more"></span>
+
+<h1 id="Install-Jellyfin"><a href="#Install-Jellyfin" class="headerlink" title="Install Jellyfin"></a>Install Jellyfin</h1><p>Firstly, create two volumes:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker volume create jellyfin-config</span><br><span class="line">docker volume create jellyfin-cache</span><br></pre></td></tr></table></figure>
+
+<p>Docker Compose:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">jellyfin:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">jellyfin/jellyfin:10.8.13-1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">jellyfin</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58096</span><span class="string">:8096</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58920</span><span class="string">:8920</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-config:/config</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-cache:/cache</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/jellyfin-media:/media:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/jellyfin_ssl/jellyfin.pfx:/ssl/jellyfin.pfx:ro</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">jellyfin-config:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">jellyfin-cache:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Specify the image version; <code>10.8.13</code> is the latest stable version, and subsequent versions have the term <code>unstable</code>, so it’s best not to use <code>latest</code>.</p>
+</li>
+<li><p><code>8096</code> is the default HTTP port, and <code>8920</code> is the default HTTPS port.</p>
+</li>
+<li><p>Jellyfin uses the following paths to store data:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Description</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Data Directory</td>
+<td>Stores all Jellyfin data, usually referenced by other directories</td>
+<td>Specified by ENV <code>JELLYFIN_DATA_DIR</code></td>
+</tr>
+<tr>
+<td>Configuration Directory</td>
+<td>Stores configuration files</td>
+<td>Specified by ENV <code>JELLYFIN_CONFIG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/config</code></td>
+</tr>
+<tr>
+<td>Cache Directory</td>
+<td>Stores server cache</td>
+<td>Specified by ENV <code>JELLYFIN_CACHE_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/cache</code></td>
+</tr>
+<tr>
+<td>Log Directory</td>
+<td>Stores log files</td>
+<td>Specified by ENV <code>JELLYFIN_LOG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/log</code></td>
+</tr>
+</tbody></table>
+<p>  These environment variables are specified in the <a href="https://hub.docker.com/layers/jellyfin/jellyfin/10.8.13-1/images/sha256-095e6d410d1d27b17cc4a961a9bab9fab5ffce6e49389d8ec685f65ab5538525?context=explore">Dockerfile</a>：</p>
+  <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ENV</span> DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=<span class="number">1</span> LC_ALL=en_US.UTF-<span class="number">8</span> LANG=en_US.UTF-<span class="number">8</span> LANGUAGE=en_US:en JELLYFIN_DATA_DIR=/config JELLYFIN_CACHE_DIR=/cache JELLYFIN_CONFIG_DIR=/config/config JELLYFIN_LOG_DIR=/config/log JELLYFIN_WEB_DIR=/jellyfin/jellyfin-web JELLYFIN_FFMPEG=/usr/lib/jellyfin-ffmpeg/ffmpeg</span><br></pre></td></tr></table></figure>
+
+<p>  Therefore, <strong><code>/config</code> and <code>/cache</code> contain all data of the Jellyfin server</strong>, and these directories are mounted to <code>jellyfin-config</code> and <code>jellyfin-cache</code>, respectively.</p>
+</li>
+<li><p><code>/mnt/hgfs/jellyfin-media:/media:ro</code>: Mount media files from the local machine into Docker, the path can be arbitrary.</p>
+</li>
+<li><p><code>/opt/docker/jellyfin_ssl/jellyfin.pfx</code>: Used to configure the SSL certificate for the server, which will be discussed later.</p>
+</li>
+<li><p><code>TZ=Asia/Shanghai</code>: Set the time zone to make the log time consistent with the local machine.</p>
+</li>
+</ul>
+<h1 id="Jellyfin-Configuration"><a href="#Jellyfin-Configuration" class="headerlink" title="Jellyfin Configuration"></a>Jellyfin Configuration</h1><p>Since it’s a fresh installation, all configurations need to be set up again. Here are some key points.</p>
+<h2 id="Server-Users"><a href="#Server-Users" class="headerlink" title="Server | Users"></a>Server | Users</h2><p>Disable transcoding: Even if the client doesn’t support the codec, server-side software decoding is not allowed, as it can lead to high pressure on the system.</p>
+<p>Remove the following two options for <strong>each user</strong>:</p>
+<p><img src="/en/MarkDownImages/image-20240213140202762.png" alt="image-20240213140202762"></p>
+<p>For the option ‘Allow video playback that requires conversion without re-encoding’, many articles recommend disabling it, but it seems to have no impact, so it can be left enabled.</p>
+<h2 id="Advanced-Networking"><a href="#Advanced-Networking" class="headerlink" title="Advanced | Networking"></a>Advanced | Networking</h2><p>Select the mounted <code>jellyfin.pfx</code> file as the SSL certificate (how to generate this file is explained later):</p>
+<p><img src="/en/MarkDownImages/image-20240213140616778.png" alt="image-20240213140616778"></p>
+<p>Check ‘Enable HTTPS’ and restart the container.</p>
+<p><img src="/en/MarkDownImages/image-20240213140600270.png" alt="image-20240213140600270"></p>
+<p>There’s no need to enable ‘Force HTTPS’ because the firewall will only allow devices on the local network to access the HTTPS port; the local machine can still access Jellyfin via HTTP.</p>
+<h1 id="SSL-Certificate"><a href="#SSL-Certificate" class="headerlink" title="SSL Certificate"></a>SSL Certificate</h1><p>Firstly, you need the private key <code>jellyfin-priv-key.key</code> and the certificate <code>jellyfin.crt</code> (refer to the <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#SSL-Certificate">previous article</a>).</p>
+<p>Then, use the following command to generate the <code>.pfx</code> file:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out jellyfin.pfx -inkey jellyfin-priv-key.key -<span class="keyword">in</span> jellyfin.crt  -passout pass:</span><br></pre></td></tr></table></figure>
+
+<h1 id="Local-Network-Settings"><a href="#Local-Network-Settings" class="headerlink" title="Local Network Settings"></a>Local Network Settings</h1><blockquote>
+<p>Here is my network topology:</p>
+<p>Windows host with a Linux virtual machine installed by VMware, and Docker runs on this virtual machine.</p>
+<p>The host and other devices share the home network.</p>
+</blockquote>
+<p>Previously, when running Jellyfin on Windows, I allowed Jellyfin’s direct access to the home network. That is, the firewall rules were authorized for the Jellyfin executable rather than a specific port.</p>
+<p>Now, with Docker, the following changes are made:</p>
+<ol>
+<li><p>Add a NAT mapping for the virtual machine, mapping Linux’s 58920 to the host’s 58920 port.</p>
+<p> <img src="/en/MarkDownImages/image-20240213141926681.png" alt="image-20240213141926681"></p>
+</li>
+<li><p>Add a firewall inbound rule: <code>58920/tcp</code> for the private network.</p>
+</li>
+<li><p>Reconnect all client devices to the new server.</p>
+</li>
+</ol>
+<hr>
+<p>Jellyfin on Windows had port 58920 open, and after switching to the Docker version, it still uses the same port. We can access the web client through <code>https://hostIP:58920</code> in a browser. This ‘tricks’ Google Password Manager in some sense, allowing me to directly use the previous account and password.</p>
+<h1 id="Some-Bugs"><a href="#Some-Bugs" class="headerlink" title="Some Bugs"></a>Some Bugs</h1><h2 id="Font-Issue"><a href="#Font-Issue" class="headerlink" title="Font Issue"></a>Font Issue</h2><p>After creating the container, enter the container and execute the following command:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">apt update &amp;&amp; apt install fonts-noto-cjk-extra</span><br></pre></td></tr></table></figure>
+
+<p>Then restart the container.</p>
+<p>Otherwise, Chinese characters on the media library cover images appear as squares.</p>
+<h2 id="Symbolic-Links"><a href="#Symbolic-Links" class="headerlink" title="Symbolic Links"></a>Symbolic Links</h2><p>On Windows, we can create links using the <code>mklink</code> command. When running Jellyfin on Windows, to prevent Jellyfin from modifying the media directory, I used the <a href="https://github.com/el-nino2020/script-house/blob/main/script_house/FileSystemOperation.py#L125"><code>walk_while_link</code> function</a> to create symbolic links for each video file. However, shared folders in virtual machines can be set to read-only, and volumes can also be set to read-only, so there’s no need to do this in Docker.</p>
+<p>Moreover, creating symbolic links this way causes videos to be unplayable, and Jellyfin reports errors when reading media data. I suspect this is due to symbolic links because many articles about NAS use hard links rather than symbolic links. However, I don’t prefer using hard links, especially on Windows.</p>
+<p>Creating symbolic links for folders is still possible. For example, if the shared folder is <code>jellyfin-docker-media</code>, you can create symbolic links for the <code>films</code> and <code>animes</code> folders in other paths, putting them all under <code>jellyfin-docker-media</code>. This essentially adds an extra layer of abstraction and reduces the number of shared folders for the virtual machine.</p>
+<p>In fact, this is what I did. The <code>/mnt/hgfs/jellyfin-media</code> in Docker-compose is the host’s <code>jellyfin-docker-media</code> shared folder.</p>
+<h1 id="Docker-Knowledge"><a href="#Docker-Knowledge" class="headerlink" title="Docker Knowledge"></a>Docker Knowledge</h1><p>By installing Jellyfin, I deepened my understanding of Docker through practical experiences.</p>
+<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p>I always thought that using the <code>EXPOSE</code> keyword in the Dockerfile was necessary for mapping ports when starting a container. However, that’s not the case.</p>
+<blockquote>
+<p>The <code>EXPOSE</code> instruction <strong>informs</strong> Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don’t specify a protocol.</p>
+<p>The <code>EXPOSE</code> instruction <strong>doesn’t actually publish the port</strong>. It functions as a type of <strong>documentation</strong> between the person who builds the image and the person who runs the container, about which ports are intended to be published. To publish the port when running the container, use the <code>-p</code> flag on <code>docker run</code> to publish and map one or more ports, or the <code>-P</code> flag to publish all exposed ports and map them to high-order ports.</p>
+</blockquote>
+<p>These two paragraphs are excerpted from the official documentation. <code>EXPOSE</code> is merely a declarative instruction, and it’s the <code>-p</code> option that truly maps the container’s ports. This mapping can be done freely, without any restrictions.</p>
+<p>Therefore, the approach I took in <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#Nginx-Container">‘Deploying Nginx in Docker and Configuring SSL Certificate for Local Network’</a> is meaningless. There’s no need to create a new image just for <code>EXPOSE</code>.</p>
+<blockquote>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="Cache-Memory"><a href="#Cache-Memory" class="headerlink" title="Cache Memory"></a>Cache Memory</h2><p>In Portainer statistics, you can see that memory usage is divided into ‘Memory’ and ‘Cache’. What do these two terms mean? Which one represents the current memory usage?</p>
+<p><img src="/en/MarkDownImages/image-20240213085846776.png" alt="image-20240213085846776"></p>
+<p>In simple words, ‘Memory’ represents the current memory usage, while ‘Cache’ represents memory that <strong>was previously used</strong>. Memory Cache is a term in Docker, and its value is equal to the value of <code>Inactive(file)</code> in <code>/proc/meminfo</code>.</p>
+<blockquote>
+<p><code>Inactive(file)</code> — The amount of file cache memory, in kibibytes, that is newly loaded from the disk, or is a candidate for reclaiming.</p>
+</blockquote>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/624670198">在Docker下安装Jellyfin并正确开启硬件解码</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/640489824">Docker部署开源流媒体软件Jellyfin</a></li>
+<li><a href="https://jellyfin.org/docs/general/installation/container#using-docker-compose">Jellyfin doc installation</a></li>
+<li><a href="https://jellyfin.org/docs/general/networking/#self-signed-certificate">Jellyfin doc self-signed certificate</a></li>
+<li><a href="https://docs.docker.com/engine/reference/builder/#expose">Docker doc EXPOSE</a></li>
+<li><a href="https://www.reddit.com/r/portainer/comments/w6pvit/what_is_memory_cache_in_the_container_stats/">What is memory “cache” in the container stat’s?</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>NAS</category>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+        <tag>NAS</tag>
+        <tag>Jellyfin</tag>
       </tags>
   </entry>
   <entry>
@@ -883,220 +1095,8 @@
       <tags>
         <tag>Docker</tag>
         <tag>NAS</tag>
+        <tag>Jellyfin</tag>
         <tag>LANraragi</tag>
-        <tag>Jellyfin</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Install Jellyfin in Docker</title>
-    <url>/en/2024/02/11/Jellyfin-Docker/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><blockquote>
-<p><a href="https://jellyfin.org/">Jellyfin</a> is an open-source media server. Here is my way of using Jellyfin: download anime using qBittorrent, start Jellyfin, and then watch the anime on iPad through the client.</p>
-</blockquote>
-<p>Previously, I have installed the portable version of Jellyfin on Windows because a Linux virtual machine can not utilize the graphics card for hardware transcoding. However, I discovered that the Android and iOS clients support most codecs, eliminating the need for server-side transcoding. Since I am already familiar with Jellyfin’s usage and configuration, I decided to migrate it to Docker.</p>
-<p>Although Jellyfin itself is cross-platform, its configuration is still OS-dependent, especially when moving from Windows to Docker. Despite the availability of a <a href="https://github.com/MMMZZZZ/Jellyfin-Migrator">third-party script</a>, I chose to reconfigure it for safety, which does not require much effort.</p>
-<p>This article mainly talks about how to install Jellyfin using Docker, along with any issues encountered and their solutions.</p>
-<span id="more"></span>
-
-<h1 id="Install-Jellyfin"><a href="#Install-Jellyfin" class="headerlink" title="Install Jellyfin"></a>Install Jellyfin</h1><p>Firstly, create two volumes:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">docker volume create jellyfin-config</span><br><span class="line">docker volume create jellyfin-cache</span><br></pre></td></tr></table></figure>
-
-<p>Docker Compose:</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">jellyfin:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">jellyfin/jellyfin:10.8.13-1</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">jellyfin</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">bridge</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58096</span><span class="string">:8096</span></span><br><span class="line">      <span class="bullet">-</span> <span class="number">58920</span><span class="string">:8920</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-config:/config</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">jellyfin-cache:/cache</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/mnt/hgfs/jellyfin-media:/media:ro</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/opt/docker/jellyfin_ssl/jellyfin.pfx:/ssl/jellyfin.pfx:ro</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">unless-stopped</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">jellyfin-config:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">jellyfin-cache:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>Specify the image version; <code>10.8.13</code> is the latest stable version, and subsequent versions have the term <code>unstable</code>, so it’s best not to use <code>latest</code>.</p>
-</li>
-<li><p><code>8096</code> is the default HTTP port, and <code>8920</code> is the default HTTPS port.</p>
-</li>
-<li><p>Jellyfin uses the following paths to store data:</p>
-<table>
-<thead>
-<tr>
-<th>Directory</th>
-<th>Description</th>
-<th>Path</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Data Directory</td>
-<td>Stores all Jellyfin data, usually referenced by other directories</td>
-<td>Specified by ENV <code>JELLYFIN_DATA_DIR</code></td>
-</tr>
-<tr>
-<td>Configuration Directory</td>
-<td>Stores configuration files</td>
-<td>Specified by ENV <code>JELLYFIN_CONFIG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/config</code></td>
-</tr>
-<tr>
-<td>Cache Directory</td>
-<td>Stores server cache</td>
-<td>Specified by ENV <code>JELLYFIN_CACHE_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/cache</code></td>
-</tr>
-<tr>
-<td>Log Directory</td>
-<td>Stores log files</td>
-<td>Specified by ENV <code>JELLYFIN_LOG_DIR</code>; if not specified, it uses <code>&lt;Data Directory&gt;/log</code></td>
-</tr>
-</tbody></table>
-<p>  These environment variables are specified in the <a href="https://hub.docker.com/layers/jellyfin/jellyfin/10.8.13-1/images/sha256-095e6d410d1d27b17cc4a961a9bab9fab5ffce6e49389d8ec685f65ab5538525?context=explore">Dockerfile</a>：</p>
-  <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ENV</span> DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=<span class="number">1</span> LC_ALL=en_US.UTF-<span class="number">8</span> LANG=en_US.UTF-<span class="number">8</span> LANGUAGE=en_US:en JELLYFIN_DATA_DIR=/config JELLYFIN_CACHE_DIR=/cache JELLYFIN_CONFIG_DIR=/config/config JELLYFIN_LOG_DIR=/config/log JELLYFIN_WEB_DIR=/jellyfin/jellyfin-web JELLYFIN_FFMPEG=/usr/lib/jellyfin-ffmpeg/ffmpeg</span><br></pre></td></tr></table></figure>
-
-<p>  Therefore, <strong><code>/config</code> and <code>/cache</code> contain all data of the Jellyfin server</strong>, and these directories are mounted to <code>jellyfin-config</code> and <code>jellyfin-cache</code>, respectively.</p>
-</li>
-<li><p><code>/mnt/hgfs/jellyfin-media:/media:ro</code>: Mount media files from the local machine into Docker, the path can be arbitrary.</p>
-</li>
-<li><p><code>/opt/docker/jellyfin_ssl/jellyfin.pfx</code>: Used to configure the SSL certificate for the server, which will be discussed later.</p>
-</li>
-<li><p><code>TZ=Asia/Shanghai</code>: Set the time zone to make the log time consistent with the local machine.</p>
-</li>
-</ul>
-<h1 id="Jellyfin-Configuration"><a href="#Jellyfin-Configuration" class="headerlink" title="Jellyfin Configuration"></a>Jellyfin Configuration</h1><p>Since it’s a fresh installation, all configurations need to be set up again. Here are some key points.</p>
-<h2 id="Server-Users"><a href="#Server-Users" class="headerlink" title="Server | Users"></a>Server | Users</h2><p>Disable transcoding: Even if the client doesn’t support the codec, server-side software decoding is not allowed, as it can lead to high pressure on the system.</p>
-<p>Remove the following two options for <strong>each user</strong>:</p>
-<p><img src="/en/MarkDownImages/image-20240213140202762.png" alt="image-20240213140202762"></p>
-<p>For the option ‘Allow video playback that requires conversion without re-encoding’, many articles recommend disabling it, but it seems to have no impact, so it can be left enabled.</p>
-<h2 id="Advanced-Networking"><a href="#Advanced-Networking" class="headerlink" title="Advanced | Networking"></a>Advanced | Networking</h2><p>Select the mounted <code>jellyfin.pfx</code> file as the SSL certificate (how to generate this file is explained later):</p>
-<p><img src="/en/MarkDownImages/image-20240213140616778.png" alt="image-20240213140616778"></p>
-<p>Check ‘Enable HTTPS’ and restart the container.</p>
-<p><img src="/en/MarkDownImages/image-20240213140600270.png" alt="image-20240213140600270"></p>
-<p>There’s no need to enable ‘Force HTTPS’ because the firewall will only allow devices on the local network to access the HTTPS port; the local machine can still access Jellyfin via HTTP.</p>
-<h1 id="SSL-Certificate"><a href="#SSL-Certificate" class="headerlink" title="SSL Certificate"></a>SSL Certificate</h1><p>Firstly, you need the private key <code>jellyfin-priv-key.key</code> and the certificate <code>jellyfin.crt</code> (refer to the <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#SSL-Certificate">previous article</a>).</p>
-<p>Then, use the following command to generate the <code>.pfx</code> file:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out jellyfin.pfx -inkey jellyfin-priv-key.key -<span class="keyword">in</span> jellyfin.crt  -passout pass:</span><br></pre></td></tr></table></figure>
-
-<h1 id="Local-Network-Settings"><a href="#Local-Network-Settings" class="headerlink" title="Local Network Settings"></a>Local Network Settings</h1><blockquote>
-<p>Here is my network topology:</p>
-<p>Windows host with a Linux virtual machine installed by VMware, and Docker runs on this virtual machine.</p>
-<p>The host and other devices share the home network.</p>
-</blockquote>
-<p>Previously, when running Jellyfin on Windows, I allowed Jellyfin’s direct access to the home network. That is, the firewall rules were authorized for the Jellyfin executable rather than a specific port.</p>
-<p>Now, with Docker, the following changes are made:</p>
-<ol>
-<li><p>Add a NAT mapping for the virtual machine, mapping Linux’s 58920 to the host’s 58920 port.</p>
-<p> <img src="/en/MarkDownImages/image-20240213141926681.png" alt="image-20240213141926681"></p>
-</li>
-<li><p>Add a firewall inbound rule: <code>58920/tcp</code> for the private network.</p>
-</li>
-<li><p>Reconnect all client devices to the new server.</p>
-</li>
-</ol>
-<hr>
-<p>Jellyfin on Windows had port 58920 open, and after switching to the Docker version, it still uses the same port. We can access the web client through <code>https://hostIP:58920</code> in a browser. This ‘tricks’ Google Password Manager in some sense, allowing me to directly use the previous account and password.</p>
-<h1 id="Some-Bugs"><a href="#Some-Bugs" class="headerlink" title="Some Bugs"></a>Some Bugs</h1><h2 id="Font-Issue"><a href="#Font-Issue" class="headerlink" title="Font Issue"></a>Font Issue</h2><p>After creating the container, enter the container and execute the following command:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">apt update &amp;&amp; apt install fonts-noto-cjk-extra</span><br></pre></td></tr></table></figure>
-
-<p>Then restart the container.</p>
-<p>Otherwise, Chinese characters on the media library cover images appear as squares.</p>
-<h2 id="Symbolic-Links"><a href="#Symbolic-Links" class="headerlink" title="Symbolic Links"></a>Symbolic Links</h2><p>On Windows, we can create links using the <code>mklink</code> command. When running Jellyfin on Windows, to prevent Jellyfin from modifying the media directory, I used the <a href="https://github.com/el-nino2020/script-house/blob/main/script_house/FileSystemOperation.py#L125"><code>walk_while_link</code> function</a> to create symbolic links for each video file. However, shared folders in virtual machines can be set to read-only, and volumes can also be set to read-only, so there’s no need to do this in Docker.</p>
-<p>Moreover, creating symbolic links this way causes videos to be unplayable, and Jellyfin reports errors when reading media data. I suspect this is due to symbolic links because many articles about NAS use hard links rather than symbolic links. However, I don’t prefer using hard links, especially on Windows.</p>
-<p>Creating symbolic links for folders is still possible. For example, if the shared folder is <code>jellyfin-docker-media</code>, you can create symbolic links for the <code>films</code> and <code>animes</code> folders in other paths, putting them all under <code>jellyfin-docker-media</code>. This essentially adds an extra layer of abstraction and reduces the number of shared folders for the virtual machine.</p>
-<p>In fact, this is what I did. The <code>/mnt/hgfs/jellyfin-media</code> in Docker-compose is the host’s <code>jellyfin-docker-media</code> shared folder.</p>
-<h1 id="Docker-Knowledge"><a href="#Docker-Knowledge" class="headerlink" title="Docker Knowledge"></a>Docker Knowledge</h1><p>By installing Jellyfin, I deepened my understanding of Docker through practical experiences.</p>
-<h2 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h2><p>I always thought that using the <code>EXPOSE</code> keyword in the Dockerfile was necessary for mapping ports when starting a container. However, that’s not the case.</p>
-<blockquote>
-<p>The <code>EXPOSE</code> instruction <strong>informs</strong> Docker that the container listens on the specified network ports at runtime. You can specify whether the port listens on TCP or UDP, and the default is TCP if you don’t specify a protocol.</p>
-<p>The <code>EXPOSE</code> instruction <strong>doesn’t actually publish the port</strong>. It functions as a type of <strong>documentation</strong> between the person who builds the image and the person who runs the container, about which ports are intended to be published. To publish the port when running the container, use the <code>-p</code> flag on <code>docker run</code> to publish and map one or more ports, or the <code>-P</code> flag to publish all exposed ports and map them to high-order ports.</p>
-</blockquote>
-<p>These two paragraphs are excerpted from the official documentation. <code>EXPOSE</code> is merely a declarative instruction, and it’s the <code>-p</code> option that truly maps the container’s ports. This mapping can be done freely, without any restrictions.</p>
-<p>Therefore, the approach I took in <a href="/en/2024/01/31/Docker-Nginx-SSL-Local-Network/#Nginx-Container">‘Deploying Nginx in Docker and Configuring SSL Certificate for Local Network’</a> is meaningless. There’s no need to create a new image just for <code>EXPOSE</code>.</p>
-<blockquote>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:<span class="number">1.24</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">443</span></span><br></pre></td></tr></table></figure>
-</blockquote>
-<h2 id="Cache-Memory"><a href="#Cache-Memory" class="headerlink" title="Cache Memory"></a>Cache Memory</h2><p>In Portainer statistics, you can see that memory usage is divided into ‘Memory’ and ‘Cache’. What do these two terms mean? Which one represents the current memory usage?</p>
-<p><img src="/en/MarkDownImages/image-20240213085846776.png" alt="image-20240213085846776"></p>
-<p>In simple words, ‘Memory’ represents the current memory usage, while ‘Cache’ represents memory that <strong>was previously used</strong>. Memory Cache is a term in Docker, and its value is equal to the value of <code>Inactive(file)</code> in <code>/proc/meminfo</code>.</p>
-<blockquote>
-<p><code>Inactive(file)</code> — The amount of file cache memory, in kibibytes, that is newly loaded from the disk, or is a candidate for reclaiming.</p>
-</blockquote>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/624670198">在Docker下安装Jellyfin并正确开启硬件解码</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/640489824">Docker部署开源流媒体软件Jellyfin</a></li>
-<li><a href="https://jellyfin.org/docs/general/installation/container#using-docker-compose">Jellyfin doc installation</a></li>
-<li><a href="https://jellyfin.org/docs/general/networking/#self-signed-certificate">Jellyfin doc self-signed certificate</a></li>
-<li><a href="https://docs.docker.com/engine/reference/builder/#expose">Docker doc EXPOSE</a></li>
-<li><a href="https://www.reddit.com/r/portainer/comments/w6pvit/what_is_memory_cache_in_the_container_stats/">What is memory “cache” in the container stat’s?</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>NAS</category>
-        <category>Docker</category>
-      </categories>
-      <tags>
-        <tag>Docker</tag>
-        <tag>NAS</tag>
-        <tag>Jellyfin</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LocalSend：局域网文件传输利器</title>
-    <url>/en/2023/09/04/LocalSend-A-powerful-tool-for-local-file-transfer/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>最近准备重装笔记本的系统，因此要备份文件，存到台式机里。我将要备份的文件夹压缩，通过 Windows 自带的文件夹共享（局域网共享），传输这些压缩包。</p>
-<p>但是，传输过程却非常艰难。有的压缩包有 10 几个 GB，传了一分钟，网速就没了，之后就开始报超时之类的错误。更离谱的是，有个压缩包在两台电脑上<a href="#%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%E6%A0%A1%E9%AA%8C">摘要算法</a>的结果不同。</p>
-<p>显然，windows SMB 协议既不能保证速度，也不能保证数据正确性，于是我开始寻找更加好用的局域网传输软件。它，就是本文的主角 —— LocalSend</p>
-<span id="more"></span>
-
-<h1 id="LocalSend-介绍"><a href="#LocalSend-介绍" class="headerlink" title="LocalSend 介绍"></a>LocalSend 介绍</h1><p>LocalSend 是一个<strong>跨平台</strong>的局域网传输软件，支持 Windows, Linux, macOS, Android 和 IOS. 这是它的<a href="https://localsend.org/#/">官网</a>；这是它的 <a href="https://github.com/localsend/localsend">GitHub 仓库</a></p>
-<p>作者设计了一个基于 HTTP 的传输协议，在<a href="https://github.com/localsend/protocol">这里</a></p>
-<p>LocalSend 基本上是开箱即用，没必要专门写一节 quickstart</p>
-<p>但是，由于 Windows 防火墙的默认配置，第一次使用该软件时，同局域网内的设备可能无法发现这台 Windows 设备。下面，我将给出解决方案。</p>
-<h1 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h1><h2 id="我的方案"><a href="#我的方案" class="headerlink" title="我的方案"></a>我的方案</h2><ol>
-<li><p>将家庭 WIFI 设置为专用网络（不建议在公共网络使用局域网传输文件，无论软件作者做了怎样的加密，我都认为是不安全的。因此，这里不讨论公用网络的情况）<img src="/en/MarkDownImages/image-20230904212558782.png" alt="image-20230904212558782"></p>
-</li>
-<li><p>进入『配置防火墙和安全设置』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212718315.png" alt="image-20230904212718315"></p>
-</li>
-<li><p>『允许应用通过防火墙』——『更改配置』。找到 <code>localsend_app</code>（其他以<code>localsend</code>开头的也可以这样做），将它之前那的单选框选上。以防万一，确保之后的两个单选框也是选上的（应该是默认开启的）。然后点击『确定』</p>
-<p> <img src="/en/MarkDownImages/image-20230904212911221.png" alt="image-20230904212911221"></p>
-</li>
-<li><p>重启 LocalSend，等待找到目标主机</p>
-</li>
-</ol>
-<h2 id="网上的方案（未验证）"><a href="#网上的方案（未验证）" class="headerlink" title="网上的方案（未验证）"></a>网上的方案（未验证）</h2><p>这里也给出网上其他人的解决方法，虽然我觉得全局操作防火墙<strong>很不安全</strong>。</p>
-<ol>
-<li><p>打开『Windows Defender 防火墙』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213446263.png" alt="image-20230904213446263"></p>
-</li>
-<li><p>『高级设置』——『Windows 防火墙属性』。在『专用配置文件』一栏，将『入站连接』改为『允许』，然后『应用』</p>
-<p> <img src="/en/MarkDownImages/image-20230904213728952.png" alt="image-20230904213728952"></p>
-</li>
-<li><p>重启 LocalSend，查看能否找到目标主机。如果不行，再将上述『公用配置文件』一栏的『入站连接』改为『允许』，然后『应用』，再次重启 LocalSend 并检验。</p>
-</li>
-</ol>
-<h1 id="文件传输校验"><a href="#文件传输校验" class="headerlink" title="文件传输校验"></a>文件传输校验</h1><p>在网络传输文件后，通常要使用摘要算法（MD5、SHA1、SHA256等）对比两份文件是否一致，防止由于网络导致的数据丢失。很多现成的工具提供这样的服务，这里我介绍 3 个。</p>
-<h2 id="7-zip"><a href="#7-zip" class="headerlink" title="7-zip"></a>7-zip</h2><p>7-zip 虽然是一个开源的压缩软件，但也提供摘要函数。</p>
-<p>右键选中要摘要的文件，点击『CRC SHA』，选择摘要算法</p>
-<p><img src="/en/MarkDownImages/image-20230904214607556.png" alt="image-20230904214607556"></p>
-<p>如果右键菜单没有该选项，在 7-zip 中配置即可：</p>
-<p><img src="/en/MarkDownImages/image-20230904214947662.png" alt="image-20230904214947662"></p>
-<h2 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h2><p>Linux 大多数发行版都会自带的工具。也可以在 git bash 中使用这个命令。语法是：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">openssl 摘要算法名 文件路径</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">Elnino@PC MINGW64 ~/Desktop</span><br><span class="line">$ openssl sha256 generate-random-file.cmd</span><br><span class="line">SHA256(generate-random-file.cmd)= 03f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Certutil"><a href="#Certutil" class="headerlink" title="Certutil"></a>Certutil</h2><p>Windows 上的一个用来提供证书服务的工具，也提供了一些摘要算法。语法是：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">certutil <span class="literal">-hashfile</span> 文件路径 摘要算法名</span><br></pre></td></tr></table></figure>
-
-<p>例子：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\Desktop&gt; certutil <span class="literal">-hashfile</span> .\generate<span class="literal">-random-file</span>.cmd sha256</span><br><span class="line">SHA256 的 .\generate<span class="literal">-random-file</span>.cmd 哈希:</span><br><span class="line"><span class="number">03</span>f9454e4ee7923d08aefa4957282b62a655e7231ea6f4bdd6cdcc4e9a4c1bd9</span><br><span class="line">CertUtil: <span class="literal">-hashfile</span> 命令成功完成。</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我介绍了一款开源好用的局域网传输工具 —— LocalSend。之后，我又给出了 Windows 系统中如何配置防火墙，使得其他设备能发现当前的设备。最后，我介绍了一些常见的对文件进行摘要的工具：从网络下载的文件，理论上都要进行一遍校验，防止数据损坏或丢失。</p>
-]]></content>
-      <categories>
-        <category>softwares</category>
-        <category>LocalSend</category>
-      </categories>
-      <tags>
-        <tag>LocalSend</tag>
-        <tag>settings</tag>
-        <tag>Firewall</tag>
-        <tag>Windows</tag>
       </tags>
   </entry>
   <entry>
@@ -1152,8 +1152,8 @@
 <p><a href="https://www.markdownguide.org/cheat-sheet/">Markdown Cheat Sheet</a></p>
 ]]></content>
       <categories>
-        <category>tech</category>
         <category>softwares</category>
+        <category>tech</category>
         <category>VS Code</category>
         <category>Typora</category>
         <category>Markdown</category>
@@ -1163,6 +1163,47 @@
         <tag>VS Code</tag>
         <tag>Typora</tag>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PotPlayer 启用 Nvidia 超分辨率</title>
+    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
+    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
+<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
+<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
+<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+<span id="more"></span>
+
+<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
+<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
+<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
+<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
+<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
+<blockquote>
+<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
+</blockquote>
+<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+
+<p>至少将 PotPlayer 升级到这个版本</p>
+<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
+<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
+<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
+<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+]]></content>
+      <categories>
+        <category>softwares</category>
+        <category>PotPlayer</category>
+      </categories>
+      <tags>
+        <tag>settings</tag>
+        <tag>PotPlayer</tag>
+        <tag>Nvidia</tag>
+        <tag>VSR</tag>
       </tags>
   </entry>
   <entry>
@@ -1249,44 +1290,64 @@
       </tags>
   </entry>
   <entry>
-    <title>PotPlayer 启用 Nvidia 超分辨率</title>
-    <url>/en/2023/07/09/PotPlayer-Enable-Nvidia-Super-Resolution/</url>
-    <content><![CDATA[<h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>Nvidia VSR (Video Super Resolution) 通过 AI 技术优化视频的画面质量，主要表现在锐化低分辨率的视频上。该技术最初只支持 Chrome 和 Edge 浏览器。</p>
-<p>如何在本地视频播放器中体验这项技术？PotPlayer 最近发布了相关更新，支持了该技术。</p>
-<p>PotPlayer 是目前数一数二的视频播放器，也是我的主力播放器。趁着这次更新，我来记录一下如何在 PotPlayer 上使用 Nvidia Super Resolution.</p>
-<h1 id="浏览器开启-VSR"><a href="#浏览器开启-VSR" class="headerlink" title="浏览器开启 VSR"></a>浏览器开启 VSR</h1><p>本小节先介绍一下如何让 Chrome 和 Edge 浏览器使用 Nvidia Super Resolution。</p>
+    <title>VS Code Remote SSH Login By Key</title>
+    <url>/en/2024/01/01/VS-Code-Remote-SSH-Login-By-Key/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>The Remote SSH extension in VS Code provides the functionality to connect to other remote hosts. While the basic way of connection requires a username and password, using a key allows for direct login without the effort to type the password every time.</p>
+<p>However, it’s crucial to understand that VS Code merely provides a GUI, and how to use a SSH key to login is a separate matter. These two aspects should not be confused.</p>
+<p>This article will primarily explain how to configure SSH keys on both the local machine and the remote machine. Subsequently, it will delve into the usage of the VS Code Remote SSH extension.</p>
 <span id="more"></span>
 
-<h2 id="更新驱动版本"><a href="#更新驱动版本" class="headerlink" title="更新驱动版本"></a>更新驱动版本</h2><p>更新驱动版本，至少到 532 版</p>
-<img src="/MarkDownImages/image-20230709161546792.png" alt="image-20230709161546792" style="zoom: 67%;" />
+<h1 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h1><ul>
+<li>Local Machine: Windows 10</li>
+<li>Remote Machine: Local virtual machine CentOS 8, root user</li>
+</ul>
+<h1 id="Local-SSH-Configuration"><a href="#Local-SSH-Configuration" class="headerlink" title="Local SSH Configuration"></a>Local SSH Configuration</h1><p>Using the <code>ssh-keygen</code> command will create the RSA public-private key pair for the <strong>local</strong> machine in the <code>C:\users\&lt;user&gt;\.ssh</code> directory:</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\.ssh&gt; <span class="built_in">dir</span></span><br><span class="line">    Directory: C:\Users\Elnino\.ssh</span><br><span class="line">Mode                 LastWriteTime         Length Name</span><br><span class="line"><span class="literal">----</span>                 <span class="literal">-------------</span>         <span class="literal">------</span> <span class="literal">----</span></span><br><span class="line"><span class="literal">-a----</span>          <span class="number">2024</span>/<span class="number">1</span>/<span class="number">1</span>     <span class="number">12</span>:<span class="number">26</span>             <span class="number">91</span> config</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>           <span class="number">2610</span> id_rsa</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>            <span class="number">576</span> id_rsa.pub</span><br><span class="line"><span class="literal">-a----</span>        <span class="number">2023</span>/<span class="number">12</span>/<span class="number">18</span>     <span class="number">20</span>:<span class="number">42</span>           <span class="number">1398</span> known_hosts</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>             <span class="number">92</span> known_hosts.old</span><br></pre></td></tr></table></figure>
 
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>在 Nvidia Control Panel 中进入如下配置：</p>
-<p>开启『超分辨率』，选择质量。数字越大，增强效果越强，同时对 GPU 压力也越大</p>
-<p><img src="/en/MarkDownImages/image-20230709161702760.png" alt="image-20230709161702760"></p>
-<h1 id="PotPlayer-开启-VSR"><a href="#PotPlayer-开启-VSR" class="headerlink" title="PotPlayer 开启 VSR"></a>PotPlayer 开启 VSR</h1><h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><p>在 PotPlayer 近期的更新说明中，提到了：</p>
-<blockquote>
-<p>添加 GPU 超分辨率功能到内置的 D3D11 视频渲染器</p>
-</blockquote>
-<img src="/MarkDownImages/image-20230709162050531.png" alt="image-20230709162050531" style="zoom: 67%;" />
+<p><code>id_rsa</code> is the private key, and <code>id_rsa.pub</code> is the public key.</p>
+<h1 id="Remote-Host-SSH-Configuration"><a href="#Remote-Host-SSH-Configuration" class="headerlink" title="Remote Host SSH Configuration"></a>Remote Host SSH Configuration</h1><p>Upload the <strong>local</strong> <code>id_rsa.pub</code> to the <code>~/ssh</code> directory on the Linux remote host and rename it to <code>authorized_keys</code>:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@CentOS100 .ssh]<span class="comment"># ll</span></span><br><span class="line">total 16</span><br><span class="line">-rw-r--r--. 1 root root 576 Jan  1 11:50 authorized_keys</span><br><span class="line">-rw-------. 1 root root 411 Jul  1  2023 id_ed25519</span><br><span class="line">-rw-r--r--. 1 root root  96 Jul  1  2023 id_ed25519.pub</span><br><span class="line">-rw-r--r--. 1 root root 880 Dec 18 21:07 known_hosts</span><br></pre></td></tr></table></figure>
 
-<p>至少将 PotPlayer 升级到这个版本</p>
-<h2 id="设置-1"><a href="#设置-1" class="headerlink" title="设置"></a>设置</h2><p>确保使用的是『Direct3D 11 视频渲染器』，并打开『超分辨率』（默认是关闭的）</p>
-<img src="/MarkDownImages/image-20230709162350077.png" alt="image-20230709162350077" style="zoom: 80%;" />
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>The steps above complete the configuration needed for SSH key login. Open PowerShell on the local machine and test the connection using <code>ssh &lt;user&gt;@&lt;ip&gt;</code>. It should allow direct login without entering a password.</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino&gt; ssh root@CentOS100</span><br><span class="line">Activate the web console with: systemctl enable <span class="literal">--now</span> cockpit.socket</span><br><span class="line"></span><br><span class="line">Last login: Mon Jan  <span class="number">1</span> <span class="number">12</span>:<span class="number">26</span>:<span class="number">15</span> <span class="number">2024</span> from &lt;ip&gt;</span><br><span class="line">[<span class="type">root</span>@<span class="type">CentOS100</span> ~]<span class="comment"># pwd</span></span><br><span class="line">/root</span><br></pre></td></tr></table></figure>
 
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>随便打开一个视频，按 <code>Tab</code> 键。如果『视频渲染器 - 缩放』显示的是『GPU Super Resolution』，则说明配置成功了。播放视频时，也可以在任务管理器中看到 GPU 的负载升高。</p>
-<p><img src="/en/MarkDownImages/image-20230709162617479.png" alt="image-20230709162617479"></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="https://blogs.nvidia.com/blog/2023/02/28/rtx-video-super-resolution/">Pixel Perfect: RTX Video Super Resolution Now Available for GeForce RTX 40 and 30 Series GPUs</a></p>
-<p><a href="https://potplayer.daum.net/">PotPlayer 官网</a></p>
+<h1 id="VS-Code-Configuration"><a href="#VS-Code-Configuration" class="headerlink" title="VS Code Configuration"></a>VS Code Configuration</h1><ol>
+<li><p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh">Remote - SSH</a> extension:</p>
+<p> <img src="/en/MarkDownImages/image-20240101130622357.png" alt="image-20240101130622357"></p>
+</li>
+<li><p>Click these three buttons sequentially to access the configuration file:</p>
+<p> <img src="/en/MarkDownImages/image-20240101130733756.png" alt="image-20240101130733756"></p>
+</li>
+<li><p>Fill in the configuration file (this file is essentially the SSH configuration for the host):</p>
+<p> <img src="/en/MarkDownImages/image-20240101130804525.png" alt="image-20240101130804525"></p>
+<ul>
+<li><code>Host</code>: an ID for this remote connection; you can choose any name.</li>
+<li><code>HostName</code>: Domain name or IP address of the remote host.</li>
+<li><code>User</code>: User to login to the remote host.</li>
+<li><code>IdentityFile</code>: Path to the <strong>private key</strong>, whose public key is in <code>authorized_keys</code>.</li>
+</ul>
+</li>
+</ol>
+<p>A few notes about the configuration file:</p>
+<ul>
+<li>If <code>authorized_keys</code> is not configured on the remote host, the <code>IdentityFile</code> property will not take effect, and it will prompt for a password during login.</li>
+<li>In this case, <code>IdentityFile</code> is not necessary because <code>authorized_keys</code> is the local machine’s public key, and SSH defaults to using the local machine’s private key for connection attempts.</li>
+<li>Generally, <code>authorized_keys</code> won’t be the local machine’s public key, and in such cases, <code>IdentityFile</code> must be configured; otherwise, a password will be required.</li>
+</ul>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
+<li><a href="https://medium.com/@sean4deepak/using-ssh-key-authentication-in-visual-studio-codes-remote-ssh-extension-4e5b922448e7">Using SSH Key Authentication in Visual Studio Code’ s Remote SSH Extension</a></li>
+<li><a href="https://adamtheautomator.com/add-ssh-key-to-vs-code/">Add SSH Key to VS Code and Connect to a Host</a></li>
+<li><a href="https://stackoverflow.com/questions/48328446/id-rsa-pub-file-ssh-error-invalid-format">id_rsa.pub file SSH Error: invalid format</a></li>
+</ul>
 ]]></content>
       <categories>
         <category>softwares</category>
-        <category>PotPlayer</category>
+        <category>VS Code</category>
       </categories>
       <tags>
         <tag>settings</tag>
-        <tag>PotPlayer</tag>
-        <tag>Nvidia</tag>
-        <tag>VSR</tag>
+        <tag>VS Code</tag>
+        <tag>SSH</tag>
       </tags>
   </entry>
   <entry>
@@ -1350,64 +1411,136 @@
       </tags>
   </entry>
   <entry>
-    <title>VS Code Remote SSH Login By Key</title>
-    <url>/en/2024/01/01/VS-Code-Remote-SSH-Login-By-Key/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>The Remote SSH extension in VS Code provides the functionality to connect to other remote hosts. While the basic way of connection requires a username and password, using a key allows for direct login without the effort to type the password every time.</p>
-<p>However, it’s crucial to understand that VS Code merely provides a GUI, and how to use a SSH key to login is a separate matter. These two aspects should not be confused.</p>
-<p>This article will primarily explain how to configure SSH keys on both the local machine and the remote machine. Subsequently, it will delve into the usage of the VS Code Remote SSH extension.</p>
+    <title>Display Original Filenames in Jellyfin</title>
+    <url>/en/2024/02/17/jellyfin-original-filename/</url>
+    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>The recommended usage of Jellyfin is that users create folders according to the media rules and place media files in them. After that, the media titles are automatically generated based on the metadata obtained from the scraper. However, this rule is so compulsory that this simple functionality of <strong>using the original file name as the title</strong> is not even available. While manual updating media titles is possible, it can be cumbersome.</p>
+<p>To fit this demand, I have created a script using <a href="https://github.com/jellyfin/jellyfin-apiclient-python">jellyfin-apiclient-python</a> to batch rename all media in a specific media library. Additionally, this article explores some previous solutions, none of which were satisfactory in my opinion.</p>
 <span id="more"></span>
 
-<h1 id="Environment"><a href="#Environment" class="headerlink" title="Environment"></a>Environment</h1><ul>
-<li>Local Machine: Windows 10</li>
-<li>Remote Machine: Local virtual machine CentOS 8, root user</li>
-</ul>
-<h1 id="Local-SSH-Configuration"><a href="#Local-SSH-Configuration" class="headerlink" title="Local SSH Configuration"></a>Local SSH Configuration</h1><p>Using the <code>ssh-keygen</code> command will create the RSA public-private key pair for the <strong>local</strong> machine in the <code>C:\users\&lt;user&gt;\.ssh</code> directory:</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino\.ssh&gt; <span class="built_in">dir</span></span><br><span class="line">    Directory: C:\Users\Elnino\.ssh</span><br><span class="line">Mode                 LastWriteTime         Length Name</span><br><span class="line"><span class="literal">----</span>                 <span class="literal">-------------</span>         <span class="literal">------</span> <span class="literal">----</span></span><br><span class="line"><span class="literal">-a----</span>          <span class="number">2024</span>/<span class="number">1</span>/<span class="number">1</span>     <span class="number">12</span>:<span class="number">26</span>             <span class="number">91</span> config</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>           <span class="number">2610</span> id_rsa</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>            <span class="number">576</span> id_rsa.pub</span><br><span class="line"><span class="literal">-a----</span>        <span class="number">2023</span>/<span class="number">12</span>/<span class="number">18</span>     <span class="number">20</span>:<span class="number">42</span>           <span class="number">1398</span> known_hosts</span><br><span class="line"><span class="literal">-a----</span>         <span class="number">2023</span>/<span class="number">9</span>/<span class="number">30</span>     <span class="number">18</span>:<span class="number">03</span>             <span class="number">92</span> known_hosts.old</span><br></pre></td></tr></table></figure>
+<h1 id="Existing-Solution-1"><a href="#Existing-Solution-1" class="headerlink" title="Existing Solution 1"></a>Existing Solution 1</h1><p>When creating a media library, choose ‘Music Videos’ as its content type and select ‘Prefer embedded titles over filenames’. </p>
+<p>What is this “embedded title”? Open the ‘Properties’ of a video and go to ‘Details’. </p>
+<p><img src="/en/MarkDownImages/image-20240217135326419.png" alt="image-20240217135326419"></p>
+<p>Any content in the ‘Title’ field will be displayed as the media title in Jellyfin without any modifications. However, this approach has two issues:</p>
+<p>1️⃣ For most anime published, the values of their ‘Title’ are their series names, as shown in the image, lacking episode numbers, making it hard for me to distinguish.</p>
+<p>This issue can be easily solved by copying the file name to ‘Title’ or clearing the ‘Title’ field. In either case, the original filename will be displayed eventually. For automation in Python, the <a href="https://github.com/quodlibet/mutagen">mutagen</a> module is handy to use.</p>
+<p>2️⃣ Media libraries of type ‘Music Videos’ cannot display folder structures, which I find unacceptable. In fact, only ‘Mixed Movies and Shows’ will be presented in a pure folder format.</p>
+<h1 id="Existing-Solution-2"><a href="#Existing-Solution-2" class="headerlink" title="Existing Solution 2"></a>Existing Solution 2</h1><p>Directly modify the database, as referenced in <a href="https://www.cnblogs.com/toumingbai/p/15514526.html">‘Manually Correcting Titles to File (Folder) Names’</a>。</p>
+<p>Bypassing the Service Tier to directly manipulate the database is too risky. I will never use this approach.</p>
+<h1 id="My-Solution"><a href="#My-Solution" class="headerlink" title="My Solution"></a>My Solution</h1><p>Since directly manipulating the database in Solution 2 is bad, why not use the Jellyfin API?</p>
+<p>The first step is to find which API corresponds to the required functionality. Instead of referring to the official documentation first, inspect the browser’s network traffic in Developer tools and then refer to the documentation. However, in most cases, the documentation is still useless, because there is no description. Under such circumstances, we need perform experiments to guess the usage of an API.</p>
+<p>Fortunately, <a href="https://github.com/jellyfin/jellyfin-apiclient-python">jellyfin-apiclient-python</a> provides a ready-made API, eliminating the need to start from <code>requests</code>. I quickly completed the script:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> jellyfin_apiclient_python <span class="keyword">import</span> JellyfinClient</span><br><span class="line"><span class="keyword">from</span> jellyfin_apiclient_python.api <span class="keyword">import</span> API</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rename_to_filename</span>(<span class="params">jellyfin: API, item_id: <span class="built_in">str</span></span>):</span><br><span class="line">    metadata: <span class="built_in">dict</span> = jellyfin.get_item(item_id)</span><br><span class="line">    <span class="keyword">assert</span> metadata[<span class="string">&#x27;Id&#x27;</span>] == item_id</span><br><span class="line"></span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(metadata[<span class="string">&#x27;MediaSources&#x27;</span>]) == <span class="number">1</span></span><br><span class="line">    path: <span class="built_in">str</span> = metadata[<span class="string">&#x27;MediaSources&#x27;</span>][<span class="number">0</span>][<span class="string">&#x27;Path&#x27;</span>]</span><br><span class="line">    filename = path.split(<span class="string">&#x27;/&#x27;</span>)[-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Only modify Name, keep other info unchanged</span></span><br><span class="line">    metadata.update(&#123;<span class="string">&#x27;Name&#x27;</span>: filename&#125;)</span><br><span class="line">    <span class="keyword">return</span> jellyfin.items(<span class="string">&#x27;/&#x27;</span> + item_id, action=<span class="string">&#x27;POST&#x27;</span>, params=<span class="literal">None</span>, json=metadata)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rename_items_in_library</span>(<span class="params">jellyfin: API, library_id: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="comment"># get_items_by_letter recursively retrieves elements in all subfolders</span></span><br><span class="line">    res = jellyfin.get_items_by_letter(parent_id=library_id)</span><br><span class="line">    res = res[<span class="string">&#x27;Items&#x27;</span>]</span><br><span class="line">    item_count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> res:</span><br><span class="line">        <span class="keyword">if</span> r[<span class="string">&#x27;Type&#x27;</span>] == <span class="string">&#x27;Folder&#x27;</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        rename_to_filename(jellyfin, r[<span class="string">&#x27;Id&#x27;</span>])</span><br><span class="line">        item_count += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;total renamed item count: <span class="subst">&#123;item_count&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">client = JellyfinClient()</span><br><span class="line"><span class="comment"># Modify these client infos as needed; it doesn&#x27;t affect the result</span></span><br><span class="line">client.config.app(<span class="string">&#x27;pycharm&#x27;</span>, <span class="string">&#x27;0.0.1&#x27;</span>, <span class="string">&#x27;pycharm&#x27;</span>, <span class="string">&#x27;kufhskdf&#x27;</span>)</span><br><span class="line">client.config.data[<span class="string">&quot;auth.ssl&quot;</span>] = <span class="literal">True</span></span><br><span class="line">client.authenticate(&#123;<span class="string">&quot;Servers&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;AccessToken&quot;</span>: <span class="string">&quot;xxx&quot;</span>,  <span class="comment"># Create one in &#x27;Dashboard | API Keys&#x27;</span></span><br><span class="line">        <span class="string">&quot;address&quot;</span>: <span class="string">&quot;zzz&quot;</span>, <span class="comment"># Jellyfin server address</span></span><br><span class="line">        <span class="string">&quot;DateLastAccessed&quot;</span>: <span class="number">0</span>,</span><br><span class="line">        <span class="string">&quot;UserId&quot;</span>: <span class="string">&quot;yyy&quot;</span>  <span class="comment"># This user should have the privilege to manage media library</span></span><br><span class="line">    &#125;</span><br><span class="line">]&#125;, discover=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(client.logged_in)</span><br><span class="line"></span><br><span class="line">rename_items_in_library(client.jellyfin, <span class="string">&#x27;uuu&#x27;</span>)  <span class="comment"># Fill in the media library ID</span></span><br></pre></td></tr></table></figure>
 
-<p><code>id_rsa</code> is the private key, and <code>id_rsa.pub</code> is the public key.</p>
-<h1 id="Remote-Host-SSH-Configuration"><a href="#Remote-Host-SSH-Configuration" class="headerlink" title="Remote Host SSH Configuration"></a>Remote Host SSH Configuration</h1><p>Upload the <strong>local</strong> <code>id_rsa.pub</code> to the <code>~/ssh</code> directory on the Linux remote host and rename it to <code>authorized_keys</code>:</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@CentOS100 .ssh]<span class="comment"># ll</span></span><br><span class="line">total 16</span><br><span class="line">-rw-r--r--. 1 root root 576 Jan  1 11:50 authorized_keys</span><br><span class="line">-rw-------. 1 root root 411 Jul  1  2023 id_ed25519</span><br><span class="line">-rw-r--r--. 1 root root  96 Jul  1  2023 id_ed25519.pub</span><br><span class="line">-rw-r--r--. 1 root root 880 Dec 18 21:07 known_hosts</span><br></pre></td></tr></table></figure>
-
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>The steps above complete the configuration needed for SSH key login. Open PowerShell on the local machine and test the connection using <code>ssh &lt;user&gt;@&lt;ip&gt;</code>. It should allow direct login without entering a password.</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">PS</span> C:\Users\Elnino&gt; ssh root@CentOS100</span><br><span class="line">Activate the web console with: systemctl enable <span class="literal">--now</span> cockpit.socket</span><br><span class="line"></span><br><span class="line">Last login: Mon Jan  <span class="number">1</span> <span class="number">12</span>:<span class="number">26</span>:<span class="number">15</span> <span class="number">2024</span> from &lt;ip&gt;</span><br><span class="line">[<span class="type">root</span>@<span class="type">CentOS100</span> ~]<span class="comment"># pwd</span></span><br><span class="line">/root</span><br></pre></td></tr></table></figure>
-
-<h1 id="VS-Code-Configuration"><a href="#VS-Code-Configuration" class="headerlink" title="VS Code Configuration"></a>VS Code Configuration</h1><ol>
-<li><p>Install the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh">Remote - SSH</a> extension:</p>
-<p> <img src="/en/MarkDownImages/image-20240101130622357.png" alt="image-20240101130622357"></p>
-</li>
-<li><p>Click these three buttons sequentially to access the configuration file:</p>
-<p> <img src="/en/MarkDownImages/image-20240101130733756.png" alt="image-20240101130733756"></p>
-</li>
-<li><p>Fill in the configuration file (this file is essentially the SSH configuration for the host):</p>
-<p> <img src="/en/MarkDownImages/image-20240101130804525.png" alt="image-20240101130804525"></p>
-<ul>
-<li><code>Host</code>: an ID for this remote connection; you can choose any name.</li>
-<li><code>HostName</code>: Domain name or IP address of the remote host.</li>
-<li><code>User</code>: User to login to the remote host.</li>
-<li><code>IdentityFile</code>: Path to the <strong>private key</strong>, whose public key is in <code>authorized_keys</code>.</li>
-</ul>
-</li>
-</ol>
-<p>A few notes about the configuration file:</p>
-<ul>
-<li>If <code>authorized_keys</code> is not configured on the remote host, the <code>IdentityFile</code> property will not take effect, and it will prompt for a password during login.</li>
-<li>In this case, <code>IdentityFile</code> is not necessary because <code>authorized_keys</code> is the local machine’s public key, and SSH defaults to using the local machine’s private key for connection attempts.</li>
-<li>Generally, <code>authorized_keys</code> won’t be the local machine’s public key, and in such cases, <code>IdentityFile</code> must be configured; otherwise, a password will be required.</li>
-</ul>
+<blockquote>
+<p>By the way, the documentation for this module is also poor; I only figured out how to connect to the server through Issues.</p>
+</blockquote>
+<p>My Jellyfin server’s certificate is self-signed, and it seems Python’s SSL cannot use the certificates installed on OS. We can resolve this by setting the environment variable <code>REQUESTS_CA_BUNDLE=&lt;certificate_path&gt;</code>.</p>
+<p>My solution perfectly addresses the drawbacks of the two aforementioned solutions.</p>
 <h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
-<li><a href="https://medium.com/@sean4deepak/using-ssh-key-authentication-in-visual-studio-codes-remote-ssh-extension-4e5b922448e7">Using SSH Key Authentication in Visual Studio Code’ s Remote SSH Extension</a></li>
-<li><a href="https://adamtheautomator.com/add-ssh-key-to-vs-code/">Add SSH Key to VS Code and Connect to a Host</a></li>
-<li><a href="https://stackoverflow.com/questions/48328446/id-rsa-pub-file-ssh-error-invalid-format">id_rsa.pub file SSH Error: invalid format</a></li>
+<li><a href="https://www.reddit.com/r/jellyfin/comments/pcptfz/possible_to_use_original_filenames_only/?utm_source=share&utm_medium=web2x&context=3">Possible to use original filenames only?</a></li>
+<li><a href="https://www.cnblogs.com/toumingbai/p/15514526.html">jellyfin手动修正标题为文件（夹）名</a></li>
+<li><a href="https://github.com/jellyfin/jellyfin-apiclient-python">jellyfin-apiclient-python</a></li>
 </ul>
 ]]></content>
       <categories>
-        <category>softwares</category>
-        <category>VS Code</category>
+        <category>tech</category>
+        <category>NAS</category>
+        <category>Python</category>
       </categories>
       <tags>
-        <tag>settings</tag>
-        <tag>VS Code</tag>
-        <tag>SSH</tag>
+        <tag>NAS</tag>
+        <tag>Jellyfin</tag>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Common Commands for pip &amp; conda</title>
+    <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
+    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
+<li><p>Install <code>script-house</code>, version <code>0.0.2</code>.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
+
+<p> If you want to install the latest version by default, you can omit <code>==0.0.2</code>.</p>
+<p> To install multiple dependencies in one line:</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
+</ol>
+<span id="more"></span>
+
+<ol start="2">
+<li><p>List all dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>List current dependencies in <code>requirements.txt</code> format.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
+
+<p> The result of <code>pip freeze</code> is a subset of <code>pip list</code>. <code>pip list</code> usually includes fundamental dependencies like <code>pip</code>, <code>setuptools</code>, and <code>wheel</code>.</p>
+<p> The purpose of <code>pip freeze</code> is to export project dependencies for others to use, while <code>pip list</code> is just for display.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install all dependencies from <code>requirements.txt</code>.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Uninstall a specific dependency.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Uninstall multiple dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
+
+<p> <code>-y</code> automatically confirms the deletion.</p>
+<p> How to uninstall all dependencies in the current environment?</p>
+ <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
+<li><p>After conda is installed on Linux, you should run <code>conda init</code> first before using conda commands; On Windows, there is no such need.</p>
+</li>
+<li><p>List all environments.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Create a new environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;environment-name&gt; python=3.8</span><br></pre></td></tr></table></figure>
+
+<p> The basic command is <code>conda create -n &lt;environment-name&gt;</code>, but specifying the Python version is a common practice. Compared to venv, conda environments also install some basic OS-dependent dependencies.</p>
+</li>
+<li><p>Activate an environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;environment-name&gt;</span><br></pre></td></tr></table></figure>
+
+<p> On Windows, you probably need to omit <code>conda</code>.</p>
+</li>
+<li><p>Deactivate the environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Remove an environment.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;environment-name&gt; --all</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>View basic information.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Install dependencies.</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
+
+<p> Similar to pip, it follows the format <code>dependency==version</code>; the <code>-c</code> parameter specifies the download source (channel) as default channels often fail.</p>
+</li>
+<li><p>Create an environment from a configuration file (usually named <code>environment.yml</code>).</p>
+ <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
+
+<p> Content of <code>environment.yml</code>:</p>
+ <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;environment-name&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c parameter, specifying download source</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies installed by conda</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># dependencies installed by pip</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
+
+<p> It’s not recommended to create a new environment by this method, because channels often fail.</p>
+</li>
+<li><p>Disable auto-activation of the base environment. If enabled, every new shell will automatically activate the base environment.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>tech</category>
+        <category>Python</category>
+        <category>cheat sheet</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>pip</tag>
+        <tag>conda</tag>
       </tags>
   </entry>
   <entry>
@@ -1581,156 +1714,10 @@
       </categories>
       <tags>
         <tag>Simulation</tag>
-        <tag>Tree</tag>
         <tag>DP</tag>
+        <tag>Tree</tag>
         <tag>Bit Manipulation</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Common Commands for pip &amp; conda</title>
-    <url>/en/2024/01/14/pip-conda-Common-Commands/</url>
-    <content><![CDATA[<h1 id="pip"><a href="#pip" class="headerlink" title="pip"></a>pip</h1><ol>
-<li><p>Install <code>script-house</code>, version <code>0.0.2</code>.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2</span><br></pre></td></tr></table></figure>
-
-<p> If you want to install the latest version by default, you can omit <code>==0.0.2</code>.</p>
-<p> To install multiple dependencies in one line:</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install script-house==0.0.2 pydantic==2.5.3 pymongo==4.6.1</span><br></pre></td></tr></table></figure></li>
-</ol>
-<span id="more"></span>
-
-<ol start="2">
-<li><p>List all dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>List current dependencies in <code>requirements.txt</code> format.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze</span><br></pre></td></tr></table></figure>
-
-<p> The result of <code>pip freeze</code> is a subset of <code>pip list</code>. <code>pip list</code> usually includes fundamental dependencies like <code>pip</code>, <code>setuptools</code>, and <code>wheel</code>.</p>
-<p> The purpose of <code>pip freeze</code> is to export project dependencies for others to use, while <code>pip list</code> is just for display.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Install all dependencies from <code>requirements.txt</code>.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Uninstall a specific dependency.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall script-house</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Uninstall multiple dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">pip uninstall -r req.txt -y</span><br></pre></td></tr></table></figure>
-
-<p> <code>-y</code> automatically confirms the deletion.</p>
-<p> How to uninstall all dependencies in the current environment?</p>
- <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pip freeze &gt; req</span><br><span class="line">pip uninstall <span class="literal">-r</span> req <span class="literal">-y</span></span><br><span class="line"><span class="built_in">del</span> req</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="conda"><a href="#conda" class="headerlink" title="conda"></a>conda</h1><ol>
-<li><p>After conda is installed on Linux, you should run <code>conda init</code> first before using conda commands; On Windows, there is no such need.</p>
-</li>
-<li><p>List all environments.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> list</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Create a new environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda create -n &lt;environment-name&gt; python=3.8</span><br></pre></td></tr></table></figure>
-
-<p> The basic command is <code>conda create -n &lt;environment-name&gt;</code>, but specifying the Python version is a common practice. Compared to venv, conda environments also install some basic OS-dependent dependencies.</p>
-</li>
-<li><p>Activate an environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda activate &lt;environment-name&gt;</span><br></pre></td></tr></table></figure>
-
-<p> On Windows, you probably need to omit <code>conda</code>.</p>
-</li>
-<li><p>Deactivate the environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Remove an environment.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda remove -n &lt;environment-name&gt; --all</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>View basic information.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda info</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Install dependencies.</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 -c pytorch -c conda-forge</span><br></pre></td></tr></table></figure>
-
-<p> Similar to pip, it follows the format <code>dependency==version</code>; the <code>-c</code> parameter specifies the download source (channel) as default channels often fail.</p>
-</li>
-<li><p>Create an environment from a configuration file (usually named <code>environment.yml</code>).</p>
- <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda <span class="built_in">env</span> create -f environment.yml</span><br></pre></td></tr></table></figure>
-
-<p> Content of <code>environment.yml</code>:</p>
- <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">&lt;environment-name&gt;</span></span><br><span class="line"><span class="attr">channels:</span> <span class="comment"># -c parameter, specifying download source</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">pytorch</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">conda-forge</span></span><br><span class="line"><span class="attr">dependencies:</span> <span class="comment"># dependencies installed by conda</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">python=3.8</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">numpy</span> </span><br><span class="line">  <span class="bullet">-</span> <span class="string">pandas</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">matplotlib</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">pip:</span> <span class="comment"># dependencies installed by pip</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">imageio</span></span><br></pre></td></tr></table></figure>
-
-<p> It’s not recommended to create a new environment by this method, because channels often fail.</p>
-</li>
-<li><p>Disable auto-activation of the base environment. If enabled, every new shell will automatically activate the base environment.</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">conda config --<span class="built_in">set</span> auto_activate_base <span class="literal">false</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>Python</category>
-        <category>cheat sheet</category>
-      </categories>
-      <tags>
-        <tag>Python</tag>
-        <tag>pip</tag>
-        <tag>conda</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Display Original Filenames in Jellyfin</title>
-    <url>/en/2024/02/17/jellyfin-original-filename/</url>
-    <content><![CDATA[<h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>The recommended usage of Jellyfin is that users create folders according to the media rules and place media files in them. After that, the media titles are automatically generated based on the metadata obtained from the scraper. However, this rule is so compulsory that this simple functionality of <strong>using the original file name as the title</strong> is not even available. While manual updating media titles is possible, it can be cumbersome.</p>
-<p>To fit this demand, I have created a script using <a href="https://github.com/jellyfin/jellyfin-apiclient-python">jellyfin-apiclient-python</a> to batch rename all media in a specific media library. Additionally, this article explores some previous solutions, none of which were satisfactory in my opinion.</p>
-<span id="more"></span>
-
-<h1 id="Existing-Solution-1"><a href="#Existing-Solution-1" class="headerlink" title="Existing Solution 1"></a>Existing Solution 1</h1><p>When creating a media library, choose ‘Music Videos’ as its content type and select ‘Prefer embedded titles over filenames’. </p>
-<p>What is this “embedded title”? Open the ‘Properties’ of a video and go to ‘Details’. </p>
-<p><img src="/en/MarkDownImages/image-20240217135326419.png" alt="image-20240217135326419"></p>
-<p>Any content in the ‘Title’ field will be displayed as the media title in Jellyfin without any modifications. However, this approach has two issues:</p>
-<p>1️⃣ For most anime published, the values of their ‘Title’ are their series names, as shown in the image, lacking episode numbers, making it hard for me to distinguish.</p>
-<p>This issue can be easily solved by copying the file name to ‘Title’ or clearing the ‘Title’ field. In either case, the original filename will be displayed eventually. For automation in Python, the <a href="https://github.com/quodlibet/mutagen">mutagen</a> module is handy to use.</p>
-<p>2️⃣ Media libraries of type ‘Music Videos’ cannot display folder structures, which I find unacceptable. In fact, only ‘Mixed Movies and Shows’ will be presented in a pure folder format.</p>
-<h1 id="Existing-Solution-2"><a href="#Existing-Solution-2" class="headerlink" title="Existing Solution 2"></a>Existing Solution 2</h1><p>Directly modify the database, as referenced in <a href="https://www.cnblogs.com/toumingbai/p/15514526.html">‘Manually Correcting Titles to File (Folder) Names’</a>。</p>
-<p>Bypassing the Service Tier to directly manipulate the database is too risky. I will never use this approach.</p>
-<h1 id="My-Solution"><a href="#My-Solution" class="headerlink" title="My Solution"></a>My Solution</h1><p>Since directly manipulating the database in Solution 2 is bad, why not use the Jellyfin API?</p>
-<p>The first step is to find which API corresponds to the required functionality. Instead of referring to the official documentation first, inspect the browser’s network traffic in Developer tools and then refer to the documentation. However, in most cases, the documentation is still useless, because there is no description. Under such circumstances, we need perform experiments to guess the usage of an API.</p>
-<p>Fortunately, <a href="https://github.com/jellyfin/jellyfin-apiclient-python">jellyfin-apiclient-python</a> provides a ready-made API, eliminating the need to start from <code>requests</code>. I quickly completed the script:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> jellyfin_apiclient_python <span class="keyword">import</span> JellyfinClient</span><br><span class="line"><span class="keyword">from</span> jellyfin_apiclient_python.api <span class="keyword">import</span> API</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rename_to_filename</span>(<span class="params">jellyfin: API, item_id: <span class="built_in">str</span></span>):</span><br><span class="line">    metadata: <span class="built_in">dict</span> = jellyfin.get_item(item_id)</span><br><span class="line">    <span class="keyword">assert</span> metadata[<span class="string">&#x27;Id&#x27;</span>] == item_id</span><br><span class="line"></span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(metadata[<span class="string">&#x27;MediaSources&#x27;</span>]) == <span class="number">1</span></span><br><span class="line">    path: <span class="built_in">str</span> = metadata[<span class="string">&#x27;MediaSources&#x27;</span>][<span class="number">0</span>][<span class="string">&#x27;Path&#x27;</span>]</span><br><span class="line">    filename = path.split(<span class="string">&#x27;/&#x27;</span>)[-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Only modify Name, keep other info unchanged</span></span><br><span class="line">    metadata.update(&#123;<span class="string">&#x27;Name&#x27;</span>: filename&#125;)</span><br><span class="line">    <span class="keyword">return</span> jellyfin.items(<span class="string">&#x27;/&#x27;</span> + item_id, action=<span class="string">&#x27;POST&#x27;</span>, params=<span class="literal">None</span>, json=metadata)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rename_items_in_library</span>(<span class="params">jellyfin: API, library_id: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="comment"># get_items_by_letter recursively retrieves elements in all subfolders</span></span><br><span class="line">    res = jellyfin.get_items_by_letter(parent_id=library_id)</span><br><span class="line">    res = res[<span class="string">&#x27;Items&#x27;</span>]</span><br><span class="line">    item_count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> res:</span><br><span class="line">        <span class="keyword">if</span> r[<span class="string">&#x27;Type&#x27;</span>] == <span class="string">&#x27;Folder&#x27;</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        rename_to_filename(jellyfin, r[<span class="string">&#x27;Id&#x27;</span>])</span><br><span class="line">        item_count += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;total renamed item count: <span class="subst">&#123;item_count&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">client = JellyfinClient()</span><br><span class="line"><span class="comment"># Modify these client infos as needed; it doesn&#x27;t affect the result</span></span><br><span class="line">client.config.app(<span class="string">&#x27;pycharm&#x27;</span>, <span class="string">&#x27;0.0.1&#x27;</span>, <span class="string">&#x27;pycharm&#x27;</span>, <span class="string">&#x27;kufhskdf&#x27;</span>)</span><br><span class="line">client.config.data[<span class="string">&quot;auth.ssl&quot;</span>] = <span class="literal">True</span></span><br><span class="line">client.authenticate(&#123;<span class="string">&quot;Servers&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;AccessToken&quot;</span>: <span class="string">&quot;xxx&quot;</span>,  <span class="comment"># Create one in &#x27;Dashboard | API Keys&#x27;</span></span><br><span class="line">        <span class="string">&quot;address&quot;</span>: <span class="string">&quot;zzz&quot;</span>, <span class="comment"># Jellyfin server address</span></span><br><span class="line">        <span class="string">&quot;DateLastAccessed&quot;</span>: <span class="number">0</span>,</span><br><span class="line">        <span class="string">&quot;UserId&quot;</span>: <span class="string">&quot;yyy&quot;</span>  <span class="comment"># This user should have the privilege to manage media library</span></span><br><span class="line">    &#125;</span><br><span class="line">]&#125;, discover=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(client.logged_in)</span><br><span class="line"></span><br><span class="line">rename_items_in_library(client.jellyfin, <span class="string">&#x27;uuu&#x27;</span>)  <span class="comment"># Fill in the media library ID</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>By the way, the documentation for this module is also poor; I only figured out how to connect to the server through Issues.</p>
-</blockquote>
-<p>My Jellyfin server’s certificate is self-signed, and it seems Python’s SSL cannot use the certificates installed on OS. We can resolve this by setting the environment variable <code>REQUESTS_CA_BUNDLE=&lt;certificate_path&gt;</code>.</p>
-<p>My solution perfectly addresses the drawbacks of the two aforementioned solutions.</p>
-<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ul>
-<li><a href="https://www.reddit.com/r/jellyfin/comments/pcptfz/possible_to_use_original_filenames_only/?utm_source=share&utm_medium=web2x&context=3">Possible to use original filenames only?</a></li>
-<li><a href="https://www.cnblogs.com/toumingbai/p/15514526.html">jellyfin手动修正标题为文件（夹）名</a></li>
-<li><a href="https://github.com/jellyfin/jellyfin-apiclient-python">jellyfin-apiclient-python</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>tech</category>
-        <category>NAS</category>
-        <category>Python</category>
-      </categories>
-      <tags>
-        <tag>NAS</tag>
-        <tag>Jellyfin</tag>
-        <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Messages for reader</title>
-    <url>/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
-    <content><![CDATA[<ul>
-<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
-<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
-</ul>
-<script>
-    function jump() {
-        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
-    }
-</script>]]></content>
   </entry>
   <entry>
     <title>LeetCode Weekly Contest 370 Summary</title>
@@ -1904,8 +1891,21 @@
       </categories>
       <tags>
         <tag>Simulation</tag>
-        <tag>Tree</tag>
         <tag>DP</tag>
+        <tag>Tree</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Messages for reader</title>
+    <url>/en/3000/01/01/%E7%BD%AE%E9%A1%B6%E9%80%9A%E7%9F%A5/</url>
+    <content><![CDATA[<ul>
+<li>Translation of posts is based on ChatGPT first, and then proofread by me. If there is any ambiguity, please refer to the Chinese version.</li>
+<li>Visit the Chinese site <a href="/" onclick="jump()">here</a>, or click ‘Switch to Chinese’ at the left sidebar.</li>
+</ul>
+<script>
+    function jump() {
+        window.location.href = "https://el-nino2020.github.io?timestamp=" + (new Date()).getTime();
+    }
+</script>]]></content>
   </entry>
 </search>

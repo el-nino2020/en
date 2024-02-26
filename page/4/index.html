@@ -229,7 +229,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/en/2023/10/06/Azure-Pipelines-Architecture/" class="post-title-link" itemprop="url">Azure Pipelines 架构解析</a>
+          <a href="/en/2023/10/06/Azure-Pipelines-Architecture/" class="post-title-link" itemprop="url">the Architecture of Azure Pipelines</a>
         </h2>
 
         <div class="post-meta-container">
@@ -263,14 +263,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>934</span>
+      <span>626</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>3 mins.</span>
+      <span>2 mins.</span>
     </span>
 </div>
 
@@ -281,9 +281,9 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a target="_blank" rel="noopener" href="https://github.com/features/actions">GitHub Actions</a> 和 <a target="_blank" rel="noopener" href="https://www.jenkins.io/">Jenkins</a>。</p>
-<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
-<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
+          <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Azure Pipelines is a component of Azure DevOps (a SaaS platform) and serves as an automated CI&#x2F;CD pipeline. Similar technologies include <a target="_blank" rel="noopener" href="https://github.com/features/actions">GitHub Actions</a> and <a target="_blank" rel="noopener" href="https://www.jenkins.io/">Jenkins</a>.</p>
+<p>As users, we only need to define various tasks in YAML, trigger the pipeline, and Azure Pipelines automatically executes these tasks for us.</p>
+<p>So, how are tasks executed? Is there a limit to parallel tasks? How can we design YAML more efficiently to make a pipeline run faster? This article will analyze the architecture of Azure Pipelines from the perspective of task scheduling, providing answers to these questions along the way.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/en/2023/10/06/Azure-Pipelines-Architecture/#more" rel="contents">
@@ -674,11 +674,11 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/en/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
+          <a href="/en/categories/softwares/" itemprop="url" rel="index"><span itemprop="name">softwares</span></a>
         </span>
           , 
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/en/categories/softwares/" itemprop="url" rel="index"><span itemprop="name">softwares</span></a>
+          <a href="/en/categories/tech/" itemprop="url" rel="index"><span itemprop="name">tech</span></a>
         </span>
           , 
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -773,14 +773,14 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Word count total: </span>
-    <span title="Word count total">24k</span>
+    <span title="Word count total">23k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:26</span>
+    <span title="Reading time total">1:25</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>

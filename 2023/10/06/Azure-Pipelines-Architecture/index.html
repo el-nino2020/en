@@ -22,12 +22,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"el-nino2020.github.io","root":"/en/","images":"/en/images","scheme":"Gemini","darkmode":false,"version":"8.17.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#008000","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/en/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/en/js/config.js"></script>
 
-    <meta name="description" content="介绍Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有GitHub Actions 和 Jenkins。 作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。 那么，任务是怎么被执行的呢？是否存在并行任务上限？我们">
+    <meta name="description" content="IntroductionAzure Pipelines is a component of Azure DevOps (a SaaS platform) and serves as an automated CI&#x2F;CD pipeline. Similar technologies include GitHub Actions and Jenkins. As users, we only">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Azure Pipelines 架构解析">
+<meta property="og:title" content="the Architecture of Azure Pipelines">
 <meta property="og:url" content="https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/index.html">
 <meta property="og:site_name" content="Blog of El nino">
-<meta property="og:description" content="介绍Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有GitHub Actions 和 Jenkins。 作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。 那么，任务是怎么被执行的呢？是否存在并行任务上限？我们">
+<meta property="og:description" content="IntroductionAzure Pipelines is a component of Azure DevOps (a SaaS platform) and serves as an automated CI&#x2F;CD pipeline. Similar technologies include GitHub Actions and Jenkins. As users, we only">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://el-nino2020.github.io/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png">
 <meta property="article:published_time" content="2023-10-06T12:11:59.000Z">
@@ -35,7 +35,7 @@
 <meta property="article:author" content="El nino">
 <meta property="article:tag" content="Azure">
 <meta property="article:tag" content="Azure Pipelines">
-<meta property="article:tag" content="架构">
+<meta property="article:tag" content="Architecture">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://el-nino2020.github.io/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png">
 
@@ -44,10 +44,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/","path":"2023/10/06/Azure-Pipelines-Architecture/","title":"Azure Pipelines 架构解析"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/","path":"2023/10/06/Azure-Pipelines-Architecture/","title":"the Architecture of Azure Pipelines"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Azure Pipelines 架构解析 | Blog of El nino</title>
+<title>the Architecture of Azure Pipelines | Blog of El nino</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBFGGZ14VS"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-SBFGGZ14VS","only_pageview":false}</script>
@@ -151,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Azure-Pipelines-%E6%9C%AF%E8%AF%AD"><span class="nav-number">2.</span> <span class="nav-text">Azure Pipelines 术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Azure-Pipelines-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6"><span class="nav-number">3.</span> <span class="nav-text">Azure Pipelines 任务调度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parallel-Jobs"><span class="nav-number">4.</span> <span class="nav-text">Parallel Jobs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Azure-Pipelines-Terminology"><span class="nav-number">2.</span> <span class="nav-text">Azure Pipelines Terminology</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Azure-Pipelines-Task-Scheduling"><span class="nav-number">3.</span> <span class="nav-text">Azure Pipelines Task Scheduling</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parallel-Jobs"><span class="nav-number">4.</span> <span class="nav-text">Parallel Jobs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -231,12 +231,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Azure Pipelines 架构解析 | Blog of El nino">
+      <meta itemprop="name" content="the Architecture of Azure Pipelines | Blog of El nino">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Azure Pipelines 架构解析
+          the Architecture of Azure Pipelines
         </h1>
 
         <div class="post-meta-container">
@@ -270,14 +270,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>934</span>
+      <span>626</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>3 mins.</span>
+      <span>2 mins.</span>
     </span>
 </div>
 
@@ -287,49 +287,49 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Azure Pipelines 是 Azure DevOps（SaaS 平台）的一个组件，是一个自动化 CI&#x2F;CD 的“流水线”。类似的技术有<a target="_blank" rel="noopener" href="https://github.com/features/actions">GitHub Actions</a> 和 <a target="_blank" rel="noopener" href="https://www.jenkins.io/">Jenkins</a>。</p>
-<p>作为使用者，我们只需要在 YAML 中定义各个任务，触发 Pipeline，Azure Pipelines 就能帮我们自动执行这些任务。</p>
-<p>那么，任务是怎么被执行的呢？是否存在并行任务上限？我们怎样设计更高效地定义 YAML，从而让一次 Pipeline 更快地跑完呢？—— 本文将从任务调度的角度，解析 Azure Pipelines 的架构。在探讨的过程中，上述问题自然能得到解答。</p>
+    <div class="post-body" itemprop="articleBody"><h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Azure Pipelines is a component of Azure DevOps (a SaaS platform) and serves as an automated CI&#x2F;CD pipeline. Similar technologies include <a target="_blank" rel="noopener" href="https://github.com/features/actions">GitHub Actions</a> and <a target="_blank" rel="noopener" href="https://www.jenkins.io/">Jenkins</a>.</p>
+<p>As users, we only need to define various tasks in YAML, trigger the pipeline, and Azure Pipelines automatically executes these tasks for us.</p>
+<p>So, how are tasks executed? Is there a limit to parallel tasks? How can we design YAML more efficiently to make a pipeline run faster? This article will analyze the architecture of Azure Pipelines from the perspective of task scheduling, providing answers to these questions along the way.</p>
 <span id="more"></span>
 
-<h1 id="Azure-Pipelines-术语"><a href="#Azure-Pipelines-术语" class="headerlink" title="Azure Pipelines 术语"></a>Azure Pipelines 术语</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
-<p><strong>对于 Azure Pipelines 的使用者</strong>，一个 YAML 文件唯一定义了一条 Pipeline 的运行逻辑：</p>
+<h1 id="Azure-Pipelines-Terminology"><a href="#Azure-Pipelines-Terminology" class="headerlink" title="Azure Pipelines Terminology"></a>Azure Pipelines Terminology</h1><p><img src="/en/MarkDownImages/key-pipeline-concepts-overview-ca80c85c.png" alt="img"></p>
+<p><strong>For users of Azure Pipelines</strong>, a YAML file uniquely defines the logic of a pipeline run:</p>
 <ul>
-<li>一条 Pipeline 可以包含多个 Stage</li>
-<li>一个 Stage 可以包含多个 Job</li>
-<li>一个 Job 可以包含多个 Step</li>
-<li>一个 Step 可以包含多个 task</li>
+<li>A pipeline can contain multiple stages.</li>
+<li>A stage can contain multiple jobs.</li>
+<li>A job can contain multiple steps.</li>
+<li>A step can contain multiple tasks.</li>
 </ul>
-<p><strong>对于 Azure Pipelines 本身</strong>，当一条 Pipeline 被触发，它需要调用计算资源，去执行 Pipeline 的逻辑。具体来说，会有一台机器（agent）负责执行一个 job。</p>
-<p>一个 job 只会在一台 agent 上跑，它不会被进一步地拆分。而一条 Pipeline 的所有 job 可能会分配给不同的 agent 去执行。</p>
-<p>这种分配是如何完成的呢？</p>
-<h1 id="Azure-Pipelines-任务调度"><a href="#Azure-Pipelines-任务调度" class="headerlink" title="Azure Pipelines 任务调度"></a>Azure Pipelines 任务调度</h1><p>Azure Pipelines 的任务调度是一种典型的分布式任务调度模型（类似的技术有<a target="_blank" rel="noopener" href="http://www.quartz-scheduler.org/">QUARTZ</a> 和 <a target="_blank" rel="noopener" href="https://github.com/xuxueli/xxl-job">xxl-job</a>）：</p>
+<p><strong>For Azure Pipelines itself</strong>, when a pipeline is triggered, it needs to invoke computing resources to execute the pipeline’s logic. Specifically, a machine (agent) is responsible for executing a job.</p>
+<p>A job runs on only one agent, and it is not further divided. However, all jobs of a pipeline may be assigned to different agents for execution.</p>
+<p>How is this distribution of jobs accomplished?</p>
+<h1 id="Azure-Pipelines-Task-Scheduling"><a href="#Azure-Pipelines-Task-Scheduling" class="headerlink" title="Azure Pipelines Task Scheduling"></a>Azure Pipelines Task Scheduling</h1><p>Azure Pipelines task scheduling follows a typical distributed task scheduling model (similar technologies include <a target="_blank" rel="noopener" href="http://www.quartz-scheduler.org/">QUARTZ</a> and <a target="_blank" rel="noopener" href="https://github.com/xuxueli/xxl-job">xxl-job</a>):</p>
 <ul>
-<li>Azure Pipelines 上有一个<strong>『任务队列』</strong>，里面存放着所有待运行的 <u>job</u>（既指任务调度模型中的 Job&#x2F;Task，又指 Pipeline 中的 job 术语）</li>
-<li>Agent 是 Worker，它会定时地查看<strong>『任务队列』</strong>中是否有 job 要运行。如果有，则某一台 Agent 会竞争获得执行该 Job 的权利，同时获得访问相应资源的权限。此时，它就可以开始执行这个 job 了。</li>
+<li>Azure Pipelines has a <strong>‘Task Queue’</strong> containing all pending <u>jobs</u> (referring to both the job&#x2F;task in the task scheduling model and the job term in the pipeline).</li>
+<li>The agent is a worker that periodically checks whether there are jobs to run in the <strong>‘Task Queue’</strong>. If there are, some agent will compete to gain the right to execute that job while obtaining access to the relevant resources. At this point, it can start executing the job.</li>
 </ul>
-<p>因此，一条 Pipeline 是这样执行的：</p>
+<p>Therefore, a pipeline is executed as follows:</p>
 <ol>
-<li>触发 Pipeline。Azure Pipelines 解析 YAML，拆分为多个 Job，存入『任务队列』中。</li>
-<li>假如此时有空闲的 Agent，说明『任务队列』此时为空。那么，它监听到了任务队列中加入新 job 后，开始与其他 Agent（假如有的话）竞争执行该 job。<ul>
-<li>竞争成功，开始执行；</li>
-<li>竞争失败，继续监听；</li>
+<li>Trigger the pipeline. Azure Pipelines parses YAML, splits it into multiple jobs, and stores them in the <strong>‘Task Queue’</strong>.</li>
+<li>If there is an idle agent at this time (indicating that the <strong>‘Task Queue’</strong> was empty), it listens for the event that a new job is pushed to the queue and begins competing to execute that job with other agents (if any).<ul>
+<li>If successful, it starts execution.</li>
+<li>If unsuccessful, it continues to listen.</li>
 </ul>
 </li>
-<li>假如此时没有空闲的 Agent，则说明『任务队列』之前已经有 job 了，或者没有 Agent 跑完自己之前领取的 job。那么这些新产生的 job 就会有序地等待 Agent 来执行。（job 按照 Pipeline 触发的时间来排队等待，因此是公平的）</li>
+<li>If there is no idle agent at this time (indicating that the <strong>‘Task Queue’</strong> previously had jobs or no agent completed its previously assigned job), these newly generated jobs will wait for an agent to execute them in an orderly manner (jobs are queued based on the time the pipeline was triggered, ensuring fairness).</li>
 </ol>
-<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>任务调度框架意味着<strong>并行（parallel）</strong>。这也意味着，我们在定义 YAML 时，<strong>应该将没有依赖的 Steps 或 Tasks 提升为 Jobs，使得它们能够并行执行，缩短运行时间</strong>。</p>
+<h1 id="Parallel-Jobs"><a href="#Parallel-Jobs" class="headerlink" title="Parallel Jobs"></a>Parallel Jobs</h1><p>The task scheduling framework implies <strong>parallelism</strong>. This means that when defining YAML, <strong>steps or tasks without dependencies should be elevated to jobs, allowing them to run in parallel and reduce execution time</strong>.</p>
 <blockquote>
-<p>在实习过程中，却鲜有人这样做，大家都用着默认的 Steps 级别，即使大部分 Agents 经常是空闲的。🤔</p>
+<p>However, during internships, few people do this, and most people use the default step level, even when many agents are often idle. 🤔</p>
 </blockquote>
-<p>那么，既然一个新 job 能否立刻执行取决于空闲 Agent 的存在，增加 Agent 的数量是否就能提高整体的吞吐量（单位时间内执行完成的 job 数量）呢？—— 很遗憾，并不是。</p>
-<p>微软毕竟要靠 Azure 盈利的，他们又提出了 『Parallel Jobs』这个概念，表示能并行执行的 job 上限。这个量是需要购买的。</p>
-<p>也就是说，如果想并行跑 job，我们不仅需要购买 Azure VM agents，还需要购买 Parallel Jobs。即使我们自己有很多台机器，也还是需要购买 Parallel Jobs。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><ul>
+<p>Now, since the immediate execution of a new job depends on the presence of idle agents, does increasing the number of agents improve overall throughput (the number of jobs completed in a unit of time)? Unfortunately, not really.</p>
+<p>After all, Microsoft needs to profit from Azure, so they introduced the concept of ‘Parallel Jobs’, indicating a limit to the number of jobs that can run in parallel. This limit requires purchasing.</p>
+<p>In other words, to run jobs in parallel, we not only need to purchase Azure VM agents but also Parallel Jobs. Even if we have many machines locally, we still need to buy Parallel Jobs.</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/3-describe-azure-pipelines">Describe Azure Pipelines</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/training/modules/explore-azure-pipelines/4-understand-key-terms">Understand Azure Pipelines key terms</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/training/modules/manage-azure-pipeline-agents-pools/7-communicate-with-azure-pipelines">Communicate with Azure Pipelines</a></li>
-<li><a target="_blank" rel="noopener" href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines 产品介绍</a></li>
+<li><a target="_blank" rel="noopener" href="https://azure.microsoft.com/en-us/products/devops/pipelines#overview">Azure Pipelines Product Overview</a></li>
 <li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/agents">Azure Pipelines agents</a></li>
 </ul>
 
@@ -349,7 +349,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>Post link: </strong>
-      <a href="https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/" title="Azure Pipelines 架构解析">https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/</a>
+      <a href="https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/" title="the Architecture of Azure Pipelines">https://el-nino2020.github.io/en/2023/10/06/Azure-Pipelines-Architecture/</a>
   </li>
   <li class="post-copyright-license">
       <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
@@ -360,7 +360,7 @@
           <div class="post-tags">
               <a href="/en/tags/Azure/" rel="tag"><i class="fa fa-tag"></i> Azure</a>
               <a href="/en/tags/Azure-Pipelines/" rel="tag"><i class="fa fa-tag"></i> Azure Pipelines</a>
-              <a href="/en/tags/%E6%9E%B6%E6%9E%84/" rel="tag"><i class="fa fa-tag"></i> 架构</a>
+              <a href="/en/tags/Architecture/" rel="tag"><i class="fa fa-tag"></i> Architecture</a>
           </div>
 
         
@@ -414,14 +414,14 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Word count total: </span>
-    <span title="Word count total">24k</span>
+    <span title="Word count total">23k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:26</span>
+    <span title="Reading time total">1:25</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
