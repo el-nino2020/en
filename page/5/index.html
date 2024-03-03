@@ -336,7 +336,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/" class="post-title-link" itemprop="url">MyBatis-Plus 实现 MySQL JSON 类型字段的映射</a>
+          <a href="/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/" class="post-title-link" itemprop="url">Mapping MySQL JSON Fields with MyBatis-Plus</a>
         </h2>
 
         <div class="post-meta-container">
@@ -370,7 +370,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>657</span>
+      <span>515</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
@@ -388,14 +388,14 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h1><p>MySQL 支持 JSON 类型的字段。相比字符串类型的字段， JSON 类型有如下好处：</p>
+          <h1 id="Preface"><a href="#Preface" class="headerlink" title="Preface"></a>Preface</h1><p>MySQL supports fields of type JSON. In comparison to string-type fields, JSON fields offer the following advantages:</p>
 <ul>
-<li>自动检查 JSON 语法是否正确</li>
-<li>底层支持快速存取 JSON 中的元素。不需要将整个 字符串 全部读取出来，再解析成 JSON 对象</li>
+<li>Automatic validation of JSON syntax</li>
+<li>Underlying support for quick access to elements within the JSON. There’s no need to read the entire string and then parse it into a JSON object.</li>
 </ul>
-<p>在逻辑上，JSON 与 POJO 无异。Spring MVC 已经实现了 Controller 层两者的自动转化，这体现在请求参数和返回值上。那么，Repository 层如何实现两者的自动转换呢？</p>
-<p>本文展示了通过使用 MyBatis-Plus，<strong>无侵入式</strong>地实现持久层 JSON 与 POJO 的自动映射（ORM， Object Relational Mapping）</p>
-<h1 id="案例演示"><a href="#案例演示" class="headerlink" title="案例演示"></a>案例演示</h1><h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2>
+<p>Logically, JSON is no different from a POJO. Spring MVC has already implemented automatic conversion between the two at the Controller tier, evident in request parameters and return values. So, how can the Repository tier achieve automatic conversion?</p>
+<p>This article demonstrates achieving seamless, <strong>non-intrusive</strong> mapping (ORM) between JSON and POJO using MyBatis-Plus in the Repository tier.</p>
+<h1 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h1><h2 id="Table"><a href="#Table" class="headerlink" title="Table"></a>Table</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/en/2023/07/08/MyBatis-Plus-Mapping-MySQL-JSON-Type/#more" rel="contents">
@@ -667,14 +667,14 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Word count total: </span>
-    <span title="Word count total">23k</span>
+    <span title="Word count total">22k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>Reading time total &asymp;</span>
-    <span title="Reading time total">1:22</span>
+    <span title="Reading time total">1:21</span>
   </span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
